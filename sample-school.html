@@ -1,0 +1,1575 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Learnly — Learn anything, anywhere</title>
+<meta name="description" content="Learnly — An online learning platform offering 200+ courses in web development, design, data science, and more. Learn from expert instructors at your own pace.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎓</text></svg>">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --orange: #F97316;
+  --orange-hover: #EA580C;
+  --orange-light: #FFF7ED;
+  --orange-glow: rgba(249, 115, 22, 0.15);
+  --yellow: #FBBF24;
+  --yellow-light: #FEF3C7;
+  --navy: #0F172A;
+  --navy-2: #1E293B;
+  --navy-3: #334155;
+  --gray: #64748B;
+  --gray-light: #94A3B8;
+  --gray-muted: #CBD5E1;
+  --border: #E2E8F0;
+  --surface: #F8FAFC;
+  --white: #FFFFFF;
+  --green: #22C55E;
+  --green-light: #DCFCE7;
+  --blue: #3B82F6;
+  --purple: #8B5CF6;
+  --rose: #F43F5E;
+  --radius: 12px;
+  --radius-lg: 20px;
+  --radius-xl: 28px;
+  --radius-full: 9999px;
+  --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.04);
+  --shadow-md: 0 4px 16px rgba(15, 23, 42, 0.08);
+  --shadow-lg: 0 12px 32px rgba(15, 23, 42, 0.1);
+  --shadow-xl: 0 20px 48px rgba(15, 23, 42, 0.14);
+  --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  color: var(--navy-2);
+  line-height: 1.65;
+  background: var(--white);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+/* ── Layout ── */
+.container { max-width: 1140px; margin: 0 auto; padding: 0 24px; }
+section { padding: 96px 0; }
+
+/* ── Animations ── */
+.fade-in {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+.fade-in.visible { opacity: 1; transform: translateY(0); }
+.fd1 { transition-delay: 0.08s; }
+.fd2 { transition-delay: 0.16s; }
+.fd3 { transition-delay: 0.24s; }
+.fd4 { transition-delay: 0.32s; }
+
+/* ── Demo Banner ── */
+.demo-banner {
+  background: var(--navy);
+  color: var(--gray-light);
+  text-align: center;
+  padding: 10px 20px;
+  font-size: 0.8rem;
+  line-height: 1.6;
+  position: relative;
+  z-index: 1001;
+}
+.demo-banner a {
+  color: var(--orange);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  transition: color var(--transition);
+}
+.demo-banner a:hover { color: var(--yellow); }
+
+/* ── Buttons ── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 11px 24px;
+  border-radius: var(--radius-full);
+  font-family: inherit;
+  font-size: 0.88rem;
+  font-weight: 600;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  line-height: 1.4;
+}
+.btn-primary {
+  background: var(--orange);
+  color: var(--white);
+}
+.btn-primary:hover {
+  background: var(--orange-hover);
+  box-shadow: 0 6px 20px var(--orange-glow);
+  transform: translateY(-1px);
+}
+.btn-ghost {
+  background: transparent;
+  color: var(--navy-2);
+  border: 1.5px solid var(--border);
+}
+.btn-ghost:hover {
+  border-color: var(--gray-muted);
+  background: var(--surface);
+}
+.btn-lg {
+  padding: 14px 30px;
+  font-size: 0.95rem;
+}
+.btn-white {
+  background: var(--white);
+  color: var(--orange);
+}
+.btn-white:hover {
+  background: var(--orange-light);
+  transform: translateY(-1px);
+}
+.btn-nav-ghost {
+  background: transparent;
+  color: var(--navy-2);
+  border: 1.5px solid var(--border);
+  padding: 8px 18px;
+  font-size: 0.82rem;
+}
+.btn-nav-ghost:hover {
+  border-color: var(--gray-muted);
+  color: var(--navy);
+}
+.btn-nav-primary {
+  background: var(--orange);
+  color: var(--white);
+  padding: 8px 18px;
+  font-size: 0.82rem;
+}
+.btn-nav-primary:hover {
+  background: var(--orange-hover);
+}
+
+/* ── Navigation ── */
+.nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+}
+.nav-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 64px;
+}
+.nav-logo {
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  line-height: 1;
+}
+.nav-logo-icon {
+  width: 36px;
+  height: 36px;
+}
+.nav-logo-text {
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: var(--navy);
+  letter-spacing: -0.02em;
+}
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  list-style: none;
+}
+.nav-links a {
+  color: var(--gray);
+  text-decoration: none;
+  font-size: 0.85rem;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+.nav-links a:hover { color: var(--navy); }
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.hamburger {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+}
+.hamburger span {
+  width: 22px;
+  height: 2px;
+  background: var(--navy-3);
+  border-radius: 2px;
+  transition: all 0.3s;
+}
+.hamburger.active span:nth-child(1) { transform: rotate(45deg) translate(4.5px, 5.5px); }
+.hamburger.active span:nth-child(2) { opacity: 0; }
+.hamburger.active span:nth-child(3) { transform: rotate(-45deg) translate(4.5px, -5.5px); }
+
+.mobile-menu {
+  display: none;
+  position: fixed;
+  inset: 0;
+  top: 64px;
+  background: var(--white);
+  z-index: 99;
+  padding: 24px;
+  flex-direction: column;
+  gap: 4px;
+}
+.mobile-menu.open { display: flex; }
+.mobile-menu a {
+  color: var(--navy-2);
+  text-decoration: none;
+  font-size: 1.05rem;
+  font-weight: 500;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--border);
+}
+.mobile-menu .btn {
+  margin-top: 16px;
+  text-align: center;
+  justify-content: center;
+}
+
+@media (max-width: 768px) {
+  .nav-links, .nav-actions { display: none; }
+  .hamburger { display: flex; }
+}
+
+/* ── Hero ── */
+.hero {
+  position: relative;
+  min-height: 92vh;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  background: var(--navy);
+}
+.hero-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  filter: brightness(1.1);
+}
+.hero::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    105deg,
+    rgba(15,23,42,0.92) 0%,
+    rgba(15,23,42,0.75) 35%,
+    rgba(15,23,42,0.35) 60%,
+    rgba(15,23,42,0.12) 100%
+  );
+  z-index: 1;
+}
+.hero .container {
+  position: relative;
+  z-index: 2;
+  padding-top: 120px;
+  padding-bottom: 120px;
+}
+.hero-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.15);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--orange);
+  padding: 7px 18px;
+  border-radius: var(--radius-full);
+  margin-bottom: 28px;
+  backdrop-filter: blur(8px);
+}
+.hero h1 {
+  font-size: clamp(2.6rem, 5.5vw, 3.8rem);
+  font-weight: 800;
+  line-height: 1.08;
+  color: var(--white);
+  margin-bottom: 24px;
+  letter-spacing: -0.03em;
+  max-width: 580px;
+}
+.hero h1 .accent {
+  color: var(--orange);
+}
+.hero-desc {
+  font-size: 1.08rem;
+  color: rgba(255,255,255,0.7);
+  max-width: 460px;
+  margin: 0 0 36px;
+  line-height: 1.8;
+}
+.hero-buttons {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.hero .btn-primary {
+  background: var(--orange);
+  color: var(--white);
+  box-shadow: 0 4px 24px rgba(249,115,22,0.35);
+}
+.hero .btn-primary:hover {
+  background: var(--orange-hover);
+  box-shadow: 0 8px 32px rgba(249,115,22,0.45);
+  transform: translateY(-2px);
+}
+.hero .btn-ghost {
+  background: transparent;
+  color: var(--white);
+  border: 1.5px solid rgba(255,255,255,0.25);
+}
+.hero .btn-ghost:hover {
+  border-color: rgba(255,255,255,0.5);
+  background: rgba(255,255,255,0.08);
+}
+
+@media (max-width: 860px) {
+  .hero { min-height: 80vh; }
+  .hero .container { padding-top: 80px; padding-bottom: 80px; }
+}
+@media (max-width: 540px) {
+  .hero { min-height: 70vh; }
+  .hero .container { padding-top: 64px; padding-bottom: 64px; }
+  .hero h1 { font-size: clamp(2rem, 7vw, 2.6rem); }
+}
+
+/* ── Stats Strip ── */
+.stats {
+  padding: 0;
+  position: relative;
+  z-index: 2;
+}
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+  text-align: center;
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  padding: 40px 32px;
+  margin-top: -48px;
+  box-shadow: 0 16px 48px rgba(15,23,42,0.12), 0 2px 8px rgba(15,23,42,0.06);
+}
+.stat-item {}
+.stat-value {
+  font-size: clamp(1.8rem, 3.5vw, 2.4rem);
+  font-weight: 800;
+  color: var(--navy);
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+.stat-value .highlight { color: var(--orange); }
+.stat-label {
+  font-size: 0.82rem;
+  color: var(--gray);
+  font-weight: 500;
+  margin-top: 4px;
+}
+
+@media (max-width: 640px) {
+  .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 20px 16px; padding: 28px 20px; }
+}
+
+/* ── Section Titles ── */
+.section-header {
+  text-align: center;
+  margin-bottom: 56px;
+}
+.section-label {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--orange);
+  margin-bottom: 12px;
+}
+.section-title {
+  font-size: clamp(1.6rem, 3.5vw, 2.2rem);
+  font-weight: 800;
+  color: var(--navy);
+  letter-spacing: -0.025em;
+  line-height: 1.2;
+  margin-bottom: 14px;
+}
+.section-desc {
+  font-size: 1rem;
+  color: var(--gray);
+  max-width: 520px;
+  margin: 0 auto;
+  line-height: 1.7;
+}
+
+/* ── Popular Courses ── */
+.courses { background: var(--white); }
+.courses-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+.course-card {
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  border: 1px solid var(--border);
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+.course-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+  border-color: transparent;
+}
+.course-header {
+  height: 160px;
+  position: relative;
+  overflow: hidden;
+}
+.course-header img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.4s ease;
+}
+.course-card:hover .course-header img {
+  transform: scale(1.05);
+}
+.course-category-badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(4px);
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  font-size: 0.62rem;
+  font-weight: 600;
+  color: var(--navy-2);
+  z-index: 1;
+}
+.course-body {
+  padding: 20px;
+}
+.course-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--navy);
+  margin-bottom: 12px;
+  line-height: 1.4;
+  letter-spacing: -0.01em;
+}
+.course-instructor {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.course-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 0.55rem;
+  font-weight: 700;
+  color: var(--white);
+  flex-shrink: 0;
+}
+.course-avatar.blue { background: linear-gradient(135deg, #3B82F6, #60A5FA); }
+.course-avatar.purple { background: linear-gradient(135deg, #8B5CF6, #A78BFA); }
+.course-avatar.green { background: linear-gradient(135deg, #10B981, #34D399); }
+.course-instructor-name {
+  font-size: 0.78rem;
+  color: var(--gray);
+  font-weight: 500;
+}
+.course-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+}
+.course-rating {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.stars {
+  display: flex;
+  gap: 1px;
+}
+.star {
+  color: var(--yellow);
+  font-size: 0.7rem;
+}
+.rating-text {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--navy-2);
+}
+.student-count {
+  font-size: 0.68rem;
+  color: var(--gray-light);
+}
+.course-price {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--orange);
+}
+
+@media (max-width: 768px) {
+  .courses-grid { grid-template-columns: 1fr; max-width: 400px; margin: 0 auto; }
+}
+
+/* ── How It Works ── */
+.how-it-works { background: var(--surface); }
+.steps {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 40px;
+  position: relative;
+}
+.steps::before {
+  content: '';
+  position: absolute;
+  top: 40px;
+  left: calc(16.67% + 20px);
+  right: calc(16.67% + 20px);
+  height: 2px;
+  background: var(--border);
+}
+.step {
+  text-align: center;
+  position: relative;
+}
+.step-number {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  margin: 0 auto 24px;
+  font-size: 1.5rem;
+  font-weight: 800;
+  position: relative;
+  z-index: 1;
+}
+.step:nth-child(1) .step-number {
+  background: var(--orange-light);
+  color: var(--orange);
+  border: 2px solid rgba(249, 115, 22, 0.2);
+}
+.step:nth-child(2) .step-number {
+  background: var(--yellow-light);
+  color: #D97706;
+  border: 2px solid rgba(251, 191, 36, 0.25);
+}
+.step:nth-child(3) .step-number {
+  background: var(--green-light);
+  color: var(--green);
+  border: 2px solid rgba(34, 197, 94, 0.2);
+}
+.step-icon { width: 32px; height: 32px; }
+.step-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--navy);
+  margin-bottom: 8px;
+}
+.step-desc {
+  font-size: 0.88rem;
+  color: var(--gray);
+  line-height: 1.6;
+  max-width: 260px;
+  margin: 0 auto;
+}
+
+@media (max-width: 768px) {
+  .steps { grid-template-columns: 1fr; max-width: 340px; margin: 0 auto; gap: 48px; }
+  .steps::before { display: none; }
+}
+
+/* ── Features ── */
+.features { background: var(--white); }
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+}
+.feature-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 32px;
+  transition: all 0.3s ease;
+}
+.feature-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md);
+  border-color: transparent;
+}
+.feature-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  margin-bottom: 20px;
+}
+.feature-icon svg { width: 24px; height: 24px; }
+.feature-icon.orange {
+  background: var(--orange-light);
+  color: var(--orange);
+}
+.feature-icon.blue {
+  background: #EFF6FF;
+  color: var(--blue);
+}
+.feature-icon.purple {
+  background: #F5F3FF;
+  color: var(--purple);
+}
+.feature-icon.green {
+  background: var(--green-light);
+  color: var(--green);
+}
+.feature-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--navy);
+  margin-bottom: 8px;
+}
+.feature-desc {
+  font-size: 0.88rem;
+  color: var(--gray);
+  line-height: 1.65;
+}
+
+@media (max-width: 640px) {
+  .features-grid { grid-template-columns: 1fr; }
+}
+
+/* ── Pricing ── */
+.pricing { background: var(--surface); }
+.pricing-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  align-items: start;
+}
+.pricing-card {
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  padding: 36px 28px;
+  border: 1px solid var(--border);
+  transition: all 0.3s ease;
+  position: relative;
+}
+.pricing-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md);
+}
+.pricing-card.featured {
+  border: 2px solid var(--orange);
+  box-shadow: var(--shadow-lg);
+  transform: scale(1.03);
+}
+.pricing-card.featured:hover {
+  transform: scale(1.03) translateY(-3px);
+  box-shadow: var(--shadow-xl);
+}
+.pricing-badge {
+  position: absolute;
+  top: -13px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--orange);
+  color: var(--white);
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 5px 16px;
+  border-radius: var(--radius-full);
+  white-space: nowrap;
+}
+.pricing-name {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--gray);
+  margin-bottom: 8px;
+}
+.pricing-price {
+  font-size: 2.4rem;
+  font-weight: 800;
+  color: var(--navy);
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  margin-bottom: 4px;
+}
+.pricing-price .currency {
+  font-size: 1.2rem;
+  font-weight: 600;
+  vertical-align: super;
+  margin-right: 2px;
+}
+.pricing-price .period {
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--gray-light);
+}
+.pricing-desc {
+  font-size: 0.82rem;
+  color: var(--gray);
+  margin-bottom: 24px;
+  line-height: 1.5;
+}
+.pricing-features {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 28px;
+}
+.pricing-features li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 0.85rem;
+  color: var(--navy-2);
+  line-height: 1.4;
+}
+.pricing-features li svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+.pricing-features li .check { color: var(--green); }
+.pricing-features li .x-mark { color: var(--gray-muted); }
+.pricing-features li.disabled {
+  color: var(--gray-light);
+}
+.pricing-btn {
+  width: 100%;
+}
+
+@media (max-width: 768px) {
+  .pricing-grid { grid-template-columns: 1fr; max-width: 400px; margin: 0 auto; }
+  .pricing-card.featured { transform: none; }
+  .pricing-card.featured:hover { transform: translateY(-3px); }
+}
+
+/* ── Testimonials ── */
+.testimonials { background: var(--white); }
+.testimonials-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+.testimonial-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 28px;
+  transition: all 0.3s ease;
+}
+.testimonial-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md);
+  border-color: transparent;
+}
+.testimonial-stars {
+  display: flex;
+  gap: 2px;
+  margin-bottom: 16px;
+}
+.testimonial-stars .star {
+  color: var(--yellow);
+  font-size: 0.85rem;
+}
+.testimonial-quote {
+  font-size: 0.92rem;
+  color: var(--navy-2);
+  line-height: 1.7;
+  margin-bottom: 20px;
+  font-style: italic;
+}
+.testimonial-author {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.testimonial-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--white);
+  flex-shrink: 0;
+}
+.testimonial-avatar.a1 { background: linear-gradient(135deg, #F97316, #FBBF24); }
+.testimonial-avatar.a2 { background: linear-gradient(135deg, #3B82F6, #60A5FA); }
+.testimonial-avatar.a3 { background: linear-gradient(135deg, #8B5CF6, #A78BFA); }
+.testimonial-name {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--navy);
+  line-height: 1.3;
+}
+.testimonial-role {
+  font-size: 0.75rem;
+  color: var(--gray);
+}
+
+@media (max-width: 768px) {
+  .testimonials-grid { grid-template-columns: 1fr; max-width: 440px; margin: 0 auto; }
+}
+
+/* ── CTA ── */
+.cta {
+  padding: 96px 0;
+  background: var(--navy);
+  position: relative;
+  overflow: hidden;
+}
+.cta::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 500px 400px at 20% 50%, rgba(249, 115, 22, 0.12) 0%, transparent 70%),
+    radial-gradient(ellipse 400px 300px at 80% 30%, rgba(251, 191, 36, 0.08) 0%, transparent 70%);
+  pointer-events: none;
+}
+.cta-content {
+  text-align: center;
+  position: relative;
+}
+.cta h2 {
+  font-size: clamp(1.8rem, 4vw, 2.6rem);
+  font-weight: 800;
+  color: var(--white);
+  margin-bottom: 14px;
+  letter-spacing: -0.025em;
+}
+.cta-desc {
+  font-size: 1.05rem;
+  color: var(--gray-light);
+  max-width: 480px;
+  margin: 0 auto 36px;
+  line-height: 1.7;
+}
+.cta-form {
+  display: flex;
+  gap: 10px;
+  max-width: 440px;
+  margin: 0 auto;
+}
+.cta-input {
+  flex: 1;
+  padding: 14px 20px;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--navy-3);
+  background: var(--navy-2);
+  color: var(--white);
+  font-family: inherit;
+  font-size: 0.9rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.cta-input::placeholder { color: var(--gray); }
+.cta-input:focus { border-color: var(--orange); }
+
+@media (max-width: 480px) {
+  .cta-form { flex-direction: column; }
+}
+
+/* ── Footer ── */
+.footer {
+  background: var(--navy);
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  padding: 64px 0 32px;
+  color: var(--gray);
+}
+.footer-grid {
+  display: grid;
+  grid-template-columns: 1.4fr repeat(3, 1fr);
+  gap: 48px;
+  margin-bottom: 48px;
+}
+.footer-brand {}
+.footer-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  margin-bottom: 16px;
+}
+.footer-logo-text {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--white);
+  letter-spacing: -0.02em;
+}
+.footer-brand-desc {
+  font-size: 0.85rem;
+  color: var(--gray);
+  line-height: 1.7;
+  margin-bottom: 20px;
+  max-width: 280px;
+}
+.footer-social {
+  display: flex;
+  gap: 12px;
+}
+.footer-social a {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: var(--navy-2);
+  display: grid;
+  place-items: center;
+  color: var(--gray-light);
+  text-decoration: none;
+  transition: all 0.2s;
+}
+.footer-social a:hover {
+  background: var(--orange);
+  color: var(--white);
+}
+.footer-social a svg { width: 16px; height: 16px; }
+.footer-col-title {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--white);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-bottom: 18px;
+}
+.footer-col a {
+  display: block;
+  color: var(--gray);
+  text-decoration: none;
+  font-size: 0.85rem;
+  padding: 5px 0;
+  transition: color 0.2s;
+}
+.footer-col a:hover { color: var(--orange); }
+.footer-bottom {
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  padding-top: 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.footer-copy {
+  font-size: 0.78rem;
+  color: var(--gray);
+}
+.footer-copy a {
+  color: var(--orange);
+  text-decoration: none;
+}
+.footer-copy a:hover { text-decoration: underline; }
+.footer-legal {
+  display: flex;
+  gap: 20px;
+}
+.footer-legal a {
+  font-size: 0.75rem;
+  color: var(--gray);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.footer-legal a:hover { color: var(--gray-light); }
+
+@media (max-width: 768px) {
+  .footer-grid { grid-template-columns: 1fr 1fr; gap: 32px; }
+}
+@media (max-width: 480px) {
+  .footer-grid { grid-template-columns: 1fr; }
+  .footer-bottom { flex-direction: column; text-align: center; }
+}
+</style>
+</head>
+<body>
+
+<!-- Demo Banner -->
+<div class="demo-banner">
+  This is a sample landing page created as a design &amp; development demo by
+  <a href="index.html">Sekimachi Design Studio</a>
+</div>
+
+<!-- Navigation -->
+<nav class="nav">
+  <div class="container nav-inner">
+    <a href="#" class="nav-logo">
+      <svg class="nav-logo-icon" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="40" height="40" rx="10" fill="#F97316"/>
+        <path d="M12 27V15.5C12 14.1193 13.1193 13 14.5 13H22.5C23.8807 13 25 14.1193 25 15.5V23" stroke="white" stroke-width="2" stroke-linecap="round"/>
+        <path d="M25 18H27.5C28.3284 18 29 18.6716 29 19.5V27" stroke="white" stroke-width="2" stroke-linecap="round"/>
+        <path d="M10 27H31" stroke="white" stroke-width="2" stroke-linecap="round"/>
+        <path d="M16 17H21" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+        <path d="M16 20H21" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+      <span class="nav-logo-text">Learnly</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="#courses">Courses</a></li>
+      <li><a href="#how-it-works">How It Works</a></li>
+      <li><a href="#pricing">Pricing</a></li>
+      <li><a href="#reviews">Reviews</a></li>
+    </ul>
+    <div class="nav-actions">
+      <a href="#" class="btn btn-nav-ghost">Log in</a>
+      <a href="#" class="btn btn-nav-primary">Start Free</a>
+    </div>
+    <button class="hamburger" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- Mobile Menu -->
+<div class="mobile-menu">
+  <a href="#courses">Courses</a>
+  <a href="#how-it-works">How It Works</a>
+  <a href="#pricing">Pricing</a>
+  <a href="#reviews">Reviews</a>
+  <a href="#" class="btn btn-ghost" style="margin-top:16px">Log in</a>
+  <a href="#" class="btn btn-primary">Start Free</a>
+</div>
+
+<!-- Hero Section -->
+<section class="hero">
+  <img src="https://images.pexels.com/photos/3184325/pexels-photo-3184325.jpeg?auto=compress&cs=tinysrgb&w=1920" alt="Team collaborating on learning projects" class="hero-bg">
+  <div class="container">
+    <div class="fade-in">
+      <div class="hero-eyebrow">New: AI-Powered Learning Paths</div>
+    </div>
+    <h1 class="fade-in fd1">Learn new skills.<br><span class="accent">Advance your career.</span></h1>
+    <p class="hero-desc fade-in fd2">Access 200+ expert-led courses in tech, design, and business. Learn at your own pace with hands-on projects and earn certificates that matter.</p>
+    <div class="hero-buttons fade-in fd3">
+      <a href="#courses" class="btn btn-primary btn-lg">Browse Courses</a>
+      <a href="#" class="btn btn-ghost btn-lg">Start Free Trial</a>
+    </div>
+  </div>
+</section>
+
+<!-- Stats Strip -->
+<div class="stats">
+  <div class="container">
+    <div class="stats-grid">
+      <div class="stat-item fade-in">
+        <div class="stat-value">50K<span class="highlight">+</span></div>
+        <div class="stat-label">Active Students</div>
+      </div>
+      <div class="stat-item fade-in fd1">
+        <div class="stat-value">200<span class="highlight">+</span></div>
+        <div class="stat-label">Expert-Led Courses</div>
+      </div>
+      <div class="stat-item fade-in fd2">
+        <div class="stat-value">4.8 <span class="highlight">★</span></div>
+        <div class="stat-label">Average Rating</div>
+      </div>
+      <div class="stat-item fade-in fd3">
+        <div class="stat-value">30<span class="highlight">+</span></div>
+        <div class="stat-label">Expert Instructors</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Popular Courses -->
+<section id="courses" class="courses">
+  <div class="container">
+    <div class="section-header fade-in">
+      <div class="section-label">Popular Courses</div>
+      <h2 class="section-title">Expand your skills with top-rated courses</h2>
+      <p class="section-desc">Handpicked by our team, loved by thousands of students worldwide.</p>
+    </div>
+
+    <div class="courses-grid">
+      <!-- Course 1 -->
+      <div class="course-card fade-in fd1">
+        <div class="course-header">
+          <span class="course-category-badge">Web Development</span>
+          <img src="https://images.pexels.com/photos/3888151/pexels-photo-3888151.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Code on laptop screen" loading="lazy">
+        </div>
+        <div class="course-body">
+          <div class="course-title">The Complete React Developer Masterclass 2025</div>
+          <div class="course-instructor">
+            <div class="course-avatar blue">SR</div>
+            <span class="course-instructor-name">Sarah Rodriguez</span>
+          </div>
+          <div class="course-meta">
+            <div class="course-rating">
+              <div class="stars"><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span></div>
+              <span class="rating-text">4.9</span>
+              <span class="student-count">(2,847)</span>
+            </div>
+            <div class="course-price">$49</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Course 2 -->
+      <div class="course-card fade-in fd2">
+        <div class="course-header">
+          <span class="course-category-badge">UI/UX Design</span>
+          <img src="https://images.pexels.com/photos/196644/pexels-photo-196644.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Creative design workspace" loading="lazy">
+        </div>
+        <div class="course-body">
+          <div class="course-title">UI/UX Design Fundamentals: From Figma to Prototype</div>
+          <div class="course-instructor">
+            <div class="course-avatar purple">MK</div>
+            <span class="course-instructor-name">Marcus Kim</span>
+          </div>
+          <div class="course-meta">
+            <div class="course-rating">
+              <div class="stars"><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span></div>
+              <span class="rating-text">4.8</span>
+              <span class="student-count">(1,923)</span>
+            </div>
+            <div class="course-price">$39</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Course 3 -->
+      <div class="course-card fade-in fd3">
+        <div class="course-header">
+          <span class="course-category-badge">Data Science</span>
+          <img src="https://images.pexels.com/photos/590022/pexels-photo-590022.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Data analytics and charts" loading="lazy">
+        </div>
+        <div class="course-body">
+          <div class="course-title">Data Science &amp; Machine Learning with Python</div>
+          <div class="course-instructor">
+            <div class="course-avatar green">AP</div>
+            <span class="course-instructor-name">Amara Patel</span>
+          </div>
+          <div class="course-meta">
+            <div class="course-rating">
+              <div class="stars"><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span></div>
+              <span class="rating-text">4.7</span>
+              <span class="student-count">(3,215)</span>
+            </div>
+            <div class="course-price">$59</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- How It Works -->
+<section id="how-it-works" class="how-it-works">
+  <div class="container">
+    <div class="section-header fade-in">
+      <div class="section-label">How It Works</div>
+      <h2 class="section-title">Start learning in 3 simple steps</h2>
+      <p class="section-desc">No complicated setup. Pick a course, hit play, and start building real skills today.</p>
+    </div>
+
+    <div class="steps">
+      <div class="step fade-in fd1">
+        <div class="step-number">
+          <svg class="step-icon" fill="none" viewBox="0 0 32 32"><circle cx="16" cy="16" r="11" stroke="currentColor" stroke-width="2"/><path d="M11 16L16 16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M16 11V16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M21 16H21.01" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg>
+        </div>
+        <div class="step-title">Choose your course</div>
+        <p class="step-desc">Browse 200+ courses across tech, design, and business. Filter by skill level and topic.</p>
+      </div>
+      <div class="step fade-in fd2">
+        <div class="step-number">
+          <svg class="step-icon" fill="none" viewBox="0 0 32 32"><path d="M12 14L10 17L12 20" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M20 14L22 17L20 20" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><rect x="5" y="7" width="22" height="18" rx="3" stroke="currentColor" stroke-width="2"/></svg>
+        </div>
+        <div class="step-title">Learn at your own pace</div>
+        <p class="step-desc">Watch HD video lessons, complete hands-on projects, and get feedback from mentors.</p>
+      </div>
+      <div class="step fade-in fd3">
+        <div class="step-number">
+          <svg class="step-icon" fill="none" viewBox="0 0 32 32"><path d="M16 8L19 14L26 15L21 20L22 27L16 24L10 27L11 20L6 15L13 14L16 8Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="step-title">Get certified</div>
+        <p class="step-desc">Earn industry-recognized certificates. Share achievements on LinkedIn and your resume.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Features -->
+<section class="features">
+  <div class="container">
+    <div class="section-header fade-in">
+      <div class="section-label">Features</div>
+      <h2 class="section-title">Everything you need to learn effectively</h2>
+      <p class="section-desc">Tools and resources designed to help you succeed, no matter your learning style.</p>
+    </div>
+
+    <div class="features-grid">
+      <div class="feature-card fade-in fd1">
+        <div class="feature-icon orange">
+          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+        </div>
+        <div class="feature-title">Live Workshops</div>
+        <p class="feature-desc">Join weekly live sessions with instructors. Ask questions in real time and collaborate with peers in interactive workshops.</p>
+      </div>
+      <div class="feature-card fade-in fd2">
+        <div class="feature-icon blue">
+          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        </div>
+        <div class="feature-title">Self-Paced Learning</div>
+        <p class="feature-desc">Access course materials 24/7. Pause, rewind, and replay lessons as many times as you need. Learn on your schedule.</p>
+      </div>
+      <div class="feature-card fade-in fd3">
+        <div class="feature-icon purple">
+          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>
+        </div>
+        <div class="feature-title">Certificate of Completion</div>
+        <p class="feature-desc">Earn verifiable certificates for every course you complete. Showcase your new skills to employers and clients.</p>
+      </div>
+      <div class="feature-card fade-in fd4">
+        <div class="feature-icon green">
+          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        </div>
+        <div class="feature-title">Community &amp; Mentorship</div>
+        <p class="feature-desc">Connect with 50,000+ learners and get guidance from experienced mentors. Never learn alone again.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Pricing -->
+<section id="pricing" class="pricing">
+  <div class="container">
+    <div class="section-header fade-in">
+      <div class="section-label">Pricing</div>
+      <h2 class="section-title">Simple, transparent pricing</h2>
+      <p class="section-desc">Start free, upgrade when you're ready. No hidden fees, cancel anytime.</p>
+    </div>
+
+    <div class="pricing-grid">
+      <!-- Free -->
+      <div class="pricing-card fade-in fd1">
+        <div class="pricing-name">Free</div>
+        <div class="pricing-price">$0</div>
+        <p class="pricing-desc">Perfect for exploring the platform and getting a taste of our courses.</p>
+        <ul class="pricing-features">
+          <li>
+            <svg class="check" fill="none" viewBox="0 0 18 18"><circle cx="9" cy="9" r="8" fill="#DCFCE7"/><path d="M5.5 9L8 11.5L12.5 6.5" stroke="#22C55E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            5 free courses
+          </li>
+          <li>
+            <svg class="check" fill="none" viewBox="0 0 18 18"><circle cx="9" cy="9" r="8" fill="#DCFCE7"/><path d="M5.5 9L8 11.5L12.5 6.5" stroke="#22C55E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Community access
+          </li>
+          <li>
+            <svg class="check" fill="none" viewBox="0 0 18 18"><circle cx="9" cy="9" r="8" fill="#DCFCE7"/><path d="M5.5 9L8 11.5L12.5 6.5" stroke="#22C55E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Basic projects
+          </li>
+          <li class="disabled">
+            <svg class="x-mark" fill="none" viewBox="0 0 18 18"><circle cx="9" cy="9" r="8" fill="#F1F5F9"/><path d="M6.5 6.5L11.5 11.5M11.5 6.5L6.5 11.5" stroke="#CBD5E1" stroke-width="1.5" stroke-linecap="round"/></svg>
+            Certificates
+          </li>
+          <li class="disabled">
+            <svg class="x-mark" fill="none" viewBox="0 0 18 18"><circle cx="9" cy="9" r="8" fill="#F1F5F9"/><path d="M6.5 6.5L11.5 11.5M11.5 6.5L6.5 11.5" stroke="#CBD5E1" stroke-width="1.5" stroke-linecap="round"/></svg>
+            Live workshops
+          </li>
+          <li class="disabled">
+            <svg class="x-mark" fill="none" viewBox="0 0 18 18"><circle cx="9" cy="9" r="8" fill="#F1F5F9"/><path d="M6.5 6.5L11.5 11.5M11.5 6.5L6.5 11.5" stroke="#CBD5E1" stroke-width="1.5" stroke-linecap="round"/></svg>
+            1-on-1 mentorship
+          </li>
+        </ul>
+        <a href="#" class="btn btn-ghost btn-lg pricing-btn">Get Started</a>
+      </div>
+
+      <!-- Pro -->
+      <div class="pricing-card featured fade-in fd2">
+        <div class="pricing-badge">Most Popular</div>
+        <div class="pricing-name">Pro</div>
+        <div class="pricing-price"><span class="currency">$</span>19<span class="period">/mo</span></div>
+        <p class="pricing-desc">Unlimited access to all courses with certificates and live workshops.</p>
+        <ul class="pricing-features">
+          <li>
+            <svg class="check" fill="none" viewBox="0 0 18 18"><circle cx="9" cy="9" r="8" fill="#DCFCE7"/><path d="M5.5 9L8 11.5L12.5 6.5" stroke="#22C55E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            All 200+ courses
+          </li>
+          <li>
+            <svg class="check" fill="none" viewBox="0 0 18 18"><circle cx="9" cy="9" r="8" fill="#DCFCE7"/><path d="M5.5 9L8 11.5L12.5 6.5" stroke="#22C55E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Community access
+          </li>
+          <li>
+            <svg class="check" fill="none" viewBox="0 0 18 18"><circle cx="9" cy="9" r="8" fill="#DCFCE7"/><path d="M5.5 9L8 11.5L12.5 6.5" stroke="#22C55E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Hands-on projects
+          </li>
+          <li>
+            <svg class="check" fill="none" viewBox="0 0 18 18"><circle cx="9" cy="9" r="8" fill="#DCFCE7"/><path d="M5.5 9L8 11.5L12.5 6.5" stroke="#22C55E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Certificates
+          </li>
+          <li>
+            <svg class="check" fill="none" viewBox="0 0 18 18"><circle cx="9" cy="9" r="8" fill="#DCFCE7"/><path d="M5.5 9L8 11.5L12.5 6.5" stroke="#22C55E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Live workshops
+          </li>
+          <li class="disabled">
+            <svg class="x-mark" fill="none" viewBox="0 0 18 18"><circle cx="9" cy="9" r="8" fill="#F1F5F9"/><path d="M6.5 6.5L11.5 11.5M11.5 6.5L6.5 11.5" stroke="#CBD5E1" stroke-width="1.5" stroke-linecap="round"/></svg>
+            1-on-1 mentorship
+          </li>
+        </ul>
+        <a href="#" class="btn btn-primary btn-lg pricing-btn">Start Free Trial</a>
+      </div>
+
+      <!-- Teams -->
+      <div class="pricing-card fade-in fd3">
+        <div class="pricing-name">Teams</div>
+        <div class="pricing-price"><span class="currency">$</span>49<span class="period">/user/mo</span></div>
+        <p class="pricing-desc">Train your whole team with admin tools, analytics, and priority support.</p>
+        <ul class="pricing-features">
+          <li>
+            <svg class="check" fill="none" viewBox="0 0 18 18"><circle cx="9" cy="9" r="8" fill="#DCFCE7"/><path d="M5.5 9L8 11.5L12.5 6.5" stroke="#22C55E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            All 200+ courses
+          </li>
+          <li>
+            <svg class="check" fill="none" viewBox="0 0 18 18"><circle cx="9" cy="9" r="8" fill="#DCFCE7"/><path d="M5.5 9L8 11.5L12.5 6.5" stroke="#22C55E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Community access
+          </li>
+          <li>
+            <svg class="check" fill="none" viewBox="0 0 18 18"><circle cx="9" cy="9" r="8" fill="#DCFCE7"/><path d="M5.5 9L8 11.5L12.5 6.5" stroke="#22C55E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Hands-on projects
+          </li>
+          <li>
+            <svg class="check" fill="none" viewBox="0 0 18 18"><circle cx="9" cy="9" r="8" fill="#DCFCE7"/><path d="M5.5 9L8 11.5L12.5 6.5" stroke="#22C55E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Certificates
+          </li>
+          <li>
+            <svg class="check" fill="none" viewBox="0 0 18 18"><circle cx="9" cy="9" r="8" fill="#DCFCE7"/><path d="M5.5 9L8 11.5L12.5 6.5" stroke="#22C55E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Live workshops
+          </li>
+          <li>
+            <svg class="check" fill="none" viewBox="0 0 18 18"><circle cx="9" cy="9" r="8" fill="#DCFCE7"/><path d="M5.5 9L8 11.5L12.5 6.5" stroke="#22C55E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            1-on-1 mentorship
+          </li>
+        </ul>
+        <a href="#" class="btn btn-ghost btn-lg pricing-btn">Contact Sales</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Testimonials -->
+<section id="reviews" class="testimonials">
+  <div class="container">
+    <div class="section-header fade-in">
+      <div class="section-label">Reviews</div>
+      <h2 class="section-title">Loved by students worldwide</h2>
+      <p class="section-desc">Join thousands of learners who've transformed their careers with Learnly.</p>
+    </div>
+
+    <div class="testimonials-grid">
+      <div class="testimonial-card fade-in fd1">
+        <div class="testimonial-stars">
+          <span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span>
+        </div>
+        <p class="testimonial-quote">"Learnly completely changed my career trajectory. I went from knowing zero code to landing a junior developer role in 6 months. The projects were incredibly practical."</p>
+        <div class="testimonial-author">
+          <div class="testimonial-avatar a1">JT</div>
+          <div>
+            <div class="testimonial-name">James Torres</div>
+            <div class="testimonial-role">Web Development Student</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="testimonial-card fade-in fd2">
+        <div class="testimonial-stars">
+          <span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span>
+        </div>
+        <p class="testimonial-quote">"The UI/UX Design course was outstanding. Marcus explains complex concepts so clearly, and the Figma exercises gave me a portfolio I'm genuinely proud of."</p>
+        <div class="testimonial-author">
+          <div class="testimonial-avatar a2">EL</div>
+          <div>
+            <div class="testimonial-name">Emily Larsen</div>
+            <div class="testimonial-role">UI/UX Design Student</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="testimonial-card fade-in fd3">
+        <div class="testimonial-stars">
+          <span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span>
+        </div>
+        <p class="testimonial-quote">"As a working parent, the self-paced format was a lifesaver. I could learn data science in the evenings and weekends. The mentorship program made all the difference."</p>
+        <div class="testimonial-author">
+          <div class="testimonial-avatar a3">RN</div>
+          <div>
+            <div class="testimonial-name">Raj Nakamura</div>
+            <div class="testimonial-role">Data Science Student</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta">
+  <div class="container">
+    <div class="cta-content fade-in">
+      <h2>Start learning today</h2>
+      <p class="cta-desc">Join 50,000+ students who are building the skills of tomorrow. Your first 5 courses are free.</p>
+      <div class="cta-form">
+        <input type="email" class="cta-input" placeholder="Enter your email address">
+        <button class="btn btn-primary btn-lg">Get Started</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a href="#" class="footer-logo">
+          <svg width="32" height="32" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="40" height="40" rx="10" fill="#F97316"/>
+            <path d="M12 27V15.5C12 14.1193 13.1193 13 14.5 13H22.5C23.8807 13 25 14.1193 25 15.5V23" stroke="white" stroke-width="2" stroke-linecap="round"/>
+            <path d="M25 18H27.5C28.3284 18 29 18.6716 29 19.5V27" stroke="white" stroke-width="2" stroke-linecap="round"/>
+            <path d="M10 27H31" stroke="white" stroke-width="2" stroke-linecap="round"/>
+            <path d="M16 17H21" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+            <path d="M16 20H21" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          <span class="footer-logo-text">Learnly</span>
+        </a>
+        <p class="footer-brand-desc">Learn anything, anywhere. Access 200+ expert-led courses and join a global community of learners.</p>
+        <div class="footer-social">
+          <a href="#" aria-label="Twitter">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"/></svg>
+          </a>
+          <a href="#" aria-label="LinkedIn">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+          </a>
+          <a href="#" aria-label="YouTube">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19.13C5.12 19.56 12 19.56 12 19.56s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.43z"/><polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"/></svg>
+          </a>
+          <a href="#" aria-label="Instagram">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+          </a>
+        </div>
+      </div>
+
+      <div class="footer-col">
+        <div class="footer-col-title">Courses</div>
+        <a href="#">Web Development</a>
+        <a href="#">UI/UX Design</a>
+        <a href="#">Data Science</a>
+        <a href="#">Mobile Development</a>
+        <a href="#">Cloud Computing</a>
+      </div>
+
+      <div class="footer-col">
+        <div class="footer-col-title">Company</div>
+        <a href="#">About Us</a>
+        <a href="#">Careers</a>
+        <a href="#">Blog</a>
+        <a href="#">Press</a>
+        <a href="#">Partners</a>
+      </div>
+
+      <div class="footer-col">
+        <div class="footer-col-title">Support</div>
+        <a href="#">Help Center</a>
+        <a href="#">Contact Us</a>
+        <a href="#">Student FAQ</a>
+        <a href="#">Become an Instructor</a>
+        <a href="#">Accessibility</a>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <div class="footer-copy">&copy; 2026 Learnly. Fictional platform by <a href="index.html">Sekimachi Design Studio</a></div>
+      <div class="footer-legal">
+        <a href="#">Privacy</a>
+        <a href="#">Terms</a>
+        <a href="#">Cookies</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function() {
+  // Intersection Observer for fade-in animations
+  var observer = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+  document.querySelectorAll('.fade-in').forEach(function(el) {
+    observer.observe(el);
+  });
+
+  // Mobile menu toggle
+  var hamburger = document.querySelector('.hamburger');
+  var mobileMenu = document.querySelector('.mobile-menu');
+
+  hamburger.addEventListener('click', function() {
+    hamburger.classList.toggle('active');
+    mobileMenu.classList.toggle('open');
+    document.body.style.overflow = mobileMenu.classList.contains('open') ? 'hidden' : '';
+  });
+
+  mobileMenu.querySelectorAll('a').forEach(function(link) {
+    link.addEventListener('click', function() {
+      hamburger.classList.remove('active');
+      mobileMenu.classList.remove('open');
+      document.body.style.overflow = '';
+    });
+  });
+
+})();
+</script>
+</body>
+</html>

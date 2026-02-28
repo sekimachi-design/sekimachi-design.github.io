@@ -425,11 +425,19 @@
 
     /* === SAMPLES === */
     .samples{background:var(--bg)}
+    .samples-category{
+      font-size:1.1rem;
+      font-weight:700;
+      color:var(--text);
+      margin-top:48px;
+      margin-bottom:20px;
+      padding-bottom:12px;
+      border-bottom:1px solid var(--border);
+    }
     .samples-grid{
       display:grid;
       grid-template-columns:repeat(3,1fr);
       gap:24px;
-      margin-top:48px;
     }
     .sample-card{
       background:var(--bg-card);
@@ -568,8 +576,8 @@
     <a href="#" class="nav-logo"><img src="images/logo.png" alt="Sekimachi Design Studio"></a>
     <div class="nav-links">
       <a href="#work" data-i18n="nav-work">Work</a>
+      <a href="#samples" data-i18n="nav-samples">Samples</a>
       <a href="#about" data-i18n="nav-about">About</a>
-      <a href="#skills" data-i18n="nav-skills">Skills</a>
       <a href="#contact" class="nav-cta" data-i18n="nav-contact">Contact</a>
       <div class="lang-toggle">
         <span data-lang="en" class="active">EN</span>
@@ -687,134 +695,6 @@
           <span class="tag">AWS</span>
         </div>
       </div>
-    </div>
-  </div>
-</section>
-
-<!-- About -->
-<section class="about" id="about">
-  <div class="container">
-    <div class="about-grid">
-      <div>
-        <div class="section-tag fade-in" data-i18n="about-tag">About</div>
-        <h2 class="section-title fade-in" data-i18n="about-title">Designer who codes.<br>Developer who designs.</h2>
-        <div class="about-text fade-in">
-          <p data-i18n="about-p1">I'm a UX Designer based in Tokyo with a unique background spanning both design and development. Starting as a programmer, I transitioned into UX design — giving me deep empathy for both users and the engineers building products.</p>
-          <p data-i18n="about-p2">Currently a Lead Designer at PERSOL CAREER, I previously worked as a contract UX Designer at Amazon Japan (via Aquent LLC) for 10 years, leading UX for 35+ projects including seasonal campaigns, category page redesigns, and service pages — always grounding decisions in quantitative data and user research.</p>
-          <p data-i18n="about-p3">I'm passionate about accessibility, and actively educate teams on inclusive design practices. I also spent 4 years working in Australia, bringing a global perspective to my design thinking. I'm available for freelance projects through Sekimachi Design Studio.</p>
-        </div>
-      </div>
-      <div>
-        <ul class="experience-list fade-in">
-          <li>
-            <span class="exp-year">2023 — Present</span>
-            <div>
-              <div class="exp-role" data-i18n="exp-role-1">Lead Designer</div>
-              <div class="exp-company" data-i18n="exp-company-1">PERSOL CAREER Co., Ltd.</div>
-            </div>
-          </li>
-          <li>
-            <span class="exp-year">2022 — 2023</span>
-            <div>
-              <div class="exp-role" data-i18n="exp-role-2">UI/UX Designer</div>
-              <div class="exp-company" data-i18n="exp-company-2">Lancers, Inc.</div>
-            </div>
-          </li>
-          <li>
-            <span class="exp-year">2015 — 2025</span>
-            <div>
-              <div class="exp-role" data-i18n="exp-role-3">UX Designer (Contract)</div>
-              <div class="exp-company" data-i18n="exp-company-3">Amazon Japan — via Aquent LLC</div>
-            </div>
-          </li>
-          <li>
-            <span class="exp-year">2014 — 2015</span>
-            <div>
-              <div class="exp-role" data-i18n="exp-role-4">UI/UX Designer / Front-End Engineer (Contract)</div>
-              <div class="exp-company" data-i18n="exp-company-4">MetaMoJi</div>
-            </div>
-          </li>
-          <li>
-            <span class="exp-year">2012 — 2013</span>
-            <div>
-              <div class="exp-role" data-i18n="exp-role-5">Programmer</div>
-              <div class="exp-company" data-i18n="exp-company-5">Net Marketing Co. Ltd</div>
-            </div>
-          </li>
-          <li>
-            <span class="exp-year">2004 — 2010</span>
-            <div>
-              <div class="exp-role" data-i18n="exp-role-6">IT Manager</div>
-              <div class="exp-company" data-i18n="exp-company-6">Australian Travel Agency (Australia)</div>
-            </div>
-          </li>
-          <li>
-            <span class="exp-year">2000 — 2004</span>
-            <div>
-              <div class="exp-role" data-i18n="exp-role-7">Web Developer / Designer</div>
-              <div class="exp-company" data-i18n="exp-company-7">Trans Cosmos Inc.</div>
-            </div>
-          </li>
-        </ul>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- Skills -->
-<section class="skills" id="skills">
-  <div class="container">
-    <div class="section-tag fade-in" data-i18n="skills-tag">Expertise</div>
-    <h2 class="section-title fade-in" data-i18n="skills-title">What I bring to the table</h2>
-    <div class="skills-grid">
-      <div class="skill-card fade-in">
-        <div class="skill-icon">🔬</div>
-        <h3 data-i18n="skill-1-h3">UX Research</h3>
-        <p data-i18n="skill-1-p">User interviews, usability testing, persona creation, customer journey mapping, competitive analysis, and survey design.</p>
-      </div>
-      <div class="skill-card fade-in">
-        <div class="skill-icon">📊</div>
-        <h3 data-i18n="skill-2-h3">Data-Driven Design</h3>
-        <p data-i18n="skill-2-p">Google Analytics, A/B testing, CTR optimization, scroll depth analysis, conversion rate tracking, and postmortem reporting.</p>
-      </div>
-      <div class="skill-card fade-in">
-        <div class="skill-icon">✏️</div>
-        <h3 data-i18n="skill-3-h3">UI/UX Design</h3>
-        <p data-i18n="skill-3-p">Wireframing, prototyping, information architecture, user flows, interaction design, and responsive web design.</p>
-      </div>
-      <div class="skill-card fade-in">
-        <div class="skill-icon">♿</div>
-        <h3 data-i18n="skill-4-h3">Accessibility</h3>
-        <p data-i18n="skill-4-p">WCAG compliance, universal design, accessibility audits, and team education on inclusive design practices.</p>
-      </div>
-      <div class="skill-card fade-in">
-        <div class="skill-icon">💻</div>
-        <h3 data-i18n="skill-5-h3">Development</h3>
-        <p data-i18n="skill-5-p">HTML, CSS, JavaScript, PHP, MySQL, WordPress, AWS. 15 years of hands-on coding experience.</p>
-      </div>
-      <div class="skill-card fade-in">
-        <div class="skill-icon">🎨</div>
-        <h3 data-i18n="skill-6-h3">Design Tools</h3>
-        <p data-i18n="skill-6-p">Figma, Sketch, Adobe XD, InVision, Photoshop, Illustrator, InDesign, and various prototyping tools.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- Certifications -->
-<section class="certs">
-  <div class="container">
-    <div class="section-tag fade-in" data-i18n="certs-tag">Credentials</div>
-    <h2 class="section-title fade-in" data-i18n="certs-title">Certifications</h2>
-    <div class="cert-grid fade-in">
-      <span class="cert">Google UX Design Certificate</span>
-      <span class="cert">HCD-Net Specialist</span>
-      <span class="cert">UX Exam Basic (HCD-certified)</span>
-      <span class="cert">Universal Design Coordinator</span>
-      <span class="cert">Universal Color Adviser</span>
-      <span class="cert">Web Analytics Consultant</span>
-      <span class="cert">Google Analytics Advanced</span>
-      <span class="cert">Oracle Master Silver</span>
     </div>
   </div>
 </section>
@@ -961,21 +841,8 @@
     <div class="section-tag fade-in" data-i18n="samples-tag">Sample Work</div>
     <h2 class="section-title fade-in" data-i18n="samples-title">Test Projects</h2>
     <p class="section-desc fade-in" data-i18n="samples-desc">Design and development skills demonstrated through personal projects.</p>
+    <h3 class="samples-category fade-in" data-i18n="samples-cat-web">Web Design</h3>
     <div class="samples-grid fade-in">
-      <a href="https://sekimachi-design.github.io/mochi-prompts-lp/" target="_blank" class="sample-card">
-        <div class="sample-thumb"><img src="images/samples/mochi.jpg" alt="Mochi Prompts screenshot" loading="lazy"></div>
-        <div class="sample-info">
-          <div class="sample-icon">🐾</div>
-          <div class="sample-body">
-            <h3 data-i18n="sample-3-h3">Mochi Prompts</h3>
-            <p data-i18n="sample-3-p">Landing page for 30 kawaii animal AI art prompts for Midjourney. Design and copywriting.</p>
-          </div>
-          <div class="project-tags">
-            <span class="tag">Landing Page</span>
-            <span class="tag">AI Art</span>
-          </div>
-        </div>
-      </a>
       <a href="sample-cafe.html" target="_blank" class="sample-card">
         <div class="sample-thumb"><img src="images/samples/cafe.jpg" alt="SORA Coffee screenshot" loading="lazy"></div>
         <div class="sample-info">
@@ -988,6 +855,48 @@
             <span class="tag">Landing Page</span>
             <span class="tag">Bilingual</span>
             <span class="tag">Cafe</span>
+          </div>
+        </div>
+      </a>
+      <a href="sample-salon.html" target="_blank" class="sample-card">
+        <div class="sample-thumb"><img src="images/samples/salon.jpg" alt="MAISON Hair Salon screenshot" loading="lazy"></div>
+        <div class="sample-info">
+          <div class="sample-icon">✂</div>
+          <div class="sample-body">
+            <h3 data-i18n="sample-8-h3">MAISON Hair Salon</h3>
+            <p data-i18n="sample-8-p">Luxury hair salon with elegant typography, gallery showcase, and sophisticated gold-charcoal design.</p>
+          </div>
+          <div class="project-tags">
+            <span class="tag">Landing Page</span>
+            <span class="tag">Beauty</span>
+          </div>
+        </div>
+      </a>
+      <a href="sample-school.html" target="_blank" class="sample-card">
+        <div class="sample-thumb"><img src="images/samples/school.jpg" alt="Learnly Online School screenshot" loading="lazy"></div>
+        <div class="sample-info">
+          <div class="sample-icon">🎓</div>
+          <div class="sample-body">
+            <h3 data-i18n="sample-9-h3">Learnly</h3>
+            <p data-i18n="sample-9-p">Online learning platform with course catalog, pricing tiers, and cinematic hero design.</p>
+          </div>
+          <div class="project-tags">
+            <span class="tag">Landing Page</span>
+            <span class="tag">EdTech</span>
+          </div>
+        </div>
+      </a>
+      <a href="https://sekimachi-design.github.io/mochi-prompts-lp/" target="_blank" class="sample-card">
+        <div class="sample-thumb"><img src="images/samples/mochi.jpg" alt="Mochi Prompts screenshot" loading="lazy"></div>
+        <div class="sample-info">
+          <div class="sample-icon">🐾</div>
+          <div class="sample-body">
+            <h3 data-i18n="sample-3-h3">Mochi Prompts</h3>
+            <p data-i18n="sample-3-p">Landing page for 30 kawaii animal AI art prompts for Midjourney. Design and copywriting.</p>
+          </div>
+          <div class="project-tags">
+            <span class="tag">Landing Page</span>
+            <span class="tag">AI Art</span>
           </div>
         </div>
       </a>
@@ -1020,6 +929,24 @@
           </div>
         </div>
       </a>
+      <a href="sample-clinic.html" target="_blank" class="sample-card">
+        <div class="sample-thumb"><img src="images/samples/clinic.jpg" alt="Aoyama Dental Clinic screenshot" loading="lazy" style="object-position:center"></div>
+        <div class="sample-info">
+          <div class="sample-icon">🦷</div>
+          <div class="sample-body">
+            <h3 data-i18n="sample-7-h3">Aoyama Dental</h3>
+            <p data-i18n="sample-7-p">Dental clinic landing page with full-bleed hero, trust indicators, and professional healthcare design.</p>
+          </div>
+          <div class="project-tags">
+            <span class="tag">Landing Page</span>
+            <span class="tag">Healthcare</span>
+          </div>
+        </div>
+      </a>
+    </div>
+
+    <h3 class="samples-category fade-in" data-i18n="samples-cat-apps">Web Apps</h3>
+    <div class="samples-grid fade-in">
       <a href="https://sekimachi-design.github.io/kanji-app/" target="_blank" class="sample-card">
         <div class="sample-thumb"><img src="images/samples/kanji.jpg" alt="かんじれんしゅう screenshot" loading="lazy"></div>
         <div class="sample-info">
@@ -1049,6 +976,134 @@
           </div>
         </div>
       </a>
+    </div>
+  </div>
+</section>
+
+<!-- About -->
+<section class="about" id="about">
+  <div class="container">
+    <div class="about-grid">
+      <div>
+        <div class="section-tag fade-in" data-i18n="about-tag">About</div>
+        <h2 class="section-title fade-in" data-i18n="about-title">Designer who codes.<br>Developer who designs.</h2>
+        <div class="about-text fade-in">
+          <p data-i18n="about-p1">I'm a UX Designer based in Tokyo with a unique background spanning both design and development. Starting as a programmer, I transitioned into UX design — giving me deep empathy for both users and the engineers building products.</p>
+          <p data-i18n="about-p2">Currently a Lead Designer at PERSOL CAREER, I previously worked as a contract UX Designer at Amazon Japan (via Aquent LLC) for 10 years, leading UX for 35+ projects including seasonal campaigns, category page redesigns, and service pages — always grounding decisions in quantitative data and user research.</p>
+          <p data-i18n="about-p3">I'm passionate about accessibility, and actively educate teams on inclusive design practices. I also spent 4 years working in Australia, bringing a global perspective to my design thinking. I'm available for freelance projects through Sekimachi Design Studio.</p>
+        </div>
+      </div>
+      <div>
+        <ul class="experience-list fade-in">
+          <li>
+            <span class="exp-year">2023 — Present</span>
+            <div>
+              <div class="exp-role" data-i18n="exp-role-1">Lead Designer</div>
+              <div class="exp-company" data-i18n="exp-company-1">PERSOL CAREER Co., Ltd.</div>
+            </div>
+          </li>
+          <li>
+            <span class="exp-year">2022 — 2023</span>
+            <div>
+              <div class="exp-role" data-i18n="exp-role-2">UI/UX Designer</div>
+              <div class="exp-company" data-i18n="exp-company-2">Lancers, Inc.</div>
+            </div>
+          </li>
+          <li>
+            <span class="exp-year">2015 — 2025</span>
+            <div>
+              <div class="exp-role" data-i18n="exp-role-3">UX Designer (Contract)</div>
+              <div class="exp-company" data-i18n="exp-company-3">Amazon Japan — via Aquent LLC</div>
+            </div>
+          </li>
+          <li>
+            <span class="exp-year">2014 — 2015</span>
+            <div>
+              <div class="exp-role" data-i18n="exp-role-4">UI/UX Designer / Front-End Engineer (Contract)</div>
+              <div class="exp-company" data-i18n="exp-company-4">MetaMoJi</div>
+            </div>
+          </li>
+          <li>
+            <span class="exp-year">2012 — 2013</span>
+            <div>
+              <div class="exp-role" data-i18n="exp-role-5">Programmer</div>
+              <div class="exp-company" data-i18n="exp-company-5">Net Marketing Co. Ltd</div>
+            </div>
+          </li>
+          <li>
+            <span class="exp-year">2004 — 2010</span>
+            <div>
+              <div class="exp-role" data-i18n="exp-role-6">IT Manager</div>
+              <div class="exp-company" data-i18n="exp-company-6">Australian Travel Agency (Australia)</div>
+            </div>
+          </li>
+          <li>
+            <span class="exp-year">2000 — 2004</span>
+            <div>
+              <div class="exp-role" data-i18n="exp-role-7">Web Developer / Designer</div>
+              <div class="exp-company" data-i18n="exp-company-7">Trans Cosmos Inc.</div>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Skills -->
+<section class="skills" id="skills">
+  <div class="container">
+    <div class="section-tag fade-in" data-i18n="skills-tag">Expertise</div>
+    <h2 class="section-title fade-in" data-i18n="skills-title">What I bring to the table</h2>
+    <div class="skills-grid">
+      <div class="skill-card fade-in">
+        <div class="skill-icon">🔬</div>
+        <h3 data-i18n="skill-1-h3">UX Research</h3>
+        <p data-i18n="skill-1-p">User interviews, usability testing, persona creation, customer journey mapping, competitive analysis, and survey design.</p>
+      </div>
+      <div class="skill-card fade-in">
+        <div class="skill-icon">📊</div>
+        <h3 data-i18n="skill-2-h3">Data-Driven Design</h3>
+        <p data-i18n="skill-2-p">Google Analytics, A/B testing, CTR optimization, scroll depth analysis, conversion rate tracking, and postmortem reporting.</p>
+      </div>
+      <div class="skill-card fade-in">
+        <div class="skill-icon">✏️</div>
+        <h3 data-i18n="skill-3-h3">UI/UX Design</h3>
+        <p data-i18n="skill-3-p">Wireframing, prototyping, information architecture, user flows, interaction design, and responsive web design.</p>
+      </div>
+      <div class="skill-card fade-in">
+        <div class="skill-icon">♿</div>
+        <h3 data-i18n="skill-4-h3">Accessibility</h3>
+        <p data-i18n="skill-4-p">WCAG compliance, universal design, accessibility audits, and team education on inclusive design practices.</p>
+      </div>
+      <div class="skill-card fade-in">
+        <div class="skill-icon">💻</div>
+        <h3 data-i18n="skill-5-h3">Development</h3>
+        <p data-i18n="skill-5-p">HTML, CSS, JavaScript, PHP, MySQL, WordPress, AWS. 15 years of hands-on coding experience.</p>
+      </div>
+      <div class="skill-card fade-in">
+        <div class="skill-icon">🎨</div>
+        <h3 data-i18n="skill-6-h3">Design Tools</h3>
+        <p data-i18n="skill-6-p">Figma, Sketch, Adobe XD, InVision, Photoshop, Illustrator, InDesign, and various prototyping tools.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Certifications -->
+<section class="certs">
+  <div class="container">
+    <div class="section-tag fade-in" data-i18n="certs-tag">Credentials</div>
+    <h2 class="section-title fade-in" data-i18n="certs-title">Certifications</h2>
+    <div class="cert-grid fade-in">
+      <span class="cert">Google UX Design Certificate</span>
+      <span class="cert">HCD-Net Specialist</span>
+      <span class="cert">UX Exam Basic (HCD-certified)</span>
+      <span class="cert">Universal Design Coordinator</span>
+      <span class="cert">Universal Color Adviser</span>
+      <span class="cert">Web Analytics Consultant</span>
+      <span class="cert">Google Analytics Advanced</span>
+      <span class="cert">Oracle Master Silver</span>
     </div>
   </div>
 </section>
@@ -1088,7 +1143,7 @@ const i18n = {
   en: {
     "nav-work": "Work",
     "nav-about": "About",
-    "nav-skills": "Skills",
+    "nav-samples": "Samples",
     "nav-contact": "Contact",
     "hero-tag": "Design Studio / Tokyo",
     "hero-h1": 'We craft digital <span class="gradient">experiences</span> that deliver results',
@@ -1184,6 +1239,14 @@ const i18n = {
     "sample-5-p": "SaaS product landing page with pricing tiers, feature showcase, and CSS dashboard mockup.",
     "sample-6-h3": "Vitality Fitness",
     "sample-6-p": "Fitness app landing page with phone mockup, testimonials, and vibrant green-coral design.",
+    "samples-cat-web": "Web Design",
+    "samples-cat-apps": "Web Apps",
+    "sample-7-h3": "Aoyama Dental",
+    "sample-7-p": "Dental clinic landing page with full-bleed hero, trust indicators, and professional healthcare design.",
+    "sample-8-h3": "MAISON Hair Salon",
+    "sample-8-p": "Luxury hair salon with elegant typography, gallery showcase, and sophisticated gold-charcoal design.",
+    "sample-9-h3": "Learnly",
+    "sample-9-p": "Online learning platform with course catalog, pricing tiers, and cinematic hero design.",
     "contact-tag": "Let's Connect",
     "contact-title": "Have a project<br>in mind?",
     "contact-desc": "I'm open to freelance projects, full-time positions, and collaborative opportunities. Let's create something great together.",
@@ -1194,7 +1257,7 @@ const i18n = {
   ja: {
     "nav-work": "実績",
     "nav-about": "自己紹介",
-    "nav-skills": "スキル",
+    "nav-samples": "サンプル",
     "nav-contact": "お問い合わせ",
     "hero-tag": "デザインスタジオ / 東京",
     "hero-h1": '成果を生む<span class="gradient">デジタル体験</span>をデザインします',
@@ -1290,6 +1353,14 @@ const i18n = {
     "sample-5-p": "料金プラン・機能紹介・CSSダッシュボードモックアップ付きのSaaS製品LP。",
     "sample-6-h3": "Vitality Fitness",
     "sample-6-p": "スマホモックアップ・口コミ・グリーン×コーラルのフィットネスアプリLP。",
+    "samples-cat-web": "Webデザイン",
+    "samples-cat-apps": "Webアプリ",
+    "sample-7-h3": "Aoyama Dental",
+    "sample-7-p": "フルブリードヒーロー・信頼指標・プロフェッショナルなヘルスケアデザインの歯科クリニックLP。",
+    "sample-8-h3": "MAISON Hair Salon",
+    "sample-8-p": "エレガントなタイポグラフィ・ギャラリー・ゴールド×チャコールのラグジュアリーヘアサロンLP。",
+    "sample-9-h3": "Learnly",
+    "sample-9-p": "コースカタログ・料金プラン・シネマティックヒーローのオンライン学習プラットフォームLP。",
     "contact-tag": "お問い合わせ",
     "contact-title": "プロジェクトの<br>ご相談はこちら",
     "contact-desc": "フリーランス案件、正社員ポジション、コラボレーションの機会を歓迎します。一緒に素晴らしいものを作りましょう。",
