@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gray + Lemon Yellow — Color Sample</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'DM Sans',sans-serif;background:#f0f0f0;color:#2c2c2c;padding:40px 24px}
+    .page-title{text-align:center;font-size:2rem;font-weight:800;margin-bottom:8px}
+    .page-sub{text-align:center;color:#888;margin-bottom:56px;font-size:0.95rem}
+    .schemes{display:flex;flex-direction:column;gap:64px;max-width:1100px;margin:0 auto}
+    .scheme{border-radius:20px;overflow:hidden;box-shadow:0 4px 30px rgba(0,0,0,0.08)}
+    .scheme-header{padding:32px 40px 24px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px}
+    .scheme-header h2{font-size:1.5rem;font-weight:800}
+    .scheme-header .badge{padding:6px 16px;border-radius:50px;font-size:0.75rem;font-weight:700;letter-spacing:0.5px}
+    .swatches{display:flex;gap:0;padding:0 40px 24px}
+    .swatch{flex:1;text-align:center}
+    .swatch-color{height:56px;border-radius:10px;margin:0 4px 8px}
+    .swatch-name{font-size:0.7rem;font-weight:600;opacity:0.7}
+    .swatch-hex{font-size:0.7rem;opacity:0.5}
+    .preview{padding:0 40px 40px;display:grid;grid-template-columns:1fr 1fr;gap:20px}
+    .preview-text h3{font-size:1.8rem;font-weight:800;margin-bottom:12px;line-height:1.2}
+    .preview-text p{font-size:0.85rem;line-height:1.7;opacity:0.65;margin-bottom:20px}
+    .preview-buttons{display:flex;gap:12px}
+    .btn{padding:10px 24px;border-radius:50px;font-family:'DM Sans',sans-serif;font-weight:600;font-size:0.8rem;border:none;cursor:pointer}
+    .preview-card{border-radius:14px;padding:24px}
+    .preview-card .tag{display:inline-block;padding:4px 12px;border-radius:50px;font-size:0.65rem;font-weight:600;margin-bottom:10px}
+    .preview-card h4{font-size:1rem;font-weight:700;margin-bottom:6px}
+    .preview-card p{font-size:0.8rem;line-height:1.6;opacity:0.6}
+    @media(max-width:700px){
+      .preview{grid-template-columns:1fr}
+      .swatches{flex-wrap:wrap}
+      .swatch{min-width:80px}
+      .scheme-header{padding:24px 24px 16px}
+      .swatches{padding:0 24px 16px}
+      .preview{padding:0 24px 32px}
+    }
+  </style>
+</head>
+<body>
+
+<h1 class="page-title">Gray + Lemon Yellow</h1>
+<p class="page-sub">Sekimachi Design Studio — Logo Color Match</p>
+
+<div class="schemes">
+
+  <!-- A: Soft approach — yellow as highlight accent -->
+  <div class="scheme" style="background:#f7f7f5">
+    <div class="scheme-header">
+      <h2 style="color:#333">A. Soft & Clean</h2>
+      <span class="badge" style="background:rgba(240,216,50,0.15);color:#998a00">Yellow as subtle accent</span>
+    </div>
+    <div class="swatches">
+      <div class="swatch"><div class="swatch-color" style="background:#f7f7f5;border:1px solid #e8e8e4"></div><div class="swatch-name" style="color:#333">BG</div><div class="swatch-hex" style="color:#888">#f7f7f5</div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#ffffff;border:1px solid #e8e8e4"></div><div class="swatch-name" style="color:#333">Card</div><div class="swatch-hex" style="color:#888">#ffffff</div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#333333"></div><div class="swatch-name" style="color:#333">Text</div><div class="swatch-hex" style="color:#888">#333333</div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#888888"></div><div class="swatch-name" style="color:#333">Dim</div><div class="swatch-hex" style="color:#888">#888888</div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#f0d832"></div><div class="swatch-name" style="color:#333">Yellow</div><div class="swatch-hex" style="color:#888">#f0d832</div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#555555"></div><div class="swatch-name" style="color:#333">Gray Accent</div><div class="swatch-hex" style="color:#888">#555555</div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#e8e8e4"></div><div class="swatch-name" style="color:#333">Border</div><div class="swatch-hex" style="color:#888">#e8e8e4</div></div>
+    </div>
+    <div class="preview">
+      <div class="preview-text">
+        <h3 style="color:#333">Designing <span style="background:linear-gradient(135deg,#f0d832,#f5e560);-webkit-background-clip:text;-webkit-text-fill-color:transparent">experiences</span> that people love</h3>
+        <p style="color:#888">UX Designer with 15+ years in tech. Currently a Lead Designer at PERSOL CAREER.</p>
+        <div class="preview-buttons">
+          <button class="btn" style="background:#333;color:#fff">View My Work</button>
+          <button class="btn" style="background:#f0d832;color:#333">Get in Touch</button>
+        </div>
+      </div>
+      <div class="preview-card" style="background:#fff;border:1px solid #e8e8e4">
+        <span class="tag" style="background:rgba(240,216,50,0.12);color:#8a7d00;border:1px solid rgba(240,216,50,0.25)">UX Research</span>
+        <h4 style="color:#333">Toy Page Renewal</h4>
+        <p style="color:#888">Led end-to-end UX research and redesign of the toy category page with data-driven approach.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- B: Bold approach — dark gray base with yellow pop -->
+  <div class="scheme" style="background:#f5f5f3">
+    <div class="scheme-header">
+      <h2 style="color:#2a2a2a">B. Bold & Confident</h2>
+      <span class="badge" style="background:#f0d832;color:#333">Yellow as primary CTA</span>
+    </div>
+    <div class="swatches">
+      <div class="swatch"><div class="swatch-color" style="background:#f5f5f3;border:1px solid #e2e2de"></div><div class="swatch-name" style="color:#2a2a2a">BG</div><div class="swatch-hex" style="color:#777">#f5f5f3</div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#ffffff;border:1px solid #e2e2de"></div><div class="swatch-name" style="color:#2a2a2a">Card</div><div class="swatch-hex" style="color:#777">#ffffff</div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#2a2a2a"></div><div class="swatch-name" style="color:#2a2a2a">Text</div><div class="swatch-hex" style="color:#777">#2a2a2a</div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#777777"></div><div class="swatch-name" style="color:#2a2a2a">Dim</div><div class="swatch-hex" style="color:#777">#777777</div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#edd81e"></div><div class="swatch-name" style="color:#2a2a2a">Yellow</div><div class="swatch-hex" style="color:#777">#edd81e</div></div>
+      <div class="swatch"><div class="swatch-color" style="background:linear-gradient(135deg,#edd81e,#f5e76b)"></div><div class="swatch-name" style="color:#2a2a2a">Gradient</div><div class="swatch-hex" style="color:#777">→ #f5e76b</div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#e2e2de"></div><div class="swatch-name" style="color:#2a2a2a">Border</div><div class="swatch-hex" style="color:#777">#e2e2de</div></div>
+    </div>
+    <div class="preview">
+      <div class="preview-text">
+        <h3 style="color:#2a2a2a">Designing <span style="position:relative;display:inline"><span style="position:absolute;bottom:2px;left:0;right:0;height:8px;background:#edd81e;opacity:0.4;z-index:0"></span><span style="position:relative;z-index:1">experiences</span></span> that people love</h3>
+        <p style="color:#777">UX Designer with 15+ years in tech. Currently a Lead Designer at PERSOL CAREER.</p>
+        <div class="preview-buttons">
+          <button class="btn" style="background:#edd81e;color:#2a2a2a;box-shadow:0 4px 16px rgba(237,216,30,0.3)">View My Work</button>
+          <button class="btn" style="background:transparent;color:#2a2a2a;border:1px solid #e2e2de">Get in Touch</button>
+        </div>
+      </div>
+      <div class="preview-card" style="background:#fff;border:1px solid #e2e2de">
+        <span class="tag" style="background:rgba(237,216,30,0.12);color:#7a7000;border:1px solid rgba(237,216,30,0.3)">UX Research</span>
+        <h4 style="color:#2a2a2a">Toy Page Renewal</h4>
+        <p style="color:#777">Led end-to-end UX research and redesign of the toy category page with data-driven approach.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- C: Warm gray + muted yellow, editorial feel -->
+  <div class="scheme" style="background:#f6f5f2">
+    <div class="scheme-header">
+      <h2 style="color:#3a3a38">C. Warm & Editorial</h2>
+      <span class="badge" style="background:rgba(218,198,48,0.12);color:#8a7d10">Muted yellow, warm gray</span>
+    </div>
+    <div class="swatches">
+      <div class="swatch"><div class="swatch-color" style="background:#f6f5f2;border:1px solid #e6e4de"></div><div class="swatch-name" style="color:#3a3a38">BG</div><div class="swatch-hex" style="color:#8a8a85">#f6f5f2</div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#ffffff;border:1px solid #e6e4de"></div><div class="swatch-name" style="color:#3a3a38">Card</div><div class="swatch-hex" style="color:#8a8a85">#ffffff</div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#3a3a38"></div><div class="swatch-name" style="color:#3a3a38">Text</div><div class="swatch-hex" style="color:#8a8a85">#3a3a38</div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#8a8a85"></div><div class="swatch-name" style="color:#3a3a38">Dim</div><div class="swatch-hex" style="color:#8a8a85">#8a8a85</div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#dac630"></div><div class="swatch-name" style="color:#3a3a38">Yellow</div><div class="swatch-hex" style="color:#8a8a85">#dac630</div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#555550"></div><div class="swatch-name" style="color:#3a3a38">Dark Gray</div><div class="swatch-hex" style="color:#8a8a85">#555550</div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#e6e4de"></div><div class="swatch-name" style="color:#3a3a38">Border</div><div class="swatch-hex" style="color:#8a8a85">#e6e4de</div></div>
+    </div>
+    <div class="preview">
+      <div class="preview-text">
+        <h3 style="color:#3a3a38">Designing <span style="color:#b0a020">experiences</span> that people love</h3>
+        <p style="color:#8a8a85">UX Designer with 15+ years in tech. Currently a Lead Designer at PERSOL CAREER.</p>
+        <div class="preview-buttons">
+          <button class="btn" style="background:#3a3a38;color:#f6f5f2">View My Work</button>
+          <button class="btn" style="background:transparent;color:#3a3a38;border:1px solid #dac630">Get in Touch</button>
+        </div>
+      </div>
+      <div class="preview-card" style="background:#fff;border:1px solid #e6e4de">
+        <span class="tag" style="background:rgba(218,198,48,0.1);color:#7a7010;border:1px solid rgba(218,198,48,0.2)">UX Research</span>
+        <h4 style="color:#3a3a38">Toy Page Renewal</h4>
+        <p style="color:#8a8a85">Led end-to-end UX research and redesign of the toy category page with data-driven approach.</p>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

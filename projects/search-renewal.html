@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Search Page Renewal — Sekimachi Design Studio</title>
+  <meta name="description" content="High-traffic search page redesign at Lancers using Google Analytics data to surface content users actually needed. Completed in 2 weeks.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>◆</text></svg>">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --bg:#fafafa;
+      --bg-card:#ffffff;
+      --bg-hover:#f3f3f3;
+      --text:#111111;
+      --text-dim:#666666;
+      --text-muted:#aaaaaa;
+      --accent:#111111;
+      --accent-glow:rgba(0,0,0,0.04);
+      --gradient:linear-gradient(135deg,#111111,#333333);
+      --border:#e5e5e5;
+      --radius:16px;
+      --radius-sm:8px;
+    }
+    html{scroll-behavior:smooth;font-size:16px}
+    body{
+      font-family:'DM Sans',sans-serif;
+      background:var(--bg);
+      color:var(--text);
+      line-height:1.6;
+      overflow-x:hidden;
+    }
+    .container{max-width:1200px;margin:0 auto;padding:0 32px}
+    a{color:inherit;text-decoration:none}
+
+    nav{
+      position:fixed;top:0;left:0;right:0;z-index:100;
+      padding:20px 0;
+      background:rgba(250,250,250,0.85);
+      backdrop-filter:blur(20px);
+      border-bottom:1px solid var(--border);
+    }
+    nav .container{display:flex;justify-content:space-between;align-items:center}
+    .nav-logo{display:flex;align-items:center}
+    .nav-logo img{height:58px;width:auto;padding:8px 0}
+    .nav-back{
+      color:var(--text-dim);font-size:0.9rem;font-weight:500;
+      transition:color 0.2s;
+    }
+    .nav-back:hover{color:var(--text)}
+
+    .project-hero{
+      margin-top:73px;
+      width:100%;
+      height:480px;
+      overflow:hidden;
+    }
+    .project-hero img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+    }
+
+    .project-header{padding:64px 0 48px}
+    .project-company{
+      font-size:0.75rem;
+      color:var(--accent);
+      text-transform:uppercase;
+      letter-spacing:1.5px;
+      font-weight:600;
+      margin-bottom:12px;
+    }
+    .project-header h1{
+      font-family:'DM Sans',sans-serif;
+      font-size:3rem;
+      font-weight:800;
+      letter-spacing:-1px;
+      margin-bottom:20px;
+    }
+    .project-tags{display:flex;gap:8px;flex-wrap:wrap}
+    .tag{
+      padding:4px 12px;
+      background:rgba(0,0,0,0.04);
+      border:1px solid rgba(0,0,0,0.08);
+      border-radius:50px;
+      font-size:0.7rem;
+      color:var(--accent);
+      font-weight:500;
+    }
+
+    .project-section{
+      padding:48px 0;
+      border-top:1px solid var(--border);
+    }
+    .project-section h2{
+      font-family:'DM Sans',sans-serif;
+      font-size:1.6rem;
+      font-weight:700;
+      letter-spacing:-0.3px;
+      margin-bottom:20px;
+    }
+    .project-section p{
+      font-size:1.05rem;
+      color:var(--text-dim);
+      line-height:1.8;
+      max-width:720px;
+      margin-bottom:16px;
+    }
+    .project-section ul{
+      list-style:none;
+      margin-top:12px;
+      max-width:720px;
+    }
+    .project-section ul li{
+      padding:8px 0;
+      padding-left:20px;
+      position:relative;
+      font-size:1rem;
+      color:var(--text-dim);
+      line-height:1.7;
+    }
+    .project-section ul li::before{
+      content:'';
+      position:absolute;
+      left:0;
+      top:16px;
+      width:6px;
+      height:6px;
+      border-radius:50%;
+      background:var(--accent);
+    }
+
+    .project-nav{
+      padding:64px 0;
+      border-top:1px solid var(--border);
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+    }
+    .project-nav a{
+      font-size:0.95rem;
+      font-weight:600;
+      color:var(--text-dim);
+      transition:color 0.2s;
+    }
+    .project-nav a:hover{color:var(--text)}
+    .project-nav .disabled{
+      color:var(--text-muted);
+      pointer-events:none;
+    }
+
+    footer{
+      padding:40px 0;
+      border-top:1px solid var(--border);
+      text-align:center;
+    }
+    footer p{font-size:0.8rem;color:var(--text-muted)}
+
+    @media(max-width:900px){
+      .project-hero{height:320px}
+      .project-header h1{font-size:2.2rem}
+    }
+    @media(max-width:600px){
+      .container{padding:0 20px}
+      .project-hero{height:220px}
+      .project-header{padding:40px 0 32px}
+      .project-header h1{font-size:1.8rem;letter-spacing:-0.5px}
+      .project-section{padding:32px 0}
+      .project-section h2{font-size:1.3rem}
+      .project-nav{padding:40px 0;flex-direction:column;gap:16px;align-items:flex-start}
+    }
+  </style>
+</head>
+<body>
+<script>if(sessionStorage.getItem('portfolio_auth')!=='true'){window.location.replace('../portfolio.html');}</script>
+
+<nav>
+  <div class="container">
+    <a href="../index.html" class="nav-logo"><img src="../images/logo.png" alt="Sekimachi Design Studio"></a>
+    <a href="../portfolio.html" class="nav-back">&larr; Back to Portfolio</a>
+  </div>
+</nav>
+
+<div class="project-hero">
+  <img src="../images/search-renewal.jpg" alt="Search Page Renewal">
+</div>
+
+<div class="container">
+  <div class="project-header">
+    <div class="project-company">Lancers</div>
+    <h1>Search Page Renewal</h1>
+    <div class="project-tags">
+      <span class="tag">Google Analytics</span>
+      <span class="tag">UI Design</span>
+      <span class="tag">Rapid Iteration</span>
+    </div>
+  </div>
+
+  <div class="project-section">
+    <h2>Overview</h2>
+    <p>Lancers is one of Japan's largest freelancing platforms, and the search page is the primary entry point for clients looking to hire freelancers. The existing search page had a complex information architecture that had become difficult to navigate as the platform grew. Users struggled to find the right talent quickly, leading to high drop-off rates.</p>
+    <p>I was tasked with redesigning the search experience — with an aggressive two-week deadline that demanded ruthless prioritization and efficient execution.</p>
+  </div>
+
+  <div class="project-section">
+    <h2>Process</h2>
+    <ul>
+      <li><strong>Analytics deep-dive</strong> — Used Google Analytics to map actual user behavior: which filters were used most, where users dropped off, which search result types got the most clicks, and common search patterns.</li>
+      <li><strong>Content prioritization</strong> — Identified a gap between what the page surfaced and what users actually needed. Many prominent UI elements had very low engagement, while high-value filters were hidden in secondary menus.</li>
+      <li><strong>Rapid wireframing</strong> — Sketched multiple layout concepts in the first two days, focusing on surfacing high-usage filters and simplifying the results layout. Reviewed with stakeholders to align on direction quickly.</li>
+      <li><strong>UI design &amp; handoff</strong> — Designed the final UI with clean typography, clearer visual hierarchy, and streamlined filter interactions. Worked closely with engineers on feasibility within the tight timeline.</li>
+      <li><strong>Launch &amp; monitoring</strong> — Coordinated with the engineering team for a smooth launch. Set up dashboards to monitor key metrics post-launch.</li>
+    </ul>
+  </div>
+
+  <div class="project-section">
+    <h2>Results</h2>
+    <p>Despite the compressed timeline, the redesign delivered meaningful improvements:</p>
+    <ul>
+      <li>Improved search-to-hire conversion by surfacing the most relevant filters and content based on analytics data</li>
+      <li>Simplified the visual hierarchy, reducing cognitive load and making it easier for clients to scan results</li>
+      <li>Completed the full redesign — from research to launch — in just 2 weeks, demonstrating effective rapid iteration</li>
+      <li>Established a data-first design approach that the team continued to use for subsequent feature work</li>
+    </ul>
+  </div>
+
+  <div class="project-nav">
+    <a href="fathers-day.html">&larr; Previous</a>
+    <a href="chusho-grow-story.html">Next &rarr;</a>
+  </div>
+</div>
+
+<footer>
+  <div class="container">
+    <p>&copy; 2026 Sekimachi Design Studio. All rights reserved.</p>
+  </div>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portfolio — Sekimachi Design Studio</title>
+  <meta name="description" content="Selected work by Sekimachi Design Studio. UX design projects across e-commerce, marketplace platforms, and digital products.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>◆</text></svg>">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --bg:#fafafa;
+      --bg-card:#ffffff;
+      --bg-hover:#f3f3f3;
+      --text:#111111;
+      --text-dim:#666666;
+      --text-muted:#aaaaaa;
+      --accent:#111111;
+      --accent-glow:rgba(0,0,0,0.04);
+      --gradient:linear-gradient(135deg,#111111,#333333);
+      --border:#e5e5e5;
+      --radius:16px;
+      --radius-sm:8px;
+    }
+    html{scroll-behavior:smooth;font-size:16px}
+    body{
+      font-family:'DM Sans',sans-serif;
+      background:var(--bg);
+      color:var(--text);
+      line-height:1.6;
+      overflow-x:hidden;
+    }
+    .container{max-width:1200px;margin:0 auto;padding:0 32px}
+    a{color:inherit;text-decoration:none}
+
+    /* === NAV === */
+    nav{
+      position:fixed;top:0;left:0;right:0;z-index:100;
+      padding:10px 0;
+      background:rgba(250,250,250,0.85);
+      backdrop-filter:blur(20px);
+      border-bottom:1px solid var(--border);
+    }
+    nav .container{display:flex;justify-content:space-between;align-items:center}
+    .nav-logo{display:flex;align-items:center}
+    .nav-logo img{height:58px;width:auto;padding:8px 0}
+    .nav-back{
+      color:var(--text-dim);font-size:0.9rem;font-weight:500;
+      transition:color 0.2s;
+    }
+    .nav-back:hover{color:var(--text)}
+
+    /* === PASSWORD GATE === */
+    .password-gate{
+      position:fixed;
+      inset:0;
+      z-index:200;
+      background:rgba(250,250,250,0.97);
+      backdrop-filter:blur(30px);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+    .password-gate.hidden{display:none}
+    .password-box{
+      text-align:center;
+      max-width:400px;
+      padding:0 32px;
+    }
+    .password-box .lock-icon{
+      font-size:3rem;
+      margin-bottom:24px;
+      opacity:0.3;
+    }
+    .password-box h2{
+      font-family:'DM Sans',sans-serif;
+      font-size:1.8rem;
+      font-weight:800;
+      letter-spacing:-0.5px;
+      margin-bottom:8px;
+    }
+    .password-box p{
+      font-size:0.95rem;
+      color:var(--text-dim);
+      margin-bottom:32px;
+      line-height:1.6;
+    }
+    .password-form{
+      display:flex;
+      gap:12px;
+    }
+    .password-form input{
+      flex:1;
+      padding:14px 20px;
+      border:1px solid var(--border);
+      border-radius:50px;
+      font-family:'DM Sans',sans-serif;
+      font-size:0.95rem;
+      background:var(--bg-card);
+      color:var(--text);
+      outline:none;
+      transition:border-color 0.2s;
+    }
+    .password-form input:focus{
+      border-color:var(--accent);
+    }
+    .password-form input.error{
+      border-color:#cc0000;
+    }
+    .password-form button{
+      padding:14px 28px;
+      border-radius:50px;
+      font-family:'DM Sans',sans-serif;
+      font-weight:600;
+      font-size:0.95rem;
+      cursor:pointer;
+      transition:all 0.3s;
+      border:none;
+      background:var(--gradient);
+      color:#fff;
+      box-shadow:0 4px 20px rgba(0,0,0,0.15);
+      white-space:nowrap;
+    }
+    .password-form button:hover{
+      transform:translateY(-2px);
+      box-shadow:0 8px 30px rgba(0,0,0,0.2);
+    }
+    .password-error{
+      color:#cc0000;
+      font-size:0.85rem;
+      margin-top:16px;
+      opacity:0;
+      transition:opacity 0.2s;
+    }
+    .password-error.visible{opacity:1}
+
+    /* === SECTION COMMON === */
+    section{padding:120px 0}
+    .section-tag{
+      display:inline-block;
+      padding:6px 16px;
+      border:1px solid var(--border);
+      border-radius:50px;
+      font-size:0.75rem;
+      color:var(--text-dim);
+      letter-spacing:2px;
+      text-transform:uppercase;
+      margin-bottom:20px;
+    }
+    .section-title{
+      font-family:'DM Sans',sans-serif;
+      font-size:3rem;
+      font-weight:800;
+      letter-spacing:-1px;
+      margin-bottom:16px;
+    }
+    .section-desc{
+      font-size:1.05rem;
+      color:var(--text-dim);
+      max-width:560px;
+      line-height:1.7;
+    }
+
+    /* === PROJECTS === */
+    .projects{padding-top:140px}
+    .projects-header{margin-bottom:64px}
+    .project-grid{
+      display:grid;
+      grid-template-columns:repeat(2,1fr);
+      gap:32px;
+    }
+    .project-card{
+      background:var(--bg-card);
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      overflow:hidden;
+      transition:all 0.4s;
+      cursor:pointer;
+    }
+    .project-card:hover{
+      border-color:rgba(0,0,0,0.15);
+      transform:translateY(-4px);
+      box-shadow:0 20px 60px rgba(0,0,0,0.1);
+    }
+    a.project-card{
+      display:block;
+      text-decoration:none;
+      color:inherit;
+    }
+    .project-card.featured{
+      grid-column:span 2;
+    }
+    .project-card.featured .project-image{
+      height:400px;
+    }
+    .project-image{
+      height:260px;
+      overflow:hidden;
+      position:relative;
+    }
+    .project-image img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      transition:transform 0.6s;
+    }
+    .project-card:hover .project-image img{
+      transform:scale(1.05);
+    }
+    .project-image .overlay{
+      position:absolute;
+      inset:0;
+      background:linear-gradient(180deg,transparent 40%,rgba(0,0,0,0.5) 100%);
+    }
+    .project-meta{padding:28px}
+    .project-company{
+      font-size:0.75rem;
+      color:var(--accent);
+      text-transform:uppercase;
+      letter-spacing:1.5px;
+      font-weight:600;
+      margin-bottom:8px;
+    }
+    .project-title{
+      font-size:1.35rem;
+      font-weight:700;
+      margin-bottom:8px;
+      letter-spacing:-0.3px;
+    }
+    .project-desc{
+      font-size:0.9rem;
+      color:var(--text-dim);
+      line-height:1.6;
+      margin-bottom:16px;
+    }
+    .project-tags{display:flex;gap:8px;flex-wrap:wrap}
+    .tag{
+      padding:4px 12px;
+      background:rgba(0,0,0,0.04);
+      border:1px solid rgba(0,0,0,0.08);
+      border-radius:50px;
+      font-size:0.7rem;
+      color:var(--accent);
+      font-weight:500;
+    }
+
+    /* === FOOTER === */
+    footer{
+      padding:40px 0;
+      border-top:1px solid var(--border);
+      text-align:center;
+    }
+    footer p{font-size:0.8rem;color:var(--text-muted)}
+
+    /* === FADE IN === */
+    .fade-in{
+      opacity:0;
+      transform:translateY(30px);
+      transition:opacity 0.8s ease,transform 0.8s ease;
+    }
+    .fade-in.visible{
+      opacity:1;
+      transform:translateY(0);
+    }
+
+    /* === RESPONSIVE === */
+    @media(max-width:900px){
+      .project-grid{grid-template-columns:1fr}
+      .project-card.featured{grid-column:span 1}
+      .project-card.featured .project-image{height:260px}
+      .section-title{font-size:2.2rem}
+    }
+    @media(max-width:600px){
+      .container{padding:0 20px}
+      .projects{padding-top:120px}
+      .password-form{flex-direction:column}
+      .password-box h2{font-size:1.4rem}
+    }
+  </style>
+</head>
+<body>
+
+<!-- Password Gate -->
+<div class="password-gate" id="passwordGate">
+  <div class="password-box">
+    <div class="lock-icon">◆</div>
+    <h2>Portfolio Access</h2>
+    <p>This portfolio contains confidential project details. Please enter the password to continue.</p>
+    <form class="password-form" id="passwordForm">
+      <input type="password" id="passwordInput" placeholder="Enter password" autocomplete="off">
+      <button type="submit">Unlock</button>
+    </form>
+    <div class="password-error" id="passwordError">Incorrect password. Please try again.</div>
+  </div>
+</div>
+
+<!-- Nav -->
+<nav>
+  <div class="container">
+    <a href="index.html" class="nav-logo"><img src="images/logo.png" alt="Sekimachi Design Studio"></a>
+    <a href="index.html" class="nav-back">&larr; Back to Home</a>
+  </div>
+</nav>
+
+<!-- Projects -->
+<section class="projects" id="projects">
+  <div class="container">
+    <div class="projects-header fade-in">
+      <div class="section-tag">Selected Work</div>
+      <h2 class="section-title">Featured Projects</h2>
+      <p class="section-desc">Data-driven UX design across e-commerce, marketplace platforms, and digital products.</p>
+    </div>
+
+    <div class="project-grid">
+
+      <!-- Featured: Toy Page Renewal -->
+      <a href="projects/toy-page-renewal.html" class="project-card featured fade-in">
+        <div class="project-image">
+          <img src="images/toy.jpg" alt="Toy Page Renewal" loading="lazy">
+          <div class="overlay"></div>
+        </div>
+        <div class="project-meta">
+          <div class="project-company">Amazon Japan (Contract via Aquent LLC)</div>
+          <div class="project-title">Toy Page Renewal — Full UX Redesign</div>
+          <div class="project-desc">Led end-to-end UX research and redesign of the toy category page. Conducted device analysis, scroll depth tracking, CTR analysis, customer journey mapping, and competitive research to create a unified responsive experience.</div>
+          <div class="project-tags">
+            <span class="tag">UX Research</span>
+            <span class="tag">Customer Journey</span>
+            <span class="tag">Competitive Analysis</span>
+            <span class="tag">Wireframing</span>
+            <span class="tag">User Testing</span>
+          </div>
+        </div>
+      </a>
+
+      <!-- Christmas Gifts -->
+      <a href="projects/christmas-gifts.html" class="project-card fade-in">
+        <div class="project-image">
+          <img src="images/christmas.jpg" alt="Christmas Gifts" loading="lazy">
+          <div class="overlay"></div>
+        </div>
+        <div class="project-meta">
+          <div class="project-company">Amazon Japan (Contract via Aquent LLC)</div>
+          <div class="project-title">Christmas Gifts 2020</div>
+          <div class="project-desc">Analyzed previous year's data to identify issues. Redesigned the gift store resulting in significantly increased sales and conversion rates.</div>
+          <div class="project-tags">
+            <span class="tag">Data Analysis</span>
+            <span class="tag">Information Architecture</span>
+            <span class="tag">A/B Testing</span>
+          </div>
+        </div>
+      </a>
+
+      <!-- Father's Day -->
+      <a href="projects/fathers-day.html" class="project-card fade-in">
+        <div class="project-image">
+          <img src="images/fathers-day.jpg" alt="Father's Day" loading="lazy">
+          <div class="overlay"></div>
+        </div>
+        <div class="project-meta">
+          <div class="project-company">Amazon Japan (Contract via Aquent LLC)</div>
+          <div class="project-title">Father's Day — A/B Test Optimization</div>
+          <div class="project-desc">Identified low CTR post-launch and ran an A/B test that significantly improved CTR, OPS, and abandon rate. Insight led to a lasting design principle across campaigns.</div>
+          <div class="project-tags">
+            <span class="tag">A/B Testing</span>
+            <span class="tag">CTR Optimization</span>
+            <span class="tag">Postmortem</span>
+          </div>
+        </div>
+      </a>
+
+      <!-- Search Page Renewal -->
+      <a href="projects/search-renewal.html" class="project-card fade-in">
+        <div class="project-image">
+          <img src="images/search-renewal.jpg" alt="Search Page Renewal" loading="lazy">
+          <div class="overlay"></div>
+        </div>
+        <div class="project-meta">
+          <div class="project-company">Lancers</div>
+          <div class="project-title">Search Page Renewal</div>
+          <div class="project-desc">Redesigned the high-traffic search page with complex information architecture. Used Google Analytics data to surface content users actually needed. Completed in just 2 weeks.</div>
+          <div class="project-tags">
+            <span class="tag">Google Analytics</span>
+            <span class="tag">UI Design</span>
+            <span class="tag">Rapid Iteration</span>
+          </div>
+        </div>
+      </a>
+
+      <!-- Chusho Grow Story -->
+      <a href="projects/chusho-grow-story.html" class="project-card fade-in">
+        <div class="project-image">
+          <img src="images/chusho.jpg" alt="Chusho Grow Story" loading="lazy">
+          <div class="overlay"></div>
+        </div>
+        <div class="project-meta">
+          <div class="project-company">Amazon Japan (Contract via Aquent LLC)</div>
+          <div class="project-title">Chusho Grow Story — DX Support</div>
+          <div class="project-desc">Designed a new landing page for Amazon's DX support initiative with accessibility-first approach, collaborating with UX Creative Director on wireframe-to-production design.</div>
+          <div class="project-tags">
+            <span class="tag">Accessibility</span>
+            <span class="tag">Landing Page</span>
+            <span class="tag">Collaboration</span>
+          </div>
+        </div>
+      </a>
+
+      <!-- Reward App -->
+      <a href="projects/reward-app.html" class="project-card fade-in">
+        <div class="project-image">
+          <img src="images/reward-app.jpg" alt="Reward App" loading="lazy">
+          <div class="overlay"></div>
+        </div>
+        <div class="project-meta">
+          <div class="project-company">Net Marketing</div>
+          <div class="project-title">Reward App — iOS & Android</div>
+          <div class="project-desc">Full-stack development of two reward mobile apps. Designed database architecture, built with LAMP/AWS stack, and managed outsourcing. Published on App Store and Google Play.</div>
+          <div class="project-tags">
+            <span class="tag">Mobile App</span>
+            <span class="tag">Full-Stack</span>
+            <span class="tag">AWS</span>
+          </div>
+        </div>
+      </a>
+
+      <!-- Freelancer Onboarding -->
+      <a href="projects/freelancer-onboarding.html" class="project-card fade-in">
+        <div class="project-image">
+          <img src="images/onboarding.png" alt="Freelancer Onboarding Flow" loading="lazy">
+          <div class="overlay"></div>
+        </div>
+        <div class="project-meta">
+          <div class="project-company">Lancers, Inc.</div>
+          <div class="project-title">Freelancer Onboarding Flow</div>
+          <div class="project-desc">Redesigned the freelancer registration and onboarding experience to reduce drop-off and improve profile completion rates, directly impacting talent-client matching quality.</div>
+          <div class="project-tags">
+            <span class="tag">User Research</span>
+            <span class="tag">Onboarding UX</span>
+            <span class="tag">Conversion Optimization</span>
+          </div>
+        </div>
+      </a>
+
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer>
+  <div class="container">
+    <p>&copy; 2026 Sekimachi Design Studio. All rights reserved.</p>
+  </div>
+</footer>
+
+<script>
+var PASS_HASH = '5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8';
+
+async function sha256(str) {
+  var buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+  return Array.from(new Uint8Array(buf)).map(function(b) { return b.toString(16).padStart(2, '0'); }).join('');
+}
+
+function init() {
+  var gate = document.getElementById('passwordGate');
+  if (sessionStorage.getItem('portfolio_auth') === 'true') {
+    gate.classList.add('hidden');
+    return;
+  }
+
+  document.getElementById('passwordForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    var input = document.getElementById('passwordInput');
+    var hash = await sha256(input.value);
+    if (hash === PASS_HASH) {
+      sessionStorage.setItem('portfolio_auth', 'true');
+      gate.classList.add('hidden');
+    } else {
+      input.classList.add('error');
+      document.getElementById('passwordError').classList.add('visible');
+      setTimeout(function() {
+        input.classList.remove('error');
+      }, 1000);
+    }
+  });
+}
+
+init();
+
+var observer = new IntersectionObserver(function(entries) {
+  entries.forEach(function(e) {
+    if (e.isIntersecting) { e.target.classList.add('visible'); }
+  });
+}, { threshold: 0.1 });
+document.querySelectorAll('.fade-in').forEach(function(el) { observer.observe(el); });
+</script>
+
+</body>
+</html>

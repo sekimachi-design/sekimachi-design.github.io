@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Toy Page Renewal — Sekimachi Design Studio</title>
+  <meta name="description" content="Full UX redesign of Amazon Japan's toy category page. Device analysis, scroll depth tracking, CTR analysis, and customer journey mapping.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>◆</text></svg>">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --bg:#fafafa;
+      --bg-card:#ffffff;
+      --bg-hover:#f3f3f3;
+      --text:#111111;
+      --text-dim:#666666;
+      --text-muted:#aaaaaa;
+      --accent:#111111;
+      --accent-glow:rgba(0,0,0,0.04);
+      --gradient:linear-gradient(135deg,#111111,#333333);
+      --border:#e5e5e5;
+      --radius:16px;
+      --radius-sm:8px;
+    }
+    html{scroll-behavior:smooth;font-size:16px}
+    body{
+      font-family:'DM Sans',sans-serif;
+      background:var(--bg);
+      color:var(--text);
+      line-height:1.6;
+      overflow-x:hidden;
+    }
+    .container{max-width:1200px;margin:0 auto;padding:0 32px}
+    a{color:inherit;text-decoration:none}
+
+    /* === NAV === */
+    nav{
+      position:fixed;top:0;left:0;right:0;z-index:100;
+      padding:20px 0;
+      background:rgba(250,250,250,0.85);
+      backdrop-filter:blur(20px);
+      border-bottom:1px solid var(--border);
+    }
+    nav .container{display:flex;justify-content:space-between;align-items:center}
+    .nav-logo{display:flex;align-items:center}
+    .nav-logo img{height:58px;width:auto;padding:8px 0}
+    .nav-back{
+      color:var(--text-dim);font-size:0.9rem;font-weight:500;
+      transition:color 0.2s;
+    }
+    .nav-back:hover{color:var(--text)}
+
+    /* === HERO IMAGE === */
+    .project-hero{
+      margin-top:73px;
+      width:100%;
+      height:480px;
+      overflow:hidden;
+    }
+    .project-hero img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+    }
+
+    /* === PROJECT HEADER === */
+    .project-header{
+      padding:64px 0 48px;
+    }
+    .project-company{
+      font-size:0.75rem;
+      color:var(--accent);
+      text-transform:uppercase;
+      letter-spacing:1.5px;
+      font-weight:600;
+      margin-bottom:12px;
+    }
+    .project-header h1{
+      font-family:'DM Sans',sans-serif;
+      font-size:3rem;
+      font-weight:800;
+      letter-spacing:-1px;
+      margin-bottom:20px;
+    }
+    .project-tags{display:flex;gap:8px;flex-wrap:wrap}
+    .tag{
+      padding:4px 12px;
+      background:rgba(0,0,0,0.04);
+      border:1px solid rgba(0,0,0,0.08);
+      border-radius:50px;
+      font-size:0.7rem;
+      color:var(--accent);
+      font-weight:500;
+    }
+
+    /* === CONTENT SECTIONS === */
+    .project-section{
+      padding:48px 0;
+      border-top:1px solid var(--border);
+    }
+    .project-section h2{
+      font-family:'DM Sans',sans-serif;
+      font-size:1.6rem;
+      font-weight:700;
+      letter-spacing:-0.3px;
+      margin-bottom:20px;
+    }
+    .project-section p{
+      font-size:1.05rem;
+      color:var(--text-dim);
+      line-height:1.8;
+      max-width:720px;
+      margin-bottom:16px;
+    }
+    .project-section ul{
+      list-style:none;
+      margin-top:12px;
+      max-width:720px;
+    }
+    .project-section ul li{
+      padding:8px 0;
+      padding-left:20px;
+      position:relative;
+      font-size:1rem;
+      color:var(--text-dim);
+      line-height:1.7;
+    }
+    .project-section ul li::before{
+      content:'';
+      position:absolute;
+      left:0;
+      top:16px;
+      width:6px;
+      height:6px;
+      border-radius:50%;
+      background:var(--accent);
+    }
+
+    /* === PROJECT NAV === */
+    .project-nav{
+      padding:64px 0;
+      border-top:1px solid var(--border);
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+    }
+    .project-nav a{
+      font-size:0.95rem;
+      font-weight:600;
+      color:var(--text-dim);
+      transition:color 0.2s;
+    }
+    .project-nav a:hover{color:var(--text)}
+    .project-nav .disabled{
+      color:var(--text-muted);
+      pointer-events:none;
+    }
+
+    /* === FOOTER === */
+    footer{
+      padding:40px 0;
+      border-top:1px solid var(--border);
+      text-align:center;
+    }
+    footer p{font-size:0.8rem;color:var(--text-muted)}
+
+    /* === RESPONSIVE === */
+    @media(max-width:900px){
+      .project-hero{height:320px}
+      .project-header h1{font-size:2.2rem}
+    }
+    @media(max-width:600px){
+      .container{padding:0 20px}
+      .project-hero{height:220px}
+      .project-header{padding:40px 0 32px}
+      .project-header h1{font-size:1.8rem;letter-spacing:-0.5px}
+      .project-section{padding:32px 0}
+      .project-section h2{font-size:1.3rem}
+      .project-nav{padding:40px 0;flex-direction:column;gap:16px;align-items:flex-start}
+    }
+  </style>
+</head>
+<body>
+<script>if(sessionStorage.getItem('portfolio_auth')!=='true'){window.location.replace('../portfolio.html');}</script>
+
+<!-- Nav -->
+<nav>
+  <div class="container">
+    <a href="../index.html" class="nav-logo"><img src="../images/logo.png" alt="Sekimachi Design Studio"></a>
+    <a href="../portfolio.html" class="nav-back">&larr; Back to Portfolio</a>
+  </div>
+</nav>
+
+<!-- Hero Image -->
+<div class="project-hero">
+  <img src="../images/toy.jpg" alt="Toy Page Renewal">
+</div>
+
+<!-- Project Header -->
+<div class="container">
+  <div class="project-header">
+    <div class="project-company">Amazon Japan (Contract via Aquent LLC)</div>
+    <h1>Toy Page Renewal — Full UX Redesign</h1>
+    <div class="project-tags">
+      <span class="tag">UX Research</span>
+      <span class="tag">Customer Journey</span>
+      <span class="tag">Competitive Analysis</span>
+      <span class="tag">Wireframing</span>
+      <span class="tag">User Testing</span>
+    </div>
+  </div>
+
+  <!-- Overview -->
+  <div class="project-section">
+    <h2>Overview</h2>
+    <p>The toy category page on Amazon Japan had grown organically over the years, resulting in a cluttered layout that didn't match how customers actually browsed. Mobile traffic accounted for over 60% of visits, yet the page was primarily designed for desktop. The goal was a complete UX overhaul — creating a unified, responsive experience grounded in real user behavior data.</p>
+    <p>As the lead UX designer, I was responsible for the full end-to-end process: from initial research through to final design delivery and user validation.</p>
+  </div>
+
+  <!-- Process -->
+  <div class="project-section">
+    <h2>Process</h2>
+    <ul>
+      <li><strong>Device &amp; behavior analysis</strong> — Analyzed traffic data to understand device split, identifying mobile as the dominant platform. Reviewed scroll depth, session duration, and bounce rates across devices.</li>
+      <li><strong>CTR &amp; content audit</strong> — Mapped click-through rates across every section of the existing page, revealing which modules drove engagement and which were ignored.</li>
+      <li><strong>Customer journey mapping</strong> — Created detailed journey maps for different user segments (gift buyers, parents, collectors) to understand varying needs and entry points.</li>
+      <li><strong>Competitive research</strong> — Benchmarked against major toy retailers and e-commerce platforms to identify industry best practices and differentiation opportunities.</li>
+      <li><strong>Wireframing &amp; prototyping</strong> — Developed mobile-first wireframes based on research findings, then expanded to desktop. Created interactive prototypes for stakeholder review.</li>
+      <li><strong>User testing &amp; iteration</strong> — Conducted moderated usability tests with target users, iterated on the design based on feedback, and validated the final version before handoff.</li>
+    </ul>
+  </div>
+
+  <!-- Results -->
+  <div class="project-section">
+    <h2>Results</h2>
+    <p>The redesigned toy page delivered a cleaner, more intuitive experience that aligned with how customers actually browsed. Key outcomes included:</p>
+    <ul>
+      <li>Improved CTR on key product modules by surfacing high-demand categories based on data insights</li>
+      <li>Reduced bounce rate through better information hierarchy and clearer navigation paths</li>
+      <li>Created a responsive, unified layout that performed consistently across mobile, tablet, and desktop</li>
+      <li>Established a reusable page template pattern that was later adopted by other category teams at Amazon Japan</li>
+    </ul>
+  </div>
+
+  <!-- Prev / Next Nav -->
+  <div class="project-nav">
+    <span class="disabled">&larr; Previous</span>
+    <a href="christmas-gifts.html">Next &rarr;</a>
+  </div>
+</div>
+
+<!-- Footer -->
+<footer>
+  <div class="container">
+    <p>&copy; 2026 Sekimachi Design Studio. All rights reserved.</p>
+  </div>
+</footer>
+
+</body>
+</html>

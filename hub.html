@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sekimachi Design Studio — Hub</title>
+  <meta name="description" content="Sekimachi Design Studio のすべてのページ・アプリの一覧">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>◆</text></svg>">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --bg:#fafafa;
+      --bg-card:#ffffff;
+      --bg-hover:#f3f3f3;
+      --text:#111111;
+      --text-dim:#666666;
+      --text-muted:#aaaaaa;
+      --accent:#111111;
+      --gradient:linear-gradient(135deg,#111111,#333333);
+      --border:#e5e5e5;
+      --radius:16px;
+      --radius-sm:8px;
+    }
+    html{scroll-behavior:smooth;font-size:16px}
+    body{
+      font-family:'DM Sans',sans-serif;
+      background:var(--bg);
+      color:var(--text);
+      line-height:1.6;
+      min-height:100vh;
+      display:flex;
+      flex-direction:column;
+    }
+
+    /* === HEADER === */
+    header{
+      padding:48px 0 0;
+      text-align:center;
+    }
+    .logo{
+      font-weight:800;
+      font-size:1.1rem;
+      letter-spacing:-0.5px;
+      margin-bottom:40px;
+    }
+    .logo span{
+      background:var(--gradient);
+      -webkit-background-clip:text;
+      -webkit-text-fill-color:transparent;
+      background-clip:text;
+    }
+    .hub-title{
+      font-size:clamp(2rem, 5vw, 3.2rem);
+      font-weight:800;
+      letter-spacing:-1.5px;
+      line-height:1.15;
+      margin-bottom:12px;
+    }
+    .hub-sub{
+      color:var(--text-dim);
+      font-size:1rem;
+      max-width:480px;
+      margin:0 auto;
+    }
+
+    /* === MAIN === */
+    .container{
+      max-width:960px;
+      margin:0 auto;
+      padding:0 24px;
+      width:100%;
+    }
+
+    /* === PAGE GRID === */
+    .page-grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fill, minmax(280px, 1fr));
+      gap:20px;
+      padding:48px 0 80px;
+    }
+
+    .page-card{
+      background:var(--bg-card);
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      padding:28px;
+      text-decoration:none;
+      color:inherit;
+      transition:all 0.25s ease;
+      display:flex;
+      flex-direction:column;
+      gap:16px;
+      position:relative;
+      overflow:hidden;
+    }
+    .page-card:hover{
+      border-color:#ccc;
+      box-shadow:0 8px 30px rgba(0,0,0,0.06);
+      transform:translateY(-2px);
+    }
+    .page-card:hover .card-arrow{
+      opacity:1;
+      transform:translateX(0);
+    }
+
+    .card-icon{
+      width:44px;
+      height:44px;
+      border-radius:12px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:1.2rem;
+      flex-shrink:0;
+    }
+
+    .card-body{
+      flex:1;
+    }
+    .card-title{
+      font-size:1.05rem;
+      font-weight:700;
+      margin-bottom:4px;
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+    .card-desc{
+      font-size:0.85rem;
+      color:var(--text-dim);
+      line-height:1.55;
+    }
+
+    .card-tags{
+      display:flex;
+      flex-wrap:wrap;
+      gap:6px;
+    }
+    .card-tag{
+      padding:3px 10px;
+      border-radius:50px;
+      font-size:0.7rem;
+      font-weight:600;
+      background:var(--bg-hover);
+      color:var(--text-dim);
+    }
+
+    .card-arrow{
+      position:absolute;
+      top:28px;
+      right:28px;
+      opacity:0;
+      transform:translateX(-4px);
+      transition:all 0.25s ease;
+      color:var(--text-muted);
+      font-size:1.1rem;
+    }
+
+    /* === FOOTER === */
+    footer{
+      margin-top:auto;
+      padding:24px 0;
+      text-align:center;
+      color:var(--text-muted);
+      font-size:0.8rem;
+      border-top:1px solid var(--border);
+    }
+
+    /* === RESPONSIVE === */
+    @media(max-width:600px){
+      header{padding:32px 0 0}
+      .hub-title{letter-spacing:-1px}
+      .page-grid{
+        grid-template-columns:1fr;
+        padding:32px 0 60px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="container">
+      <div class="logo"><span>Sekimachi Design Studio</span></div>
+      <h1 class="hub-title">All Pages</h1>
+      <p class="hub-sub">デプロイ済みのページ・アプリ一覧</p>
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="page-grid">
+
+      <!-- ① Portfolio -->
+      <a href="index.html" class="page-card">
+        <div class="card-icon" style="background:#f0f0f0">◆</div>
+        <div class="card-body">
+          <div class="card-title">Portfolio</div>
+          <p class="card-desc">UXデザイナーとしての実績・スキル・経歴をまとめたメインポートフォリオサイト</p>
+        </div>
+        <div class="card-tags">
+          <span class="card-tag">Portfolio</span>
+          <span class="card-tag">UX Design</span>
+        </div>
+        <span class="card-arrow">→</span>
+      </a>
+
+      <!-- ② Kanji App -->
+      <a href="https://sekimachi-design.github.io/kanji-app/" class="page-card">
+        <div class="card-icon" style="background:#e8f5e9">漢</div>
+        <div class="card-body">
+          <div class="card-title">かんじれんしゅう</div>
+          <p class="card-desc">小学3年生向けの漢字学習アプリ。書き順アニメーション・手書き練習・クイズ機能つき</p>
+        </div>
+        <div class="card-tags">
+          <span class="card-tag">React</span>
+          <span class="card-tag">Education</span>
+          <span class="card-tag">PWA</span>
+        </div>
+        <span class="card-arrow">→</span>
+      </a>
+
+      <!-- ③ Color Sample -->
+      <a href="color-sample.html" class="page-card">
+        <div class="card-icon" style="background:#faf5d6">🎨</div>
+        <div class="card-body">
+          <div class="card-title">Color Sample</div>
+          <p class="card-desc">Gray + Lemon Yellow の配色バリエーション3パターンを比較するカラーパレットページ</p>
+        </div>
+        <div class="card-tags">
+          <span class="card-tag">Design System</span>
+          <span class="card-tag">Color</span>
+        </div>
+        <span class="card-arrow">→</span>
+      </a>
+
+      <!--
+        ★ 新しいページを追加する場合は、以下をコピーして編集してください：
+
+        <a href="your-page.html" class="page-card">
+          <div class="card-icon" style="background:#f0f0f0">📄</div>
+          <div class="card-body">
+            <div class="card-title">ページ名</div>
+            <p class="card-desc">ページの説明文</p>
+          </div>
+          <div class="card-tags">
+            <span class="card-tag">Tag</span>
+          </div>
+          <span class="card-arrow">→</span>
+        </a>
+      -->
+
+    </div>
+  </main>
+
+  <footer>
+    <div class="container">
+      &copy; 2025 Sekimachi Design Studio. All rights reserved.
+    </div>
+  </footer>
+
+</body>
+</html>

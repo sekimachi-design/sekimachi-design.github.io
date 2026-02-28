@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sekimachi Design Studio — UX Design & Digital Products</title>
+  <meta name="description" content="Sekimachi Design Studio by Rie Hayashi. UX Designer with 15+ years of experience. Data-driven UX design, user research, and accessibility. Available for freelance projects.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>◆</text></svg>">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --bg:#fafafa;
+      --bg-card:#ffffff;
+      --bg-hover:#f3f3f3;
+      --text:#111111;
+      --text-dim:#666666;
+      --text-muted:#aaaaaa;
+      --accent:#111111;
+      --accent-glow:rgba(0,0,0,0.04);
+      --gradient:linear-gradient(135deg,#111111,#333333);
+      --border:#e5e5e5;
+      --radius:16px;
+      --radius-sm:8px;
+    }
+    html{scroll-behavior:smooth;font-size:16px}
+    body{
+      font-family:'DM Sans',sans-serif;
+      background:var(--bg);
+      color:var(--text);
+      line-height:1.6;
+      overflow-x:hidden;
+    }
+    .container{max-width:1200px;margin:0 auto;padding:0 32px}
+    a{color:inherit;text-decoration:none}
+
+    /* === NAV === */
+    nav{
+      position:fixed;top:0;left:0;right:0;z-index:100;
+      padding:10px 0;
+      background:rgba(250,250,250,0.85);
+      backdrop-filter:blur(20px);
+      border-bottom:1px solid var(--border);
+    }
+    nav .container{display:flex;justify-content:space-between;align-items:center}
+    .nav-logo{display:flex;align-items:center}
+    .nav-logo img{height:58px;width:auto;padding:8px 0}
+    .nav-links{display:flex;gap:32px;align-items:center}
+    .nav-links a{
+      color:var(--text-dim);font-size:0.9rem;font-weight:500;
+      transition:color 0.2s;
+    }
+    .nav-links a:hover{color:var(--text)}
+    .nav-cta{
+      padding:8px 20px;
+      border:1px solid var(--accent);
+      border-radius:50px;
+      color:var(--accent)!important;
+      font-size:0.85rem!important;
+      transition:all 0.3s!important;
+    }
+    .nav-cta:hover{background:var(--accent);color:#fff!important}
+    .lang-toggle{
+      display:flex;align-items:center;gap:6px;
+      margin-left:8px;font-size:0.8rem;color:var(--text-muted);
+      user-select:none;
+    }
+    .lang-toggle span{
+      cursor:pointer;padding:2px 6px;border-radius:4px;
+      transition:all 0.2s;
+    }
+    .lang-toggle span:hover{color:var(--text)}
+    .lang-toggle span.active{font-weight:700;color:var(--text)}
+
+    /* === HERO === */
+    .hero{
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      padding:120px 0 80px;
+      position:relative;
+      overflow:hidden;
+    }
+    .hero::before{
+      content:'';
+      position:absolute;
+      top:-200px;right:-200px;
+      width:600px;height:600px;
+      background:radial-gradient(circle,rgba(0,0,0,0.03) 0%,transparent 70%);
+      pointer-events:none;
+    }
+    .hero-content{
+      display:grid;
+      grid-template-columns:1fr 400px;
+      gap:80px;
+      align-items:center;
+    }
+    .hero-tag{
+      display:inline-block;
+      padding:6px 16px;
+      border:1px solid var(--border);
+      border-radius:50px;
+      font-size:0.8rem;
+      color:var(--text-dim);
+      margin-bottom:24px;
+      letter-spacing:1px;
+      text-transform:uppercase;
+    }
+    .hero h1{
+      font-family:'DM Sans',sans-serif;
+      font-size:4.5rem;
+      font-weight:900;
+      line-height:1.1;
+      letter-spacing:-2px;
+      margin-bottom:24px;
+    }
+    .hero h1 .gradient{
+      background:var(--gradient);
+      -webkit-background-clip:text;
+      -webkit-text-fill-color:transparent;
+      background-clip:text;
+    }
+    .hero-intro{
+      font-size:1.15rem;
+      color:var(--text-dim);
+      line-height:1.7;
+      margin-bottom:40px;
+      max-width:520px;
+    }
+    .hero-stats{
+      display:flex;gap:48px;
+      margin-bottom:40px;
+    }
+    .hero-stat .number{
+      font-size:2.5rem;
+      font-weight:800;
+      background:var(--gradient);
+      -webkit-background-clip:text;
+      -webkit-text-fill-color:transparent;
+      background-clip:text;
+    }
+    .hero-stat .label{
+      font-size:0.8rem;
+      color:var(--text-muted);
+      text-transform:uppercase;
+      letter-spacing:1px;
+      margin-top:2px;
+    }
+    .hero-buttons{display:flex;gap:16px}
+    .btn{
+      padding:14px 32px;
+      border-radius:50px;
+      font-family:'DM Sans',sans-serif;
+      font-weight:600;
+      font-size:0.95rem;
+      cursor:pointer;
+      transition:all 0.3s;
+      border:none;
+      display:inline-block;
+    }
+    .btn-primary{
+      background:var(--gradient);
+      color:#fff;
+      box-shadow:0 4px 20px rgba(0,0,0,0.15);
+    }
+    .btn-primary:hover{
+      transform:translateY(-2px);
+      box-shadow:0 8px 30px rgba(0,0,0,0.2);
+    }
+    .btn-outline{
+      background:transparent;
+      color:var(--text);
+      border:1px solid var(--border);
+    }
+    .btn-outline:hover{
+      border-color:var(--accent);
+      background:var(--accent-glow);
+    }
+    .hero-photo{
+      position:relative;
+    }
+    .hero-photo img{
+      width:100%;
+      border-radius:var(--radius);
+      filter:grayscale(20%);
+    }
+    .hero-photo::after{
+      content:'';
+      position:absolute;
+      inset:-4px;
+      border-radius:calc(var(--radius) + 4px);
+      background:var(--gradient);
+      z-index:-1;
+      opacity:0.3;
+    }
+
+    /* === SECTION COMMON === */
+    section{padding:120px 0}
+    .section-tag{
+      display:inline-block;
+      padding:6px 16px;
+      border:1px solid var(--border);
+      border-radius:50px;
+      font-size:0.75rem;
+      color:var(--text-dim);
+      letter-spacing:2px;
+      text-transform:uppercase;
+      margin-bottom:20px;
+    }
+    .section-title{
+      font-family:'DM Sans',sans-serif;
+      font-size:3rem;
+      font-weight:800;
+      letter-spacing:-1px;
+      margin-bottom:16px;
+    }
+    .section-desc{
+      font-size:1.05rem;
+      color:var(--text-dim);
+      max-width:560px;
+      line-height:1.7;
+    }
+
+    /* === SERVICES === */
+    .services{background:var(--bg)}
+    .services-header{margin-bottom:64px}
+    .services-grid{
+      display:grid;
+      grid-template-columns:repeat(2,1fr);
+      gap:32px;
+    }
+    .service-card{
+      background:var(--bg-card);
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      padding:40px;
+      transition:all 0.4s;
+    }
+    .service-card:hover{
+      border-color:rgba(0,0,0,0.15);
+      transform:translateY(-4px);
+      box-shadow:0 20px 60px rgba(0,0,0,0.1);
+    }
+    .service-number{
+      font-size:3rem;
+      font-weight:900;
+      background:var(--gradient);
+      -webkit-background-clip:text;
+      -webkit-text-fill-color:transparent;
+      background-clip:text;
+      line-height:1;
+      margin-bottom:20px;
+      opacity:0.3;
+    }
+    .service-card h3{
+      font-size:1.35rem;
+      font-weight:700;
+      margin-bottom:12px;
+      letter-spacing:-0.3px;
+    }
+    .service-card p{
+      font-size:0.9rem;
+      color:var(--text-dim);
+      line-height:1.7;
+      margin-bottom:20px;
+    }
+    .project-tags{display:flex;gap:8px;flex-wrap:wrap}
+    .tag{
+      padding:4px 12px;
+      background:rgba(0,0,0,0.04);
+      border:1px solid rgba(0,0,0,0.08);
+      border-radius:50px;
+      font-size:0.7rem;
+      color:var(--accent);
+      font-weight:500;
+    }
+
+    /* === ABOUT === */
+    .about{
+      background:linear-gradient(180deg,var(--bg) 0%,#f0f0f0 100%);
+    }
+    .about-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:80px;
+      align-items:start;
+    }
+    .about-text{padding-top:16px}
+    .about-text p{
+      color:var(--text-dim);
+      font-size:1rem;
+      line-height:1.8;
+      margin-bottom:20px;
+    }
+    .experience-list{
+      list-style:none;
+      margin-top:32px;
+    }
+    .experience-list li{
+      padding:20px 0;
+      border-bottom:1px solid var(--border);
+      display:grid;
+      grid-template-columns:120px 1fr;
+      gap:16px;
+    }
+    .exp-year{
+      font-size:0.8rem;
+      color:var(--text-muted);
+      font-weight:500;
+      padding-top:2px;
+    }
+    .exp-role{font-weight:600;margin-bottom:2px}
+    .exp-company{font-size:0.9rem;color:var(--text-dim)}
+
+    /* === SKILLS === */
+    .skills{background:#f0f0f0}
+    .skills-grid{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:24px;
+      margin-top:64px;
+    }
+    .skill-card{
+      background:var(--bg-card);
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      padding:32px;
+      transition:all 0.3s;
+    }
+    .skill-card:hover{
+      border-color:rgba(0,0,0,0.15);
+      background:var(--bg-hover);
+    }
+    .skill-icon{
+      font-size:2rem;
+      margin-bottom:16px;
+    }
+    .skill-card h3{
+      font-size:1.05rem;
+      font-weight:700;
+      margin-bottom:8px;
+    }
+    .skill-card p{
+      font-size:0.85rem;
+      color:var(--text-dim);
+      line-height:1.6;
+    }
+
+    /* === CERTIFICATIONS === */
+    .certs{background:var(--bg)}
+    .cert-grid{
+      display:flex;
+      flex-wrap:wrap;
+      gap:12px;
+      margin-top:40px;
+    }
+    .cert{
+      padding:10px 20px;
+      background:var(--bg-card);
+      border:1px solid var(--border);
+      border-radius:50px;
+      font-size:0.85rem;
+      color:var(--text-dim);
+      transition:all 0.2s;
+    }
+    .cert:hover{
+      border-color:var(--accent);
+      color:var(--text);
+    }
+
+    /* === CONTACT === */
+    .contact{
+      padding:120px 0;
+      background:linear-gradient(180deg,var(--bg) 0%,#f0f0f0 100%);
+      text-align:center;
+    }
+    .contact .section-title{
+      font-size:3.5rem;
+    }
+    .contact .section-desc{
+      margin:0 auto 48px;
+      max-width:480px;
+    }
+    .contact-links{
+      display:flex;gap:16px;justify-content:center;flex-wrap:wrap;
+    }
+
+    /* === FOOTER === */
+    footer{
+      padding:40px 0;
+      border-top:1px solid var(--border);
+      text-align:center;
+    }
+    footer p{font-size:0.8rem;color:var(--text-muted)}
+
+    /* === FADE IN ANIMATION === */
+    .fade-in{
+      opacity:0;
+      transform:translateY(30px);
+      transition:opacity 0.8s ease,transform 0.8s ease;
+    }
+    .fade-in.visible{
+      opacity:1;
+      transform:translateY(0);
+    }
+
+    /* === RESPONSIVE === */
+    @media(max-width:900px){
+      .hero-content{grid-template-columns:1fr;gap:40px}
+      .hero-photo{max-width:320px;order:-1}
+      .hero h1{font-size:3rem}
+      .hero-stats{gap:32px}
+      .services-grid{grid-template-columns:1fr}
+      .about-grid{grid-template-columns:1fr;gap:40px}
+      .skills-grid{grid-template-columns:1fr}
+      .section-title{font-size:2.2rem}
+      .contact .section-title{font-size:2.5rem}
+    }
+    @media(max-width:600px){
+      .container{padding:0 20px}
+      section{padding:80px 0}
+      .hero{padding:100px 0 60px}
+      .hero h1{font-size:2.2rem;letter-spacing:-1px}
+      .hero-stats{flex-wrap:wrap;gap:24px}
+      .hero-stat .number{font-size:2rem}
+      .hero-buttons{flex-direction:column}
+      .nav-links a:not(.nav-cta):not(.lang-toggle span){display:none}
+      .lang-toggle{display:flex}
+      .experience-list li{grid-template-columns:1fr}
+      .exp-year{margin-bottom:-8px}
+    }
+  </style>
+</head>
+<body>
+
+<!-- Nav -->
+<nav>
+  <div class="container">
+    <a href="#" class="nav-logo"><img src="images/logo.png" alt="Sekimachi Design Studio"></a>
+    <div class="nav-links">
+      <a href="portfolio.html" data-i18n="nav-work">Work</a>
+      <a href="#about" data-i18n="nav-about">About</a>
+      <a href="#skills" data-i18n="nav-skills">Skills</a>
+      <a href="#contact" class="nav-cta" data-i18n="nav-contact">Contact</a>
+      <div class="lang-toggle">
+        <span data-lang="en" class="active">EN</span>
+        <span style="color:var(--text-muted)">|</span>
+        <span data-lang="ja">JA</span>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-content">
+      <div>
+        <div class="hero-tag" data-i18n="hero-tag">Design Studio / Tokyo</div>
+        <h1 data-i18n="hero-h1">We craft digital <span class="gradient">experiences</span> that deliver results</h1>
+        <p class="hero-intro" data-i18n="hero-intro">
+          Sekimachi Design Studio combines data-driven research with human-centered design to create digital products that truly work for people.
+        </p>
+        <div class="hero-stats">
+          <div class="hero-stat">
+            <div class="number">35+</div>
+            <div class="label" data-i18n="hero-stat-1">Projects</div>
+          </div>
+          <div class="hero-stat">
+            <div class="number">7yr</div>
+            <div class="label" data-i18n="hero-stat-2">Amazon (Contract)</div>
+          </div>
+          <div class="hero-stat">
+            <div class="number">15yr</div>
+            <div class="label" data-i18n="hero-stat-3">In Tech</div>
+          </div>
+        </div>
+        <div class="hero-buttons">
+          <a href="#services" class="btn btn-primary" data-i18n="hero-btn-services">Our Services</a>
+          <a href="#contact" class="btn btn-outline" data-i18n="hero-btn-contact">Get in Touch</a>
+        </div>
+      </div>
+      <div class="hero-photo">
+        <img src="images/avatar.svg" alt="Sekimachi Design Studio" loading="lazy">
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Services -->
+<section class="services" id="services">
+  <div class="container">
+    <div class="services-header fade-in">
+      <div class="section-tag" data-i18n="services-tag">What We Do</div>
+      <h2 class="section-title" data-i18n="services-title">Our Services</h2>
+      <p class="section-desc" data-i18n="services-desc">End-to-end design solutions grounded in research, data, and real user needs.</p>
+    </div>
+    <div class="services-grid">
+      <div class="service-card fade-in">
+        <div class="service-number">01</div>
+        <h3 data-i18n="service-1-h3">UX Design</h3>
+        <p data-i18n="service-1-p">User-centered design from wireframes to high-fidelity prototypes. We map journeys, define information architecture, and design interactions that feel intuitive.</p>
+        <div class="project-tags">
+          <span class="tag">Wireframing</span>
+          <span class="tag">Prototyping</span>
+          <span class="tag">User Flows</span>
+          <span class="tag">IA</span>
+        </div>
+      </div>
+      <div class="service-card fade-in">
+        <div class="service-number">02</div>
+        <h3 data-i18n="service-2-h3">User Research</h3>
+        <p data-i18n="service-2-p">Evidence-based design decisions through user interviews, usability testing, survey design, persona creation, and competitive analysis.</p>
+        <div class="project-tags">
+          <span class="tag">Interviews</span>
+          <span class="tag">Usability Testing</span>
+          <span class="tag">Personas</span>
+          <span class="tag">Surveys</span>
+        </div>
+      </div>
+      <div class="service-card fade-in">
+        <div class="service-number">03</div>
+        <h3 data-i18n="service-3-h3">UI Design</h3>
+        <p data-i18n="service-3-p">Clean, modern interfaces that align with brand identity. Responsive layouts, design systems, and pixel-perfect visual design for web and mobile.</p>
+        <div class="project-tags">
+          <span class="tag">Visual Design</span>
+          <span class="tag">Design Systems</span>
+          <span class="tag">Responsive</span>
+        </div>
+      </div>
+      <div class="service-card fade-in">
+        <div class="service-number">04</div>
+        <h3 data-i18n="service-4-h3">Data-Driven Optimization</h3>
+        <p data-i18n="service-4-p">Analytics-informed improvements through A/B testing, CTR optimization, scroll depth analysis, and conversion rate tracking.</p>
+        <div class="project-tags">
+          <span class="tag">A/B Testing</span>
+          <span class="tag">Analytics</span>
+          <span class="tag">CRO</span>
+        </div>
+      </div>
+      <div class="service-card fade-in">
+        <div class="service-number">05</div>
+        <h3 data-i18n="service-5-h3">Accessibility Consulting</h3>
+        <p data-i18n="service-5-p">WCAG-compliant, universally designed digital experiences. Accessibility audits, remediation plans, and team education on inclusive design.</p>
+        <div class="project-tags">
+          <span class="tag">WCAG</span>
+          <span class="tag">Audits</span>
+          <span class="tag">Universal Design</span>
+        </div>
+      </div>
+      <div class="service-card fade-in">
+        <div class="service-number">06</div>
+        <h3 data-i18n="service-6-h3">Front-End Development</h3>
+        <p data-i18n="service-6-p">Production-quality code from a designer who codes. HTML, CSS, JavaScript, and WordPress — bridging the gap between design and engineering.</p>
+        <div class="project-tags">
+          <span class="tag">HTML/CSS/JS</span>
+          <span class="tag">WordPress</span>
+          <span class="tag">AWS</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- About -->
+<section class="about" id="about">
+  <div class="container">
+    <div class="about-grid">
+      <div>
+        <div class="section-tag fade-in" data-i18n="about-tag">About</div>
+        <h2 class="section-title fade-in" data-i18n="about-title">Designer who codes.<br>Developer who designs.</h2>
+        <div class="about-text fade-in">
+          <p data-i18n="about-p1">I'm a UX Designer based in Tokyo with a unique background spanning both design and development. Starting as a programmer, I transitioned into UX design — giving me deep empathy for both users and the engineers building products.</p>
+          <p data-i18n="about-p2">Currently a Lead Designer at PERSOL CAREER, I previously worked as a contract UX Designer at Amazon Japan (via Aquent LLC) for 7 years, leading UX for 35+ projects including seasonal campaigns, category page redesigns, and service pages — always grounding decisions in quantitative data and user research.</p>
+          <p data-i18n="about-p3">I'm passionate about accessibility, and actively educate teams on inclusive design practices. I also spent 4 years working in Australia, bringing a global perspective to my design thinking. I'm available for freelance projects through Sekimachi Design Studio.</p>
+        </div>
+      </div>
+      <div>
+        <ul class="experience-list fade-in">
+          <li>
+            <span class="exp-year">2023 — Present</span>
+            <div>
+              <div class="exp-role" data-i18n="exp-role-1">Lead Designer</div>
+              <div class="exp-company" data-i18n="exp-company-1">PERSOL CAREER Co., Ltd.</div>
+            </div>
+          </li>
+          <li>
+            <span class="exp-year">2022 — 2023</span>
+            <div>
+              <div class="exp-role" data-i18n="exp-role-2">UI/UX Designer</div>
+              <div class="exp-company" data-i18n="exp-company-2">Lancers, Inc.</div>
+            </div>
+          </li>
+          <li>
+            <span class="exp-year">2015 — 2022</span>
+            <div>
+              <div class="exp-role" data-i18n="exp-role-3">UX Designer (Contract)</div>
+              <div class="exp-company" data-i18n="exp-company-3">Amazon Japan — via Aquent LLC</div>
+            </div>
+          </li>
+          <li>
+            <span class="exp-year">2014 — 2015</span>
+            <div>
+              <div class="exp-role" data-i18n="exp-role-4">UI/UX Designer / Front-End Engineer (Contract)</div>
+              <div class="exp-company" data-i18n="exp-company-4">MetaMoJi</div>
+            </div>
+          </li>
+          <li>
+            <span class="exp-year">2012 — 2013</span>
+            <div>
+              <div class="exp-role" data-i18n="exp-role-5">Programmer</div>
+              <div class="exp-company" data-i18n="exp-company-5">Net Marketing Co. Ltd</div>
+            </div>
+          </li>
+          <li>
+            <span class="exp-year">2004 — 2010</span>
+            <div>
+              <div class="exp-role" data-i18n="exp-role-6">IT Manager</div>
+              <div class="exp-company" data-i18n="exp-company-6">Australian Travel Agency (Australia)</div>
+            </div>
+          </li>
+          <li>
+            <span class="exp-year">2000 — 2004</span>
+            <div>
+              <div class="exp-role" data-i18n="exp-role-7">Web Developer / Designer</div>
+              <div class="exp-company" data-i18n="exp-company-7">Trans Cosmos Inc.</div>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Skills -->
+<section class="skills" id="skills">
+  <div class="container">
+    <div class="section-tag fade-in" data-i18n="skills-tag">Expertise</div>
+    <h2 class="section-title fade-in" data-i18n="skills-title">What I bring to the table</h2>
+    <div class="skills-grid">
+      <div class="skill-card fade-in">
+        <div class="skill-icon">🔬</div>
+        <h3 data-i18n="skill-1-h3">UX Research</h3>
+        <p data-i18n="skill-1-p">User interviews, usability testing, persona creation, customer journey mapping, competitive analysis, and survey design.</p>
+      </div>
+      <div class="skill-card fade-in">
+        <div class="skill-icon">📊</div>
+        <h3 data-i18n="skill-2-h3">Data-Driven Design</h3>
+        <p data-i18n="skill-2-p">Google Analytics, A/B testing, CTR optimization, scroll depth analysis, conversion rate tracking, and postmortem reporting.</p>
+      </div>
+      <div class="skill-card fade-in">
+        <div class="skill-icon">✏️</div>
+        <h3 data-i18n="skill-3-h3">UI/UX Design</h3>
+        <p data-i18n="skill-3-p">Wireframing, prototyping, information architecture, user flows, interaction design, and responsive web design.</p>
+      </div>
+      <div class="skill-card fade-in">
+        <div class="skill-icon">♿</div>
+        <h3 data-i18n="skill-4-h3">Accessibility</h3>
+        <p data-i18n="skill-4-p">WCAG compliance, universal design, accessibility audits, and team education on inclusive design practices.</p>
+      </div>
+      <div class="skill-card fade-in">
+        <div class="skill-icon">💻</div>
+        <h3 data-i18n="skill-5-h3">Development</h3>
+        <p data-i18n="skill-5-p">HTML, CSS, JavaScript, PHP, MySQL, WordPress, AWS. 15 years of hands-on coding experience.</p>
+      </div>
+      <div class="skill-card fade-in">
+        <div class="skill-icon">🎨</div>
+        <h3 data-i18n="skill-6-h3">Design Tools</h3>
+        <p data-i18n="skill-6-p">Figma, Sketch, Adobe XD, InVision, Photoshop, Illustrator, InDesign, and various prototyping tools.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Certifications -->
+<section class="certs">
+  <div class="container">
+    <div class="section-tag fade-in" data-i18n="certs-tag">Credentials</div>
+    <h2 class="section-title fade-in" data-i18n="certs-title">Certifications</h2>
+    <div class="cert-grid fade-in">
+      <span class="cert">Google UX Design Certificate</span>
+      <span class="cert">HCD-Net Specialist</span>
+      <span class="cert">UX Exam Basic (HCD-certified)</span>
+      <span class="cert">Universal Design Coordinator</span>
+      <span class="cert">Universal Color Adviser</span>
+      <span class="cert">Web Analytics Consultant</span>
+      <span class="cert">Google Analytics Advanced</span>
+      <span class="cert">Oracle Master Silver</span>
+    </div>
+  </div>
+</section>
+
+<!-- Contact -->
+<section class="contact" id="contact">
+  <div class="container">
+    <div class="section-tag fade-in" data-i18n="contact-tag">Let's Connect</div>
+    <h2 class="section-title fade-in" data-i18n="contact-title">Have a project<br>in mind?</h2>
+    <p class="section-desc fade-in" data-i18n="contact-desc">I'm open to freelance projects, full-time positions, and collaborative opportunities. Let's create something great together.</p>
+    <div class="contact-links fade-in">
+      <a href="mailto:sekimachidesignstudio@gmail.com" class="btn btn-primary" data-i18n="contact-btn-email">Send an Email</a>
+      <a href="https://www.linkedin.com/in/rie-hayashi/" target="_blank" class="btn btn-outline" data-i18n="contact-btn-linkedin">LinkedIn</a>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer>
+  <div class="container">
+    <p data-i18n="footer">&copy; 2026 Sekimachi Design Studio. All rights reserved.</p>
+  </div>
+</footer>
+
+<!-- Scroll animation + i18n -->
+<script>
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('visible');
+    }
+  });
+}, { threshold: 0.1 });
+document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+const i18n = {
+  en: {
+    "nav-work": "Work",
+    "nav-about": "About",
+    "nav-skills": "Skills",
+    "nav-contact": "Contact",
+    "hero-tag": "Design Studio / Tokyo",
+    "hero-h1": 'We craft digital <span class="gradient">experiences</span> that deliver results',
+    "hero-intro": "Sekimachi Design Studio combines data-driven research with human-centered design to create digital products that truly work for people.",
+    "hero-stat-1": "Projects",
+    "hero-stat-2": "Amazon (Contract)",
+    "hero-stat-3": "In Tech",
+    "hero-btn-services": "Our Services",
+    "hero-btn-contact": "Get in Touch",
+    "services-tag": "What We Do",
+    "services-title": "Our Services",
+    "services-desc": "End-to-end design solutions grounded in research, data, and real user needs.",
+    "service-1-h3": "UX Design",
+    "service-1-p": "User-centered design from wireframes to high-fidelity prototypes. We map journeys, define information architecture, and design interactions that feel intuitive.",
+    "service-2-h3": "User Research",
+    "service-2-p": "Evidence-based design decisions through user interviews, usability testing, survey design, persona creation, and competitive analysis.",
+    "service-3-h3": "UI Design",
+    "service-3-p": "Clean, modern interfaces that align with brand identity. Responsive layouts, design systems, and pixel-perfect visual design for web and mobile.",
+    "service-4-h3": "Data-Driven Optimization",
+    "service-4-p": "Analytics-informed improvements through A/B testing, CTR optimization, scroll depth analysis, and conversion rate tracking.",
+    "service-5-h3": "Accessibility Consulting",
+    "service-5-p": "WCAG-compliant, universally designed digital experiences. Accessibility audits, remediation plans, and team education on inclusive design.",
+    "service-6-h3": "Front-End Development",
+    "service-6-p": "Production-quality code from a designer who codes. HTML, CSS, JavaScript, and WordPress — bridging the gap between design and engineering.",
+    "about-tag": "About",
+    "about-title": 'Designer who codes.<br>Developer who designs.',
+    "about-p1": "I'm a UX Designer based in Tokyo with a unique background spanning both design and development. Starting as a programmer, I transitioned into UX design — giving me deep empathy for both users and the engineers building products.",
+    "about-p2": "Currently a Lead Designer at PERSOL CAREER, I previously worked as a contract UX Designer at Amazon Japan (via Aquent LLC) for 7 years, leading UX for 35+ projects including seasonal campaigns, category page redesigns, and service pages — always grounding decisions in quantitative data and user research.",
+    "about-p3": "I'm passionate about accessibility, and actively educate teams on inclusive design practices. I also spent 4 years working in Australia, bringing a global perspective to my design thinking. I'm available for freelance projects through Sekimachi Design Studio.",
+    "exp-role-1": "Lead Designer",
+    "exp-company-1": "PERSOL CAREER Co., Ltd.",
+    "exp-role-2": "UI/UX Designer",
+    "exp-company-2": "Lancers, Inc.",
+    "exp-role-3": "UX Designer (Contract)",
+    "exp-company-3": "Amazon Japan — via Aquent LLC",
+    "exp-role-4": "UI/UX Designer / Front-End Engineer (Contract)",
+    "exp-company-4": "MetaMoJi",
+    "exp-role-5": "Programmer",
+    "exp-company-5": "Net Marketing Co. Ltd",
+    "exp-role-6": "IT Manager",
+    "exp-company-6": "Australian Travel Agency (Australia)",
+    "exp-role-7": "Web Developer / Designer",
+    "exp-company-7": "Trans Cosmos Inc.",
+    "skills-tag": "Expertise",
+    "skills-title": "What I bring to the table",
+    "skill-1-h3": "UX Research",
+    "skill-1-p": "User interviews, usability testing, persona creation, customer journey mapping, competitive analysis, and survey design.",
+    "skill-2-h3": "Data-Driven Design",
+    "skill-2-p": "Google Analytics, A/B testing, CTR optimization, scroll depth analysis, conversion rate tracking, and postmortem reporting.",
+    "skill-3-h3": "UI/UX Design",
+    "skill-3-p": "Wireframing, prototyping, information architecture, user flows, interaction design, and responsive web design.",
+    "skill-4-h3": "Accessibility",
+    "skill-4-p": "WCAG compliance, universal design, accessibility audits, and team education on inclusive design practices.",
+    "skill-5-h3": "Development",
+    "skill-5-p": "HTML, CSS, JavaScript, PHP, MySQL, WordPress, AWS. 15 years of hands-on coding experience.",
+    "skill-6-h3": "Design Tools",
+    "skill-6-p": "Figma, Sketch, Adobe XD, InVision, Photoshop, Illustrator, InDesign, and various prototyping tools.",
+    "certs-tag": "Credentials",
+    "certs-title": "Certifications",
+    "contact-tag": "Let's Connect",
+    "contact-title": "Have a project<br>in mind?",
+    "contact-desc": "I'm open to freelance projects, full-time positions, and collaborative opportunities. Let's create something great together.",
+    "contact-btn-email": "Send an Email",
+    "contact-btn-linkedin": "LinkedIn",
+    "footer": "&copy; 2026 Sekimachi Design Studio. All rights reserved."
+  },
+  ja: {
+    "nav-work": "実績",
+    "nav-about": "自己紹介",
+    "nav-skills": "スキル",
+    "nav-contact": "お問い合わせ",
+    "hero-tag": "デザインスタジオ / 東京",
+    "hero-h1": '成果を生む<span class="gradient">デジタル体験</span>をデザインします',
+    "hero-intro": "関町デザインスタジオは、データに基づくリサーチとヒューマンセンタードデザインを組み合わせ、本当にユーザーに寄り添うデジタルプロダクトを制作します。",
+    "hero-stat-1": "プロジェクト",
+    "hero-stat-2": "Amazon（業務委託）",
+    "hero-stat-3": "IT業界歴",
+    "hero-btn-services": "サービス一覧",
+    "hero-btn-contact": "お問い合わせ",
+    "services-tag": "事業内容",
+    "services-title": "サービス",
+    "services-desc": "リサーチ、データ、ユーザーの実態に基づいたエンドツーエンドのデザインソリューションを提供します。",
+    "service-1-h3": "UXデザイン",
+    "service-1-p": "ワイヤーフレームから高精度プロトタイプまで、ユーザー中心のデザインを実現。ジャーニーマップ、情報設計、直感的なインタラクションを設計します。",
+    "service-2-h3": "ユーザーリサーチ",
+    "service-2-p": "ユーザーインタビュー、ユーザビリティテスト、アンケート設計、ペルソナ作成、競合分析を通じて、エビデンスに基づくデザイン判断を行います。",
+    "service-3-h3": "UIデザイン",
+    "service-3-p": "ブランドアイデンティティに沿った洗練されたインターフェース。レスポンシブレイアウト、デザインシステム、Web・モバイル向けのピクセルパーフェクトなビジュアルデザイン。",
+    "service-4-h3": "データドリブン最適化",
+    "service-4-p": "A/Bテスト、CTR最適化、スクロール深度分析、コンバージョン率トラッキングによるアナリティクス主導の改善。",
+    "service-5-h3": "アクセシビリティコンサルティング",
+    "service-5-p": "WCAG準拠のユニバーサルデザイン。アクセシビリティ監査、改善計画の策定、インクルーシブデザインに関するチーム教育を提供します。",
+    "service-6-h3": "フロントエンド開発",
+    "service-6-p": "コーディングもできるデザイナーが手がけるプロダクション品質のコード。HTML、CSS、JavaScript、WordPress — デザインとエンジニアリングの架け橋に。",
+    "about-tag": "自己紹介",
+    "about-title": 'コードが書けるデザイナー。<br>デザインができる開発者。',
+    "about-p1": "東京を拠点に活動するUXデザイナーです。デザインと開発の両方の経験を持つユニークなバックグラウンドがあります。プログラマーからキャリアをスタートし、UXデザインに転向。ユーザーとプロダクトを開発するエンジニアの両方に深い共感を持っています。",
+    "about-p2": "現在はパーソルキャリアでリードデザイナーを務めています。それ以前はAquent LLC経由でAmazon Japanの業務委託UXデザイナーとして7年間勤務し、季節キャンペーン、カテゴリーページのリデザイン、サービスページなど35以上のプロジェクトのUXをリードしました。常に定量データとユーザーリサーチに基づいた判断を行ってきました。",
+    "about-p3": "アクセシビリティに情熱を持ち、インクルーシブデザインの実践についてチームへの教育を積極的に行っています。オーストラリアで4年間の勤務経験があり、グローバルな視点をデザイン思考に活かしています。関町デザインスタジオを通じてフリーランスのプロジェクトも承っています。",
+    "exp-role-1": "リードデザイナー",
+    "exp-company-1": "パーソルキャリア株式会社",
+    "exp-role-2": "UI/UXデザイナー",
+    "exp-company-2": "ランサーズ株式会社",
+    "exp-role-3": "UXデザイナー（業務委託）",
+    "exp-company-3": "Amazon Japan — Aquent LLC経由",
+    "exp-role-4": "UI/UXデザイナー / フロントエンドエンジニア（業務委託）",
+    "exp-company-4": "株式会社MetaMoJi",
+    "exp-role-5": "プログラマー",
+    "exp-company-5": "株式会社ネットマーケティング",
+    "exp-role-6": "ITマネージャー",
+    "exp-company-6": "オーストラリア旅行会社（オーストラリア）",
+    "exp-role-7": "Webデベロッパー / デザイナー",
+    "exp-company-7": "トランスコスモス株式会社",
+    "skills-tag": "専門分野",
+    "skills-title": "提供できる価値",
+    "skill-1-h3": "UXリサーチ",
+    "skill-1-p": "ユーザーインタビュー、ユーザビリティテスト、ペルソナ作成、カスタマージャーニーマッピング、競合分析、アンケート設計。",
+    "skill-2-h3": "データドリブンデザイン",
+    "skill-2-p": "Google Analytics、A/Bテスト、CTR最適化、スクロール深度分析、コンバージョン率トラッキング、振り返りレポート。",
+    "skill-3-h3": "UI/UXデザイン",
+    "skill-3-p": "ワイヤーフレーム、プロトタイピング、情報設計、ユーザーフロー、インタラクションデザイン、レスポンシブWebデザイン。",
+    "skill-4-h3": "アクセシビリティ",
+    "skill-4-p": "WCAG準拠、ユニバーサルデザイン、アクセシビリティ監査、インクルーシブデザインに関するチーム教育。",
+    "skill-5-h3": "開発",
+    "skill-5-p": "HTML、CSS、JavaScript、PHP、MySQL、WordPress、AWS。15年の実務コーディング経験。",
+    "skill-6-h3": "デザインツール",
+    "skill-6-p": "Figma、Sketch、Adobe XD、InVision、Photoshop、Illustrator、InDesign、その他プロトタイピングツール。",
+    "certs-tag": "資格",
+    "certs-title": "保有資格",
+    "contact-tag": "お問い合わせ",
+    "contact-title": "プロジェクトの<br>ご相談はこちら",
+    "contact-desc": "フリーランス案件、正社員ポジション、コラボレーションの機会を歓迎します。一緒に素晴らしいものを作りましょう。",
+    "contact-btn-email": "メールを送る",
+    "contact-btn-linkedin": "LinkedIn",
+    "footer": "&copy; 2026 関町デザインスタジオ All rights reserved."
+  }
+};
+
+function setLang(lang) {
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    if (i18n[lang][key]) {
+      el.innerHTML = i18n[lang][key];
+    }
+  });
+  document.documentElement.lang = lang;
+  document.querySelectorAll('.lang-toggle [data-lang]').forEach(s => {
+    s.classList.toggle('active', s.getAttribute('data-lang') === lang);
+  });
+  localStorage.setItem('lang', lang);
+}
+
+document.querySelectorAll('.lang-toggle [data-lang]').forEach(s => {
+  s.addEventListener('click', () => setLang(s.getAttribute('data-lang')));
+});
+
+setLang(localStorage.getItem('lang') || 'en');
+</script>
+
+</body>
+</html>
