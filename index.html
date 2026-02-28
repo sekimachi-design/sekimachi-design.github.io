@@ -370,6 +370,75 @@
       color:var(--text);
     }
 
+    /* === SAMPLES === */
+    .samples{background:#f0f0f0}
+    .samples-grid{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:24px;
+      margin-top:48px;
+    }
+    .sample-card{
+      background:var(--bg-card);
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      padding:0;
+      display:flex;
+      flex-direction:column;
+      gap:0;
+      transition:all 0.3s;
+      text-decoration:none;
+      color:inherit;
+      overflow:hidden;
+    }
+    .sample-card:hover{
+      border-color:rgba(0,0,0,0.15);
+      transform:translateY(-4px);
+      box-shadow:0 20px 60px rgba(0,0,0,0.1);
+    }
+    .sample-card:hover .sample-thumb img{
+      transform:scale(1.03);
+    }
+    .sample-thumb{
+      width:100%;
+      aspect-ratio:16/10;
+      overflow:hidden;
+      background:var(--bg-hover);
+    }
+    .sample-thumb img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      object-position:top;
+      transition:transform 0.4s ease;
+    }
+    .sample-info{
+      padding:20px 24px 24px;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+    }
+    .sample-icon{
+      width:36px;
+      height:36px;
+      border-radius:10px;
+      background:var(--bg-hover);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:1.1rem;
+    }
+    .sample-body h3{
+      font-size:1.05rem;
+      font-weight:700;
+      margin-bottom:4px;
+    }
+    .sample-body p{
+      font-size:0.82rem;
+      color:var(--text-dim);
+      line-height:1.6;
+    }
+
     /* === CONTACT === */
     .contact{
       padding:120px 0;
@@ -415,6 +484,7 @@
       .services-grid{grid-template-columns:1fr}
       .about-grid{grid-template-columns:1fr;gap:40px}
       .skills-grid{grid-template-columns:1fr}
+      .samples-grid{grid-template-columns:repeat(2,1fr)}
       .section-title{font-size:2.2rem}
       .contact .section-title{font-size:2.5rem}
     }
@@ -430,6 +500,7 @@
       .lang-toggle{display:flex}
       .experience-list li{grid-template-columns:1fr}
       .exp-year{margin-bottom:-8px}
+      .samples-grid{grid-template-columns:1fr}
     }
   </style>
 </head>
@@ -483,7 +554,7 @@
         </div>
       </div>
       <div class="hero-photo">
-        <img src="images/avatar.svg" alt="Sekimachi Design Studio" loading="lazy">
+        <img src="images/profile.jpg" alt="Rie Hayashi — Sekimachi Design Studio" loading="lazy">
       </div>
     </div>
   </div>
@@ -692,6 +763,104 @@
   </div>
 </section>
 
+<!-- Sample Apps -->
+<section class="samples" id="samples">
+  <div class="container">
+    <div class="section-tag fade-in" data-i18n="samples-tag">Sample Work</div>
+    <h2 class="section-title fade-in" data-i18n="samples-title">Test Projects</h2>
+    <p class="section-desc fade-in" data-i18n="samples-desc">Design and development skills demonstrated through personal projects.</p>
+    <div class="samples-grid fade-in">
+      <a href="https://sekimachi-design.github.io/kanji-app/" target="_blank" class="sample-card">
+        <div class="sample-thumb"><img src="images/samples/kanji.jpg" alt="かんじれんしゅう screenshot" loading="lazy"></div>
+        <div class="sample-info">
+          <div class="sample-icon">漢</div>
+          <div class="sample-body">
+            <h3 data-i18n="sample-1-h3">かんじれんしゅう</h3>
+            <p data-i18n="sample-1-p">Kanji practice app for 3rd graders with stroke order animation, handwriting practice, and quiz features.</p>
+          </div>
+          <div class="project-tags">
+            <span class="tag">React</span>
+            <span class="tag">PWA</span>
+            <span class="tag">Education</span>
+          </div>
+        </div>
+      </a>
+      <a href="https://sekimachi-design.github.io/note-generator/" target="_blank" class="sample-card">
+        <div class="sample-thumb"><img src="images/samples/note.jpg" alt="note Article Generator screenshot" loading="lazy"></div>
+        <div class="sample-info">
+          <div class="sample-icon">📝</div>
+          <div class="sample-body">
+            <h3 data-i18n="sample-2-h3">note Article Generator</h3>
+            <p data-i18n="sample-2-p">A tool that helps you quickly generate structured article drafts for the note platform.</p>
+          </div>
+          <div class="project-tags">
+            <span class="tag">React</span>
+            <span class="tag">Tool</span>
+          </div>
+        </div>
+      </a>
+      <a href="https://sekimachi-design.github.io/mochi-prompts-lp/" target="_blank" class="sample-card">
+        <div class="sample-thumb"><img src="images/samples/mochi.jpg" alt="Mochi Prompts screenshot" loading="lazy"></div>
+        <div class="sample-info">
+          <div class="sample-icon">🐾</div>
+          <div class="sample-body">
+            <h3 data-i18n="sample-3-h3">Mochi Prompts</h3>
+            <p data-i18n="sample-3-p">Landing page for 30 kawaii animal AI art prompts for Midjourney. Design and copywriting.</p>
+          </div>
+          <div class="project-tags">
+            <span class="tag">Landing Page</span>
+            <span class="tag">AI Art</span>
+          </div>
+        </div>
+      </a>
+      <a href="sample-cafe.html" target="_blank" class="sample-card">
+        <div class="sample-thumb"><img src="images/samples/cafe.jpg" alt="SORA Coffee screenshot" loading="lazy"></div>
+        <div class="sample-info">
+          <div class="sample-icon">☕</div>
+          <div class="sample-body">
+            <h3 data-i18n="sample-4-h3">SORA Coffee</h3>
+            <p data-i18n="sample-4-p">Bilingual cafe landing page with warm photography, smooth animations, and EN/JA language toggle.</p>
+          </div>
+          <div class="project-tags">
+            <span class="tag">Landing Page</span>
+            <span class="tag">Bilingual</span>
+            <span class="tag">Cafe</span>
+          </div>
+        </div>
+      </a>
+      <a href="sample-saas.html" target="_blank" class="sample-card">
+        <div class="sample-thumb"><img src="images/samples/saas.jpg" alt="FlowBoard SaaS screenshot" loading="lazy"></div>
+        <div class="sample-info">
+          <div class="sample-icon">📊</div>
+          <div class="sample-body">
+            <h3 data-i18n="sample-5-h3">FlowBoard SaaS</h3>
+            <p data-i18n="sample-5-p">SaaS product landing page with pricing tiers, feature showcase, and CSS dashboard mockup.</p>
+          </div>
+          <div class="project-tags">
+            <span class="tag">Landing Page</span>
+            <span class="tag">SaaS</span>
+          </div>
+        </div>
+      </a>
+      <a href="sample-fitness.html" target="_blank" class="sample-card">
+        <div class="sample-thumb"><img src="images/samples/fitness.jpg" alt="Vitality Fitness screenshot" loading="lazy"></div>
+        <div class="sample-info">
+          <div class="sample-icon">💪</div>
+          <div class="sample-body">
+            <h3 data-i18n="sample-6-h3">Vitality Fitness</h3>
+            <p data-i18n="sample-6-p">Fitness app landing page with phone mockup, testimonials, and vibrant green-coral design.</p>
+          </div>
+          <div class="project-tags">
+            <span class="tag">Landing Page</span>
+            <span class="tag">App</span>
+            <span class="tag">Fitness</span>
+          </div>
+        </div>
+      </a>
+    </div>
+  </div>
+</section>
+
 <!-- Contact -->
 <section class="contact" id="contact">
   <div class="container">
@@ -787,6 +956,21 @@ const i18n = {
     "skill-6-p": "Figma, Sketch, Adobe XD, InVision, Photoshop, Illustrator, InDesign, and various prototyping tools.",
     "certs-tag": "Credentials",
     "certs-title": "Certifications",
+    "samples-tag": "Sample Work",
+    "samples-title": "Test Projects",
+    "samples-desc": "Design and development skills demonstrated through personal projects.",
+    "sample-1-h3": "かんじれんしゅう",
+    "sample-1-p": "Kanji practice app for 3rd graders with stroke order animation, handwriting practice, and quiz features.",
+    "sample-2-h3": "note Article Generator",
+    "sample-2-p": "A tool that helps you quickly generate structured article drafts for the note platform.",
+    "sample-3-h3": "Mochi Prompts",
+    "sample-3-p": "Landing page for 30 kawaii animal AI art prompts for Midjourney. Design and copywriting.",
+    "sample-4-h3": "SORA Coffee",
+    "sample-4-p": "Bilingual cafe landing page with warm photography, smooth animations, and EN/JA language toggle.",
+    "sample-5-h3": "FlowBoard SaaS",
+    "sample-5-p": "SaaS product landing page with pricing tiers, feature showcase, and CSS dashboard mockup.",
+    "sample-6-h3": "Vitality Fitness",
+    "sample-6-p": "Fitness app landing page with phone mockup, testimonials, and vibrant green-coral design.",
     "contact-tag": "Let's Connect",
     "contact-title": "Have a project<br>in mind?",
     "contact-desc": "I'm open to freelance projects, full-time positions, and collaborative opportunities. Let's create something great together.",
@@ -857,6 +1041,21 @@ const i18n = {
     "skill-6-p": "Figma、Sketch、Adobe XD、InVision、Photoshop、Illustrator、InDesign、その他プロトタイピングツール。",
     "certs-tag": "資格",
     "certs-title": "保有資格",
+    "samples-tag": "サンプル",
+    "samples-title": "テストプロジェクト",
+    "samples-desc": "個人プロジェクトを通じて、デザインと開発のスキルを実証しています。",
+    "sample-1-h3": "かんじれんしゅう",
+    "sample-1-p": "小学3年生向けの漢字学習アプリ。書き順アニメーション・手書き練習・クイズ機能つき。",
+    "sample-2-h3": "note記事ジェネレーター",
+    "sample-2-p": "noteプラットフォーム向けの構造化された記事ドラフトを素早く生成するツール。",
+    "sample-3-h3": "Mochi Prompts",
+    "sample-3-p": "Midjourney用のかわいい動物AIアートプロンプト30選のランディングページ。デザインとコピーライティング。",
+    "sample-4-h3": "SORA Coffee",
+    "sample-4-p": "写真・アニメーション・EN/JA切り替え対応のバイリンガルカフェLP。",
+    "sample-5-h3": "FlowBoard SaaS",
+    "sample-5-p": "料金プラン・機能紹介・CSSダッシュボードモックアップ付きのSaaS製品LP。",
+    "sample-6-h3": "Vitality Fitness",
+    "sample-6-p": "スマホモックアップ・口コミ・グリーン×コーラルのフィットネスアプリLP。",
     "contact-tag": "お問い合わせ",
     "contact-title": "プロジェクトの<br>ご相談はこちら",
     "contact-desc": "フリーランス案件、正社員ポジション、コラボレーションの機会を歓迎します。一緒に素晴らしいものを作りましょう。",
