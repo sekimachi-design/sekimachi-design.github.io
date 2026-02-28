@@ -53,90 +53,6 @@
     }
     .nav-back:hover{color:var(--text)}
 
-    /* === PASSWORD GATE === */
-    .password-gate{
-      position:fixed;
-      inset:0;
-      z-index:200;
-      background:rgba(250,250,250,0.97);
-      backdrop-filter:blur(30px);
-      display:flex;
-      align-items:center;
-      justify-content:center;
-    }
-    .password-gate.hidden{display:none}
-    .password-box{
-      text-align:center;
-      max-width:400px;
-      padding:0 32px;
-    }
-    .password-box .lock-icon{
-      font-size:3rem;
-      margin-bottom:24px;
-      opacity:0.3;
-    }
-    .password-box h2{
-      font-family:'DM Sans',sans-serif;
-      font-size:1.8rem;
-      font-weight:800;
-      letter-spacing:-0.5px;
-      margin-bottom:8px;
-    }
-    .password-box p{
-      font-size:0.95rem;
-      color:var(--text-dim);
-      margin-bottom:32px;
-      line-height:1.6;
-    }
-    .password-form{
-      display:flex;
-      gap:12px;
-    }
-    .password-form input{
-      flex:1;
-      padding:14px 20px;
-      border:1px solid var(--border);
-      border-radius:50px;
-      font-family:'DM Sans',sans-serif;
-      font-size:0.95rem;
-      background:var(--bg-card);
-      color:var(--text);
-      outline:none;
-      transition:border-color 0.2s;
-    }
-    .password-form input:focus{
-      border-color:var(--accent);
-    }
-    .password-form input.error{
-      border-color:#cc0000;
-    }
-    .password-form button{
-      padding:14px 28px;
-      border-radius:50px;
-      font-family:'DM Sans',sans-serif;
-      font-weight:600;
-      font-size:0.95rem;
-      cursor:pointer;
-      transition:all 0.3s;
-      border:none;
-      background:var(--gradient);
-      color:#fff;
-      box-shadow:0 4px 20px rgba(0,0,0,0.15);
-      white-space:nowrap;
-    }
-    .password-form button:hover{
-      transform:translateY(-2px);
-      box-shadow:0 8px 30px rgba(0,0,0,0.2);
-    }
-    .password-error{
-      color:#cc0000;
-      font-size:0.85rem;
-      margin-top:16px;
-      opacity:0;
-      transition:opacity 0.2s;
-    }
-    .password-error.visible{opacity:1}
-
     /* === SECTION COMMON === */
     section{padding:120px 0}
     .section-tag{
@@ -276,26 +192,10 @@
     @media(max-width:600px){
       .container{padding:0 20px}
       .projects{padding-top:120px}
-      .password-form{flex-direction:column}
-      .password-box h2{font-size:1.4rem}
     }
   </style>
 </head>
 <body>
-
-<!-- Password Gate -->
-<div class="password-gate" id="passwordGate">
-  <div class="password-box">
-    <div class="lock-icon">◆</div>
-    <h2>Portfolio Access</h2>
-    <p>This portfolio contains confidential project details. Please enter the password to continue.</p>
-    <form class="password-form" id="passwordForm">
-      <input type="password" id="passwordInput" placeholder="Enter password" autocomplete="off">
-      <button type="submit">Unlock</button>
-    </form>
-    <div class="password-error" id="passwordError">Incorrect password. Please try again.</div>
-  </div>
-</div>
 
 <!-- Nav -->
 <nav>
@@ -456,39 +356,6 @@
 </footer>
 
 <script>
-var PASS_HASH = '5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8';
-
-async function sha256(str) {
-  var buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
-  return Array.from(new Uint8Array(buf)).map(function(b) { return b.toString(16).padStart(2, '0'); }).join('');
-}
-
-function init() {
-  var gate = document.getElementById('passwordGate');
-  if (sessionStorage.getItem('portfolio_auth') === 'true') {
-    gate.classList.add('hidden');
-    return;
-  }
-
-  document.getElementById('passwordForm').addEventListener('submit', async function(e) {
-    e.preventDefault();
-    var input = document.getElementById('passwordInput');
-    var hash = await sha256(input.value);
-    if (hash === PASS_HASH) {
-      sessionStorage.setItem('portfolio_auth', 'true');
-      gate.classList.add('hidden');
-    } else {
-      input.classList.add('error');
-      document.getElementById('passwordError').classList.add('visible');
-      setTimeout(function() {
-        input.classList.remove('error');
-      }, 1000);
-    }
-  });
-}
-
-init();
-
 var observer = new IntersectionObserver(function(entries) {
   entries.forEach(function(e) {
     if (e.isIntersecting) { e.target.classList.add('visible'); }

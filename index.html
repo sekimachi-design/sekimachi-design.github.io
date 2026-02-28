@@ -371,7 +371,60 @@
     }
 
     /* === SAMPLES === */
-    .samples{background:#f0f0f0}
+    /* === WORK / PROJECTS === */
+    .work{background:#f0f0f0}
+    .work-header{margin-bottom:64px}
+    .project-grid{
+      display:grid;
+      grid-template-columns:repeat(2,1fr);
+      gap:32px;
+    }
+    .project-card{
+      background:var(--bg-card);
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      overflow:hidden;
+      transition:all 0.4s;
+    }
+    .project-card:hover{
+      border-color:rgba(0,0,0,0.15);
+      transform:translateY(-4px);
+      box-shadow:0 20px 60px rgba(0,0,0,0.1);
+    }
+    a.project-card{display:block;text-decoration:none;color:inherit}
+    .project-card.featured{grid-column:span 2}
+    .project-card.featured .project-image{height:400px}
+    .project-image{
+      height:260px;
+      overflow:hidden;
+      position:relative;
+    }
+    .project-image img{
+      width:100%;height:100%;object-fit:cover;
+      transition:transform 0.6s;
+    }
+    .project-card:hover .project-image img{transform:scale(1.05)}
+    .project-image .overlay{
+      position:absolute;inset:0;
+      background:linear-gradient(180deg,transparent 40%,rgba(0,0,0,0.5) 100%);
+    }
+    .project-meta{padding:28px}
+    .project-company{
+      font-size:0.75rem;color:var(--accent);
+      text-transform:uppercase;letter-spacing:1.5px;
+      font-weight:600;margin-bottom:8px;
+    }
+    .project-title{
+      font-size:1.35rem;font-weight:700;
+      margin-bottom:8px;letter-spacing:-0.3px;
+    }
+    .project-desc{
+      font-size:0.9rem;color:var(--text-dim);
+      line-height:1.6;margin-bottom:16px;
+    }
+
+    /* === SAMPLES === */
+    .samples{background:var(--bg)}
     .samples-grid{
       display:grid;
       grid-template-columns:repeat(3,1fr);
@@ -484,6 +537,9 @@
       .services-grid{grid-template-columns:1fr}
       .about-grid{grid-template-columns:1fr;gap:40px}
       .skills-grid{grid-template-columns:1fr}
+      .project-grid{grid-template-columns:1fr}
+      .project-card.featured{grid-column:span 1}
+      .project-card.featured .project-image{height:260px}
       .samples-grid{grid-template-columns:repeat(2,1fr)}
       .section-title{font-size:2.2rem}
       .contact .section-title{font-size:2.5rem}
@@ -511,7 +567,7 @@
   <div class="container">
     <a href="#" class="nav-logo"><img src="images/logo.png" alt="Sekimachi Design Studio"></a>
     <div class="nav-links">
-      <a href="portfolio.html" data-i18n="nav-work">Work</a>
+      <a href="#work" data-i18n="nav-work">Work</a>
       <a href="#about" data-i18n="nav-about">About</a>
       <a href="#skills" data-i18n="nav-skills">Skills</a>
       <a href="#contact" class="nav-cta" data-i18n="nav-contact">Contact</a>
@@ -763,6 +819,142 @@
   </div>
 </section>
 
+<!-- Work / Projects -->
+<section class="work" id="work">
+  <div class="container">
+    <div class="work-header fade-in">
+      <div class="section-tag" data-i18n="work-tag">Selected Work</div>
+      <h2 class="section-title" data-i18n="work-title">Featured Projects</h2>
+      <p class="section-desc" data-i18n="work-desc">Data-driven UX design across e-commerce, marketplace platforms, and digital products.</p>
+    </div>
+
+    <div class="project-grid">
+
+      <a href="projects/toy-page-renewal.html" class="project-card featured fade-in">
+        <div class="project-image">
+          <img src="images/toy.jpg" alt="Toy Page Renewal" loading="lazy">
+          <div class="overlay"></div>
+        </div>
+        <div class="project-meta">
+          <div class="project-company" data-i18n="work-company-amazon">Amazon Japan (Contract via Aquent LLC)</div>
+          <div class="project-title" data-i18n="work-1-title">Toy Page Renewal — Full UX Redesign</div>
+          <div class="project-desc" data-i18n="work-1-desc">Led end-to-end UX research and redesign of the toy category page. Conducted device analysis, scroll depth tracking, CTR analysis, customer journey mapping, and competitive research to create a unified responsive experience.</div>
+          <div class="project-tags">
+            <span class="tag">UX Research</span>
+            <span class="tag">Customer Journey</span>
+            <span class="tag">Competitive Analysis</span>
+            <span class="tag">Wireframing</span>
+            <span class="tag">User Testing</span>
+          </div>
+        </div>
+      </a>
+
+      <a href="projects/christmas-gifts.html" class="project-card fade-in">
+        <div class="project-image">
+          <img src="images/christmas.jpg" alt="Christmas Gifts" loading="lazy">
+          <div class="overlay"></div>
+        </div>
+        <div class="project-meta">
+          <div class="project-company" data-i18n="work-company-amazon">Amazon Japan (Contract via Aquent LLC)</div>
+          <div class="project-title" data-i18n="work-2-title">Christmas Gifts 2020</div>
+          <div class="project-desc" data-i18n="work-2-desc">Analyzed previous year's data to identify issues. Redesigned the gift store resulting in significantly increased sales and conversion rates.</div>
+          <div class="project-tags">
+            <span class="tag">Data Analysis</span>
+            <span class="tag">Information Architecture</span>
+            <span class="tag">A/B Testing</span>
+          </div>
+        </div>
+      </a>
+
+      <a href="projects/fathers-day.html" class="project-card fade-in">
+        <div class="project-image">
+          <img src="images/fathers-day.jpg" alt="Father's Day" loading="lazy">
+          <div class="overlay"></div>
+        </div>
+        <div class="project-meta">
+          <div class="project-company" data-i18n="work-company-amazon">Amazon Japan (Contract via Aquent LLC)</div>
+          <div class="project-title" data-i18n="work-3-title">Father's Day — A/B Test Optimization</div>
+          <div class="project-desc" data-i18n="work-3-desc">Identified low CTR post-launch and ran an A/B test that significantly improved CTR, OPS, and abandon rate. Insight led to a lasting design principle across campaigns.</div>
+          <div class="project-tags">
+            <span class="tag">A/B Testing</span>
+            <span class="tag">CTR Optimization</span>
+            <span class="tag">Postmortem</span>
+          </div>
+        </div>
+      </a>
+
+      <a href="projects/search-renewal.html" class="project-card fade-in">
+        <div class="project-image">
+          <img src="images/search-renewal.jpg" alt="Search Page Renewal" loading="lazy">
+          <div class="overlay"></div>
+        </div>
+        <div class="project-meta">
+          <div class="project-company" data-i18n="work-company-lancers">Lancers</div>
+          <div class="project-title" data-i18n="work-4-title">Search Page Renewal</div>
+          <div class="project-desc" data-i18n="work-4-desc">Redesigned the high-traffic search page with complex information architecture. Used Google Analytics data to surface content users actually needed. Completed in just 2 weeks.</div>
+          <div class="project-tags">
+            <span class="tag">Google Analytics</span>
+            <span class="tag">UI Design</span>
+            <span class="tag">Rapid Iteration</span>
+          </div>
+        </div>
+      </a>
+
+      <a href="projects/chusho-grow-story.html" class="project-card fade-in">
+        <div class="project-image">
+          <img src="images/chusho.jpg" alt="Chusho Grow Story" loading="lazy">
+          <div class="overlay"></div>
+        </div>
+        <div class="project-meta">
+          <div class="project-company" data-i18n="work-company-amazon">Amazon Japan (Contract via Aquent LLC)</div>
+          <div class="project-title" data-i18n="work-5-title">Chusho Grow Story — DX Support</div>
+          <div class="project-desc" data-i18n="work-5-desc">Designed a new landing page for Amazon's DX support initiative with accessibility-first approach, collaborating with UX Creative Director on wireframe-to-production design.</div>
+          <div class="project-tags">
+            <span class="tag">Accessibility</span>
+            <span class="tag">Landing Page</span>
+            <span class="tag">Collaboration</span>
+          </div>
+        </div>
+      </a>
+
+      <a href="projects/reward-app.html" class="project-card fade-in">
+        <div class="project-image">
+          <img src="images/reward-app.jpg" alt="Reward App" loading="lazy">
+          <div class="overlay"></div>
+        </div>
+        <div class="project-meta">
+          <div class="project-company" data-i18n="work-company-netmarketing">Net Marketing</div>
+          <div class="project-title" data-i18n="work-6-title">Reward App — iOS & Android</div>
+          <div class="project-desc" data-i18n="work-6-desc">Full-stack development of two reward mobile apps. Designed database architecture, built with LAMP/AWS stack, and managed outsourcing. Published on App Store and Google Play.</div>
+          <div class="project-tags">
+            <span class="tag">Mobile App</span>
+            <span class="tag">Full-Stack</span>
+            <span class="tag">AWS</span>
+          </div>
+        </div>
+      </a>
+
+      <a href="projects/freelancer-onboarding.html" class="project-card fade-in">
+        <div class="project-image">
+          <img src="images/onboarding.png" alt="Freelancer Onboarding Flow" loading="lazy">
+          <div class="overlay"></div>
+        </div>
+        <div class="project-meta">
+          <div class="project-company" data-i18n="work-company-lancers-inc">Lancers, Inc.</div>
+          <div class="project-title" data-i18n="work-7-title">Freelancer Onboarding Flow</div>
+          <div class="project-desc" data-i18n="work-7-desc">Redesigned the freelancer registration and onboarding experience to reduce drop-off and improve profile completion rates, directly impacting talent-client matching quality.</div>
+          <div class="project-tags">
+            <span class="tag">User Research</span>
+            <span class="tag">Onboarding UX</span>
+            <span class="tag">Conversion Optimization</span>
+          </div>
+        </div>
+      </a>
+
+    </div>
+  </div>
+</section>
+
 <!-- Sample Apps -->
 <section class="samples" id="samples">
   <div class="container">
@@ -956,6 +1148,27 @@ const i18n = {
     "skill-6-p": "Figma, Sketch, Adobe XD, InVision, Photoshop, Illustrator, InDesign, and various prototyping tools.",
     "certs-tag": "Credentials",
     "certs-title": "Certifications",
+    "work-tag": "Selected Work",
+    "work-title": "Featured Projects",
+    "work-desc": "Data-driven UX design across e-commerce, marketplace platforms, and digital products.",
+    "work-company-amazon": "Amazon Japan (Contract via Aquent LLC)",
+    "work-company-lancers": "Lancers",
+    "work-company-lancers-inc": "Lancers, Inc.",
+    "work-company-netmarketing": "Net Marketing",
+    "work-1-title": "Toy Page Renewal — Full UX Redesign",
+    "work-1-desc": "Led end-to-end UX research and redesign of the toy category page. Conducted device analysis, scroll depth tracking, CTR analysis, customer journey mapping, and competitive research to create a unified responsive experience.",
+    "work-2-title": "Christmas Gifts 2020",
+    "work-2-desc": "Analyzed previous year's data to identify issues. Redesigned the gift store resulting in significantly increased sales and conversion rates.",
+    "work-3-title": "Father's Day — A/B Test Optimization",
+    "work-3-desc": "Identified low CTR post-launch and ran an A/B test that significantly improved CTR, OPS, and abandon rate. Insight led to a lasting design principle across campaigns.",
+    "work-4-title": "Search Page Renewal",
+    "work-4-desc": "Redesigned the high-traffic search page with complex information architecture. Used Google Analytics data to surface content users actually needed. Completed in just 2 weeks.",
+    "work-5-title": "Chusho Grow Story — DX Support",
+    "work-5-desc": "Designed a new landing page for Amazon's DX support initiative with accessibility-first approach, collaborating with UX Creative Director on wireframe-to-production design.",
+    "work-6-title": "Reward App — iOS & Android",
+    "work-6-desc": "Full-stack development of two reward mobile apps. Designed database architecture, built with LAMP/AWS stack, and managed outsourcing. Published on App Store and Google Play.",
+    "work-7-title": "Freelancer Onboarding Flow",
+    "work-7-desc": "Redesigned the freelancer registration and onboarding experience to reduce drop-off and improve profile completion rates, directly impacting talent-client matching quality.",
     "samples-tag": "Sample Work",
     "samples-title": "Test Projects",
     "samples-desc": "Design and development skills demonstrated through personal projects.",
@@ -1041,6 +1254,27 @@ const i18n = {
     "skill-6-p": "Figma、Sketch、Adobe XD、InVision、Photoshop、Illustrator、InDesign、その他プロトタイピングツール。",
     "certs-tag": "資格",
     "certs-title": "保有資格",
+    "work-tag": "実績",
+    "work-title": "主なプロジェクト",
+    "work-desc": "ECサイト、マーケットプレイス、デジタルプロダクトにおけるデータドリブンなUXデザイン。",
+    "work-company-amazon": "Amazon Japan（Aquent LLC経由の業務委託）",
+    "work-company-lancers": "ランサーズ",
+    "work-company-lancers-inc": "ランサーズ株式会社",
+    "work-company-netmarketing": "株式会社ネットマーケティング",
+    "work-1-title": "トイページリニューアル — UXフルリデザイン",
+    "work-1-desc": "おもちゃカテゴリーページのエンドツーエンドのUXリサーチとリデザインをリード。デバイス分析、スクロール深度トラッキング、CTR分析、カスタマージャーニーマッピング、競合調査を実施し、統一されたレスポンシブ体験を構築。",
+    "work-2-title": "クリスマスギフト 2020",
+    "work-2-desc": "前年データを分析して課題を特定。ギフトストアをリデザインし、売上とコンバージョン率の大幅な向上を実現。",
+    "work-3-title": "父の日 — A/Bテスト最適化",
+    "work-3-desc": "ローンチ後の低CTRを特定し、A/Bテストを実施。CTR、OPS、離脱率を大幅に改善。この知見はキャンペーン全体に適用されるデザイン原則となった。",
+    "work-4-title": "検索ページリニューアル",
+    "work-4-desc": "複雑な情報設計を持つ高トラフィック検索ページをリデザイン。Google Analyticsデータを活用し、ユーザーが本当に必要とするコンテンツを表面化。わずか2週間で完了。",
+    "work-5-title": "中小企業グロウストーリー — DX支援",
+    "work-5-desc": "AmazonのDX支援イニシアチブ向けの新規ランディングページをデザイン。アクセシビリティファーストのアプローチで、UXクリエイティブディレクターと協力し、ワイヤーフレームから本番デザインまで担当。",
+    "work-6-title": "リワードアプリ — iOS & Android",
+    "work-6-desc": "2つのリワードモバイルアプリのフルスタック開発。データベース設計、LAMP/AWSスタックでの構築、アウトソーシング管理を担当。App StoreとGoogle Playに公開。",
+    "work-7-title": "フリーランサーオンボーディングフロー",
+    "work-7-desc": "フリーランサーの登録・オンボーディング体験をリデザインし、離脱率の削減とプロフィール完了率の向上を実現。タレントとクライアントのマッチング品質に直接貢献。",
     "samples-tag": "サンプル",
     "samples-title": "テストプロジェクト",
     "samples-desc": "個人プロジェクトを通じて、デザインと開発のスキルを実証しています。",
