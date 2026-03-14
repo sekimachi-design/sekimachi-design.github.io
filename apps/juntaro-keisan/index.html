@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>じゅんたろうNASAへの道</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'Hiragino Kaku Gothic ProN', 'Yu Gothic', sans-serif;
+  background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+  min-height: 100vh; min-height: 100dvh;
+  display: flex; justify-content: center;
+}
+.app {
+  width: 95%; max-width: 540px;
+  display: flex; flex-direction: column;
+  padding: 12px 0 16px; gap: 10px;
+}
+h1 { text-align: center; color: white; font-size: 22px; text-shadow: 0 2px 8px rgba(0,0,0,0.3); }
+.panel {
+  background: rgba(255,255,255,0.95); border-radius: 16px;
+  padding: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+}
+.btn-row { display: flex; gap: 6px; justify-content: center; flex-wrap: wrap; }
+.lv-btn {
+  padding: 10px 18px; border: 2px solid #ddd; border-radius: 10px;
+  background: white; font-size: 15px; font-weight: bold;
+  cursor: pointer; transition: all 0.15s;
+}
+.lv-btn.active { border-color: #302b63; background: #e8e4ff; color: #302b63; }
+
+.progress-row { display: flex; justify-content: space-between; align-items: center; padding: 4px 8px; }
+.progress-text { font-size: 14px; color: #666; font-weight: bold; }
+.score-display { font-size: 20px; font-weight: bold; color: #302b63; transition: transform 0.3s; }
+.score-display.pulse { animation: pulse-anim 0.4s ease-out; }
+@keyframes pulse-anim {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.5); color: #22c55e; }
+  100% { transform: scale(1); }
+}
+.progress-dots { display: flex; gap: 5px; justify-content: center; margin-top: 6px; }
+.dot {
+  width: 18px; height: 18px; border-radius: 50%;
+  background: #e5e7eb; border: 2px solid #d1d5db;
+  transition: all 0.3s; display: flex; align-items: center; justify-content: center;
+  font-size: 10px;
+}
+.dot.current { border-color: #302b63; box-shadow: 0 0 8px rgba(48,43,99,0.5); background: #e8e4ff; }
+.dot.correct { background: #22c55e; border-color: #16a34a; }
+.dot.wrong { background: #ef4444; border-color: #dc2626; }
+
+.hissan-area {
+  display: flex; justify-content: center; align-items: center;
+  min-height: 180px; padding: 12px 0;
+}
+.hissan-grid { display: inline-block; }
+.h-row { display: flex; justify-content: center; }
+
+.h-cell {
+  position: relative;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: bold; overflow: hidden;
+  user-select: none; -webkit-user-select: none;
+}
+.h-cell.empty { background: transparent; border: none; }
+.h-cell.op { background: transparent; border: none; color: #302b63; }
+.mc-cell { background: #e8ecff; border: 1px solid #c0c8e8; color: #1a1a2e; }
+.h-cell.fixed { background: #e8ecff; border: 1px solid #c0c8e8; color: #1a1a2e; }
+
+.carry-box {
+  position: absolute; top: 2px; left: 2px;
+  border: 1.5px dashed #333; border-radius: 3px;
+  background: rgba(255,255,255,0.85);
+  z-index: 3;
+}
+.carry-box canvas { display: block; touch-action: none; }
+
+.h-cell.answer { background: white; border: 1px solid #c0c8e8; cursor: pointer; }
+.h-cell.answer canvas { display: block; touch-action: none; }
+.h-cell.answer.is-correct { background: #dcfce7 !important; border-color: #86efac !important; }
+.h-cell.answer.is-wrong { background: #fee2e2 !important; border-color: #fca5a5 !important; }
+.correct-overlay {
+  position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: bold; color: #dc2626; pointer-events: none;
+  background: rgba(254,226,226,0.5);
+}
+.h-line { height: 3px; background: #333; margin: 0 auto; }
+
+.feedback { text-align: center; font-size: 22px; font-weight: bold; min-height: 32px; line-height: 32px; }
+.feedback.ok { color: #22c55e; }
+.feedback.ng { color: #ef4444; }
+
+.action-row { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+.act-btn {
+  padding: 12px 18px; font-size: 15px; font-weight: bold;
+  color: white; border: none; border-radius: 10px;
+  cursor: pointer; transition: transform 0.1s;
+}
+.act-btn:active { transform: scale(0.95); }
+.act-btn.next { background: linear-gradient(135deg, #302b63, #24243e); }
+.act-btn.check { background: linear-gradient(135deg, #f59e0b, #ef4444); }
+.act-btn.clear { background: #aaa; }
+.act-btn.erase { background: #e88; }
+.pen-hint { text-align: center; font-size: 12px; color: #999; margin-top: 6px; }
+
+/* Celebration */
+.celebrate-overlay {
+  position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+  background: radial-gradient(ellipse at center, #0a0a2e 0%, #000 100%);
+  z-index: 1000; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; overflow: hidden; cursor: pointer;
+}
+.rocket { position: absolute; font-size: 80px; left: 50%; transform: translateX(-50%); animation: rocket-launch 2.5s ease-in forwards; }
+@keyframes rocket-launch {
+  0% { bottom: -100px; }
+  40% { bottom: 30%; }
+  100% { bottom: 120%; }
+}
+.rocket-trail {
+  position: absolute; left: 50%; transform: translateX(-50%);
+  width: 6px; border-radius: 3px;
+  background: linear-gradient(to top, #ff6b35, #ffd700, transparent);
+  animation: trail-fade 2.5s ease-in forwards;
+}
+@keyframes trail-fade {
+  0% { bottom: -100px; height: 60px; opacity: 1; }
+  40% { bottom: 25%; height: 120px; opacity: 0.8; }
+  100% { bottom: 110%; height: 40px; opacity: 0; }
+}
+.confetti {
+  position: absolute; border-radius: 2px;
+  animation: confetti-fall linear forwards;
+}
+@keyframes confetti-fall {
+  0% { top: -20px; opacity: 1; transform: rotate(0deg) scale(1); }
+  100% { top: 110vh; opacity: 0.3; transform: rotate(1080deg) scale(0.5); }
+}
+.star-bg {
+  position: absolute; color: white; opacity: 0;
+  animation: star-twinkle 2s ease-in-out infinite;
+}
+@keyframes star-twinkle {
+  0%, 100% { opacity: 0.2; transform: scale(0.8); }
+  50% { opacity: 1; transform: scale(1.3); }
+}
+.celebrate-msg {
+  position: relative; z-index: 10; text-align: center;
+  padding: 20px;
+}
+.celebrate-title {
+  font-size: 48px; font-weight: bold; color: #ffd700;
+  text-shadow: 0 0 30px rgba(255,215,0,0.6);
+  animation: bounce-in 0.6s ease-out 1s both;
+}
+.celebrate-sub {
+  font-size: 22px; color: #a5b4fc; margin-top: 12px;
+  animation: bounce-in 0.6s ease-out 1.5s both;
+}
+.celebrate-reward {
+  font-size: 26px; color: #4ade80; font-weight: bold; margin-top: 20px;
+  background: rgba(255,255,255,0.1); padding: 14px 28px; border-radius: 14px;
+  border: 2px solid rgba(74,222,128,0.3);
+  animation: bounce-in 0.6s ease-out 2s both;
+}
+.celebrate-close {
+  font-size: 14px; color: rgba(255,255,255,0.4); margin-top: 24px;
+  animation: bounce-in 0.6s ease-out 2.5s both;
+}
+@keyframes bounce-in {
+  0% { transform: scale(0) rotate(-10deg); opacity: 0; }
+  60% { transform: scale(1.15) rotate(2deg); opacity: 1; }
+  100% { transform: scale(1) rotate(0); opacity: 1; }
+}
+
+/* Results */
+.results-overlay {
+  position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,20,0.92); z-index: 1000;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+}
+.results-box { text-align: center; }
+.results-emoji { font-size: 80px; animation: bounce-in 0.5s ease-out both; }
+.results-score { font-size: 64px; font-weight: bold; color: white; margin-top: 8px; animation: bounce-in 0.5s ease-out 0.3s both; }
+.results-unit { font-size: 28px; color: #a5b4fc; }
+.results-msg { font-size: 22px; color: #ccc; margin-top: 8px; animation: bounce-in 0.5s ease-out 0.6s both; }
+.results-retry {
+  margin-top: 28px; padding: 16px 36px; font-size: 20px; font-weight: bold;
+  background: linear-gradient(135deg, #302b63, #24243e); color: white;
+  border: none; border-radius: 14px; cursor: pointer;
+  animation: bounce-in 0.5s ease-out 0.9s both;
+}
+.results-retry:active { transform: scale(0.95); }
+</style>
+</head>
+<body>
+<div class="app">
+  <h1>🚀 じゅんたろうNASAへの道</h1>
+
+  <div class="panel">
+    <div class="btn-row" id="levelBar"></div>
+  </div>
+
+  <div class="panel">
+    <div class="progress-row">
+      <span class="progress-text" id="qProgress">もんだい 1/10</span>
+      <span class="score-display" id="qScoreDisp">0てん</span>
+    </div>
+    <div class="progress-dots" id="progressDots"></div>
+  </div>
+
+  <div class="panel">
+    <div class="hissan-area" id="hissanArea"></div>
+    <div class="feedback" id="feedback"></div>
+    <p class="pen-hint" id="penHint"></p>
+  </div>
+
+  <div class="panel">
+    <div class="action-row">
+      <button class="act-btn erase" onclick="clearLast()">← 1マス消す</button>
+      <button class="act-btn clear" onclick="clearAll()">ぜんぶ消す</button>
+      <button class="act-btn check" onclick="check()">こたえあわせ</button>
+      <button class="act-btn next" id="nextBtn" onclick="next()">つぎのもんだい</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const DPR = window.devicePixelRatio || 1;
+let lvIdx = 0, pA, pB, pAns;
+let qNum = 1, qScore = 0, checked = false;
+let drawing = false, activeCanvas = null, lastX = 0, lastY = 0, lastDrawnId = null;
+
+const goodMsg = ['すごい！🎉','せいかい！⭐','やったね！🌟','かんぺき！💯','さすが！✨','てんさい！🏆'];
+const badMsg = ['おしい！😣','がんばれ！💪','つぎはできるよ！🔥','ドンマイ！😊'];
+const REWARDS = [10, 15, 20, 25, 30];
+
+const LV = [
+  { label: 'Lv.1', desc: '2けた×1けた', aMin: 11, aMax: 49, bMin: 2, bMax: 4, noCarry: true },
+  { label: 'Lv.2', desc: '2けた×1けた', aMin: 11, aMax: 99, bMin: 2, bMax: 9 },
+  { label: 'Lv.3', desc: '2けた×2けた', aMin: 11, aMax: 99, bMin: 11, bMax: 99 },
+  { label: 'Lv.4', desc: '3けた×1けた', aMin: 101, aMax: 999, bMin: 2, bMax: 9 },
+  { label: 'Lv.5', desc: '3けた×2けた', aMin: 101, aMax: 999, bMin: 11, bMax: 99 },
+];
+
+function rand(a, b) { return Math.floor(Math.random() * (b - a + 1)) + a; }
+function pick(a) { return a[Math.floor(Math.random() * a.length)]; }
+
+// ===== Recognition =====
+let digitRefs = [];
+const NORM = 28;
+
+function initRecognition() {
+  const RS = 80;
+  const fonts = [
+    'bold 48px Arial','48px Arial','bold 48px Helvetica',
+    'bold 52px sans-serif','44px sans-serif','bold 44px Courier',
+    'bold 48px Georgia','52px Georgia','bold 54px Arial',
+    'bold 42px Verdana','48px Trebuchet MS','bold 52px Palatino',
+    'bold 36px Arial','bold 60px Arial','36px sans-serif',
+    '60px sans-serif','bold 40px Courier','bold 56px Georgia',
+    '44px Helvetica','bold 38px Verdana',
+    'italic 48px Arial','italic bold 46px Georgia',
+  ];
+  const c = document.createElement('canvas');
+  c.width = RS; c.height = RS;
+  const ctx = c.getContext('2d');
+  for (let d = 0; d <= 9; d++) {
+    for (const font of fonts) {
+      ctx.clearRect(0, 0, RS, RS);
+      ctx.fillStyle = '#000'; ctx.font = font;
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText(String(d), RS / 2, RS / 2 + 2);
+      addRef(c, d);
+    }
+    for (const [dx, dy] of [[-8,0],[8,0],[0,-8],[0,8],[-6,-6],[6,-6],[-6,6],[6,6]]) {
+      ctx.clearRect(0, 0, RS, RS);
+      ctx.fillStyle = '#000'; ctx.font = 'bold 48px Arial';
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText(String(d), RS / 2 + dx, RS / 2 + 2 + dy);
+      addRef(c, d);
+    }
+    for (const sz of [32, 40, 56, 64]) {
+      ctx.clearRect(0, 0, RS, RS);
+      ctx.fillStyle = '#000'; ctx.font = `bold ${sz}px Arial`;
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText(String(d), RS / 2, RS / 2 + 2);
+      addRef(c, d);
+    }
+    for (const lw of [2, 4, 6]) {
+      ctx.clearRect(0, 0, RS, RS);
+      ctx.strokeStyle = '#000'; ctx.lineWidth = lw;
+      ctx.font = 'bold 48px Arial'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.strokeText(String(d), RS / 2, RS / 2 + 2);
+      ctx.fillStyle = '#000'; ctx.fillText(String(d), RS / 2, RS / 2 + 2);
+      addRef(c, d);
+    }
+    for (const angle of [-0.2, -0.1, 0.1, 0.2]) {
+      ctx.clearRect(0, 0, RS, RS);
+      ctx.save(); ctx.translate(RS / 2, RS / 2); ctx.rotate(angle);
+      ctx.fillStyle = '#000'; ctx.font = 'bold 48px Arial';
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText(String(d), 0, 2);
+      ctx.restore();
+      addRef(c, d);
+    }
+  }
+}
+
+function addRef(canvas, digit) {
+  const nd = normCanvas(canvas);
+  if (!nd) return;
+  const px = new Uint8Array(NORM * NORM);
+  let ink = 0;
+  for (let i = 0; i < NORM * NORM; i++) { px[i] = nd[i * 4 + 3] > 30 ? 1 : 0; ink += px[i]; }
+  if (ink < 3) return;
+  digitRefs.push({ digit, pixels: dilate(px, 2) });
+}
+
+function dilate(px, r) {
+  const out = new Uint8Array(NORM * NORM);
+  for (let y = 0; y < NORM; y++) for (let x = 0; x < NORM; x++) {
+    if (!px[y * NORM + x]) continue;
+    for (let dy = -r; dy <= r; dy++) for (let dx = -r; dx <= r; dx++) {
+      const ny = y + dy, nx = x + dx;
+      if (ny >= 0 && ny < NORM && nx >= 0 && nx < NORM) out[ny * NORM + nx] = 1;
+    }
+  }
+  return out;
+}
+
+function normCanvas(canvas) {
+  const w = canvas.width, h = canvas.height;
+  const data = canvas.getContext('2d').getImageData(0, 0, w, h).data;
+  let top = h, bot = 0, left = w, right = 0;
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+    if (data[(y * w + x) * 4 + 3] > 30) { if (y < top) top = y; if (y > bot) bot = y; if (x < left) left = x; if (x > right) right = x; }
+  }
+  if (top >= bot || left >= right) return null;
+  const bw = right - left + 1, bh = bot - top + 1;
+  const t = document.createElement('canvas'); t.width = NORM; t.height = NORM;
+  const tc = t.getContext('2d');
+  const sc = Math.min((NORM - 4) / bw, (NORM - 4) / bh);
+  const sw = bw * sc, sh = bh * sc;
+  tc.drawImage(canvas, left, top, bw, bh, (NORM - sw) / 2, (NORM - sh) / 2, sw, sh);
+  return tc.getImageData(0, 0, NORM, NORM).data;
+}
+
+function recog(canvas) {
+  const nd = normCanvas(canvas);
+  if (!nd) return -1;
+  const raw = new Uint8Array(NORM * NORM);
+  let ink = 0;
+  for (let i = 0; i < NORM * NORM; i++) { raw[i] = nd[i * 4 + 3] > 30 ? 1 : 0; ink += raw[i]; }
+  if (ink < 3) return -1;
+  const inputPx = dilate(raw, 2);
+  const bestScore = new Float64Array(10);
+  for (const ref of digitRefs) {
+    let overlap = 0, union = 0;
+    for (let i = 0; i < NORM * NORM; i++) {
+      const a = inputPx[i], b = ref.pixels[i];
+      if (a || b) { union++; if (a && b) overlap++; }
+    }
+    const score = union > 0 ? overlap / union : 0;
+    if (score > bestScore[ref.digit]) bestScore[ref.digit] = score;
+  }
+  let best = -1, bv = 0;
+  for (let d = 0; d <= 9; d++) { if (bestScore[d] > bv) { bv = bestScore[d]; best = d; } }
+  return best;
+}
+
+// ===== Problem =====
+function hasMulCarry(a, b) {
+  let carry = 0;
+  const aS = String(a);
+  for (let i = aS.length - 1; i >= 0; i--) {
+    const prod = parseInt(aS[i]) * b + carry;
+    carry = Math.floor(prod / 10);
+    if (carry > 0 && i > 0) return true;
+  }
+  return carry > 0;
+}
+
+function mulCarryFlags(a, b) {
+  const aDigits = String(a).split('').map(Number);
+  const resLen = String(a * b).length;
+  const flags = new Array(resLen).fill(false);
+  let carry = 0;
+  for (let i = aDigits.length - 1; i >= 0; i--) {
+    const prod = aDigits[i] * b + carry;
+    carry = Math.floor(prod / 10);
+    const ansIdx = resLen - 1 - (aDigits.length - 1 - i);
+    if (carry > 0 && ansIdx - 1 >= 0) flags[ansIdx - 1] = true;
+  }
+  return flags;
+}
+
+function addCarryFlags(a, b) {
+  const sum = a + b;
+  const sumLen = String(sum).length;
+  const flags = new Array(sumLen).fill(false);
+  let carry = 0;
+  for (let pos = 0; pos < sumLen; pos++) {
+    const da = Math.floor(a / Math.pow(10, pos)) % 10;
+    const db = Math.floor(b / Math.pow(10, pos)) % 10;
+    const colSum = da + db + carry;
+    carry = Math.floor(colSum / 10);
+    const ansIdx = sumLen - 1 - pos;
+    if (carry > 0 && ansIdx - 1 >= 0) flags[ansIdx - 1] = true;
+  }
+  return flags;
+}
+
+function genProblem() {
+  const lv = LV[lvIdx];
+  let tries = 0;
+  do {
+    pA = rand(lv.aMin, lv.aMax);
+    pB = rand(lv.bMin, lv.bMax);
+    pAns = pA * pB;
+    tries++;
+    if (tries > 200) break;
+    if (lv.noCarry && hasMulCarry(pA, pB)) continue;
+    if (!lv.noCarry && !hasMulCarry(pA, pB) && tries < 100) continue;
+    break;
+  } while (true);
+}
+
+// ===== Grid =====
+function cellSize(nc) {
+  const w = document.getElementById('hissanArea').clientWidth;
+  return Math.min(105, Math.floor((w - 10) / nc));
+}
+
+function emptyCell(sz) {
+  return `<div class="h-cell empty" style="width:${sz}px;height:${sz}px"></div>`;
+}
+
+function render() {
+  genProblem();
+  checked = false; lastDrawnId = null;
+  document.getElementById('feedback').textContent = '';
+  document.getElementById('feedback').className = 'feedback';
+  updateProgress();
+
+  const isMul2 = String(pB).length >= 2;
+  document.getElementById('hissanArea').innerHTML = '<div class="hissan-grid">' +
+    (isMul2 ? renderMul2() : renderMul1()) + '</div>';
+
+  const lv = LV[lvIdx];
+  document.getElementById('penHint').textContent = lv.noCarry
+    ? '✏️ ' + lv.desc
+    : '✏️ ' + lv.desc + ' ／ 点線のマスは くりあがり用';
+  document.getElementById('nextBtn').textContent = qNum >= 10 ? 'けっかをみる' : 'つぎのもんだい';
+  setupCanvases();
+}
+
+function renderMul1() {
+  const aS = String(pA), bS = String(pB), anS = String(pAns);
+  const maxD = Math.max(aS.length, bS.length, anS.length);
+  const nc = maxD + 1;
+  const sz = cellSize(nc);
+  const showCarry = !LV[lvIdx].noCarry;
+  const cFlags = showCarry ? mulCarryFlags(pA, pB) : [];
+  const cW = Math.floor(sz * 0.36), cH = Math.floor(sz * 0.36);
+  let h = '';
+
+  h += '<div class="h-row">';
+  const aOff = nc - aS.length;
+  for (let c = 0; c < nc; c++) {
+    if (c >= aOff) h += `<div class="h-cell mc-cell" style="width:${sz}px;height:${sz}px;font-size:${sz * 0.55}px">${aS[c - aOff]}</div>`;
+    else h += emptyCell(sz);
+  }
+  h += '</div>';
+
+  h += '<div class="h-row">';
+  const bOff = nc - bS.length;
+  for (let c = 0; c < nc; c++) {
+    if (c === 0) h += `<div class="h-cell op" style="width:${sz}px;height:${sz}px;font-size:${sz * 0.5}px">×</div>`;
+    else if (c >= bOff) h += `<div class="h-cell fixed" style="width:${sz}px;height:${sz}px;font-size:${sz * 0.55}px">${bS[c - bOff]}</div>`;
+    else h += emptyCell(sz);
+  }
+  h += '</div>';
+
+  h += `<div class="h-line" style="width:${nc * sz}px"></div>`;
+
+  h += '<div class="h-row">';
+  const anOff = nc - anS.length;
+  for (let c = 0; c < nc; c++) {
+    if (c >= anOff) {
+      const di = c - anOff;
+      const hasC = di < cFlags.length && cFlags[di];
+      h += makeAnswerCell(sz, 'a' + c, anS[di], hasC ? cW : 0, hasC ? cH : 0);
+    } else {
+      h += emptyCell(sz);
+    }
+  }
+  h += '</div>';
+  return h;
+}
+
+function renderMul2() {
+  const aS = String(pA), bS = String(pB), anS = String(pAns);
+  const b1 = parseInt(bS[1]), b0 = parseInt(bS[0]);
+  const p1 = pA * b1, p2 = pA * b0;
+  const p1S = String(p1), p2S = String(p2);
+  const maxD = Math.max(aS.length, bS.length, anS.length, p1S.length, p2S.length + 1);
+  const nc = maxD + 1;
+  const sz = cellSize(nc);
+  const showCarry = !LV[lvIdx].noCarry;
+  const cf1 = showCarry ? mulCarryFlags(pA, b1) : [];
+  const cf2 = showCarry ? mulCarryFlags(pA, b0) : [];
+  const cfA = showCarry ? addCarryFlags(p1, p2 * 10) : [];
+  const cW = Math.floor(sz * 0.36), cH = Math.floor(sz * 0.36);
+  let h = '';
+
+  h += '<div class="h-row">';
+  const aOff = nc - aS.length;
+  for (let c = 0; c < nc; c++) {
+    if (c >= aOff) h += `<div class="h-cell mc-cell" style="width:${sz}px;height:${sz}px;font-size:${sz * 0.55}px">${aS[c - aOff]}</div>`;
+    else h += emptyCell(sz);
+  }
+  h += '</div>';
+
+  h += '<div class="h-row">';
+  const bOff = nc - bS.length;
+  for (let c = 0; c < nc; c++) {
+    if (c === 0) h += `<div class="h-cell op" style="width:${sz}px;height:${sz}px;font-size:${sz * 0.5}px">×</div>`;
+    else if (c >= bOff) h += `<div class="h-cell fixed" style="width:${sz}px;height:${sz}px;font-size:${sz * 0.55}px">${bS[c - bOff]}</div>`;
+    else h += emptyCell(sz);
+  }
+  h += '</div>';
+
+  h += `<div class="h-line" style="width:${nc * sz}px"></div>`;
+
+  h += '<div class="h-row">';
+  const p1Off = nc - p1S.length;
+  for (let c = 0; c < nc; c++) {
+    if (c >= p1Off) {
+      const di = c - p1Off;
+      const hasC = di < cf1.length && cf1[di];
+      h += makeAnswerCell(sz, 'p1-' + c, p1S[di], hasC ? cW : 0, hasC ? cH : 0);
+    } else {
+      h += emptyCell(sz);
+    }
+  }
+  h += '</div>';
+
+  h += '<div class="h-row">';
+  const p2Off = nc - p2S.length - 1;
+  for (let c = 0; c < nc; c++) {
+    if (c >= p2Off && c < p2Off + p2S.length) {
+      const di = c - p2Off;
+      const hasC = di < cf2.length && cf2[di];
+      h += makeAnswerCell(sz, 'p2-' + c, p2S[di], hasC ? cW : 0, hasC ? cH : 0);
+    } else {
+      h += emptyCell(sz);
+    }
+  }
+  h += '</div>';
+
+  h += `<div class="h-line" style="width:${nc * sz}px;height:2px;background:#999"></div>`;
+
+  h += '<div class="h-row">';
+  const anOff = nc - anS.length;
+  for (let c = 0; c < nc; c++) {
+    if (c >= anOff) {
+      const di = c - anOff;
+      const hasC = di < cfA.length && cfA[di];
+      h += makeAnswerCell(sz, 'a' + c, anS[di], hasC ? cW : 0, hasC ? cH : 0);
+    } else {
+      h += emptyCell(sz);
+    }
+  }
+  h += '</div>';
+  return h;
+}
+
+function makeCarryBox(w, h, id) {
+  const cw = w * DPR, ch = h * DPR;
+  return `<div class="carry-box" style="width:${w}px;height:${h}px">` +
+    `<canvas class="cell-canvas" data-cell-id="${id}" width="${cw}" height="${ch}" style="width:${w}px;height:${h}px"></canvas></div>`;
+}
+
+function makeAnswerCell(sz, id, correct, cbW, cbH) {
+  const cw = sz * DPR, ch = sz * DPR;
+  let html = `<div class="h-cell answer" style="width:${sz}px;height:${sz}px" data-id="${id}"${correct ? ` data-correct="${correct}"` : ''}>`;
+  if (cbW > 0 && cbH > 0) html += makeCarryBox(cbW, cbH, 'carry-' + id);
+  html += `<canvas class="cell-canvas" data-cell-id="${id}" width="${cw}" height="${ch}" style="width:${sz}px;height:${sz}px"></canvas></div>`;
+  return html;
+}
+
+// ===== Drawing =====
+function setupCanvases() {
+  document.querySelectorAll('.cell-canvas').forEach(c => {
+    const ctx = c.getContext('2d');
+    ctx.scale(DPR, DPR);
+    c.addEventListener('pointerdown', onDown);
+    c.addEventListener('pointermove', onMove);
+    c.addEventListener('pointerup', onUp);
+    c.addEventListener('pointercancel', onUp);
+  });
+}
+
+function onDown(e) {
+  e.preventDefault();
+  if (checked) return;
+  const c = e.target;
+  c.setPointerCapture(e.pointerId);
+  drawing = true; activeCanvas = c;
+  lastDrawnId = c.dataset.cellId;
+  const r = c.getBoundingClientRect();
+  lastX = e.clientX - r.left; lastY = e.clientY - r.top;
+  const ctx = c.getContext('2d');
+  ctx.strokeStyle = '#333'; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+  const p = e.pressure > 0 ? e.pressure : 0.5;
+  ctx.lineWidth = 1.5 + p * 3;
+  ctx.beginPath(); ctx.moveTo(lastX, lastY);
+}
+
+function onMove(e) {
+  if (!drawing || e.target !== activeCanvas) return;
+  e.preventDefault();
+  const r = activeCanvas.getBoundingClientRect();
+  const x = Math.max(0, Math.min(e.clientX - r.left, r.width));
+  const y = Math.max(0, Math.min(e.clientY - r.top, r.height));
+  const ctx = activeCanvas.getContext('2d');
+  const p = e.pressure > 0 ? e.pressure : 0.5;
+  ctx.lineWidth = 1.5 + p * 3;
+  ctx.lineTo(x, y); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(x, y);
+  lastX = x; lastY = y;
+}
+
+function onUp() {
+  if (!drawing) return;
+  drawing = false;
+  if (activeCanvas) activeCanvas.getContext('2d').beginPath();
+  activeCanvas = null;
+}
+
+// ===== Actions =====
+function clearCanvasById(id) {
+  const c = document.querySelector(`canvas[data-cell-id="${id}"]`);
+  if (!c) return;
+  const ctx = c.getContext('2d');
+  ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.clearRect(0, 0, c.width, c.height); ctx.restore();
+  const cell = c.closest('.answer');
+  if (cell) { cell.classList.remove('is-correct', 'is-wrong'); const ov = cell.querySelector('.correct-overlay'); if (ov) ov.remove(); }
+}
+
+function clearLast() { if (lastDrawnId) clearCanvasById(lastDrawnId); }
+
+function clearAll() {
+  document.querySelectorAll('.cell-canvas').forEach(c => {
+    const ctx = c.getContext('2d'); ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.clearRect(0, 0, c.width, c.height); ctx.restore();
+  });
+  document.querySelectorAll('.h-cell.answer').forEach(c => {
+    c.classList.remove('is-correct', 'is-wrong');
+    const ov = c.querySelector('.correct-overlay'); if (ov) ov.remove();
+  });
+  document.getElementById('feedback').textContent = '';
+  document.getElementById('feedback').className = 'feedback';
+  lastDrawnId = null;
+}
+
+function check() {
+  if (checked) return;
+  checked = true;
+  let allOk = true;
+  document.querySelectorAll('[data-correct]').forEach(cell => {
+    const correct = cell.dataset.correct;
+    if (!correct) return;
+    const cid = cell.dataset.id;
+    const canvas = cell.querySelector(`canvas[data-cell-id="${cid}"]`);
+    const digit = canvas ? recog(canvas) : -1;
+    if (String(digit) === correct) {
+      cell.classList.add('is-correct');
+    } else {
+      cell.classList.add('is-wrong');
+      allOk = false;
+      const ov = document.createElement('div');
+      ov.className = 'correct-overlay';
+      ov.style.fontSize = (parseInt(cell.style.width) * 0.5) + 'px';
+      ov.textContent = correct + '(' + digit + ')';
+      cell.appendChild(ov);
+    }
+  });
+  const fb = document.getElementById('feedback');
+  if (allOk) {
+    qScore += 10;
+    fb.textContent = pick(goodMsg); fb.className = 'feedback ok';
+    const el = document.getElementById('qScoreDisp');
+    el.classList.remove('pulse'); void el.offsetWidth; el.classList.add('pulse');
+  } else {
+    fb.textContent = pick(badMsg) + ' 赤い字がせいかいだよ'; fb.className = 'feedback ng';
+  }
+  const dot = document.querySelectorAll('.dot')[qNum - 1];
+  if (dot) { dot.classList.remove('current'); dot.classList.add(allOk ? 'correct' : 'wrong'); }
+  updateProgress();
+  document.getElementById('nextBtn').textContent = qNum >= 10 ? 'けっかをみる' : 'つぎのもんだい';
+}
+
+function next() {
+  if (!checked) return;
+  if (qNum >= 10) {
+    showResults();
+    return;
+  }
+  qNum++;
+  render();
+}
+
+// ===== Progress =====
+function updateProgress() {
+  document.getElementById('qProgress').textContent = `もんだい ${qNum}/10`;
+  document.getElementById('qScoreDisp').textContent = `${qScore}てん`;
+}
+
+function renderDots() {
+  let h = '';
+  for (let i = 0; i < 10; i++) {
+    h += `<div class="dot${i === qNum - 1 ? ' current' : ''}">${i + 1}</div>`;
+  }
+  document.getElementById('progressDots').innerHTML = h;
+}
+
+// ===== Results =====
+function showResults() {
+  if (qScore === 100) {
+    celebrate();
+  } else {
+    showScoreScreen();
+  }
+}
+
+function showScoreScreen() {
+  let emoji, msg;
+  if (qScore >= 80) { emoji = '🛸'; msg = 'うちゅうまであとすこし！'; }
+  else if (qScore >= 60) { emoji = '☁️'; msg = 'くもの上まできた！'; }
+  else if (qScore >= 40) { emoji = '✈️'; msg = 'ひこうきの高さ！'; }
+  else { emoji = '🚀'; msg = 'はっしゃだいにスタンバイ！'; }
+
+  const ov = document.createElement('div');
+  ov.className = 'results-overlay';
+  ov.innerHTML = `<div class="results-box">
+    <div class="results-emoji">${emoji}</div>
+    <div class="results-score">${qScore}<span class="results-unit">てん</span></div>
+    <div class="results-msg">${msg}</div>
+    <button class="results-retry" onclick="this.closest('.results-overlay').remove();setLv(lvIdx)">もういちど チャレンジ！</button>
+  </div>`;
+  document.body.appendChild(ov);
+}
+
+function celebrate() {
+  const ov = document.createElement('div');
+  ov.className = 'celebrate-overlay';
+  ov.onclick = () => ov.remove();
+
+  for (let i = 0; i < 25; i++) {
+    const s = document.createElement('div');
+    s.className = 'star-bg';
+    s.textContent = '✦';
+    s.style.left = Math.random() * 100 + '%';
+    s.style.top = Math.random() * 100 + '%';
+    s.style.fontSize = (10 + Math.random() * 18) + 'px';
+    s.style.animationDelay = Math.random() * 3 + 's';
+    ov.appendChild(s);
+  }
+
+  for (let i = 0; i < 50; i++) {
+    const c = document.createElement('div');
+    c.className = 'confetti';
+    c.style.left = Math.random() * 100 + '%';
+    c.style.animationDelay = (0.5 + Math.random() * 2.5) + 's';
+    c.style.animationDuration = (2 + Math.random() * 3) + 's';
+    c.style.background = ['#ff6b6b', '#ffd93d', '#6bcb77', '#4d96ff', '#ff6fff', '#ff9f43'][i % 6];
+    c.style.width = (6 + Math.random() * 10) + 'px';
+    c.style.height = (6 + Math.random() * 10) + 'px';
+    c.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+    ov.appendChild(c);
+  }
+
+  const r = document.createElement('div');
+  r.className = 'rocket';
+  r.textContent = '🚀';
+  ov.appendChild(r);
+
+  const trail = document.createElement('div');
+  trail.className = 'rocket-trail';
+  ov.appendChild(trail);
+
+  const m = document.createElement('div');
+  m.className = 'celebrate-msg';
+  m.innerHTML = `
+    <div class="celebrate-title">100てん！🎉</div>
+    <div class="celebrate-sub">NASAにいっぽ ちかづいた！</div>
+    <div class="celebrate-reward">🎮 ${REWARDS[lvIdx]}ふん ゲームけん ゲット！</div>
+    <div class="celebrate-close">タップしてとじる</div>
+  `;
+  ov.appendChild(m);
+  document.body.appendChild(ov);
+  setTimeout(() => { if (ov.parentNode) ov.remove(); }, 10000);
+}
+
+// ===== UI =====
+function renderLevels() {
+  document.getElementById('levelBar').innerHTML = LV.map((l, i) =>
+    `<button class="lv-btn${i === lvIdx ? ' active' : ''}" onclick="setLv(${i})">${l.label}</button>`
+  ).join('');
+}
+
+function setLv(i) {
+  lvIdx = i; qNum = 1; qScore = 0;
+  document.querySelectorAll('.lv-btn').forEach((b, j) => b.classList.toggle('active', j === i));
+  renderDots();
+  render();
+}
+
+// ===== Init =====
+initRecognition();
+renderLevels();
+renderDots();
+render();
+</script>
+</body>
+</html>
