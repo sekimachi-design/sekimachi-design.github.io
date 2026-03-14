@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>じゅんたろうの けいさんアプリ</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Hiragino Kaku Gothic ProN', 'Yu Gothic', sans-serif;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* ===== Tab Bar ===== */
+.tab-bar {
+  display: flex;
+  gap: 4px;
+  margin-top: 16px;
+  background: rgba(255,255,255,0.2);
+  border-radius: 16px;
+  padding: 4px;
+}
+
+.tab-btn {
+  padding: 10px 24px;
+  border: none;
+  border-radius: 12px;
+  background: transparent;
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.tab-btn.active {
+  background: white;
+  color: #667eea;
+}
+
+/* ===== Shared ===== */
+.page { display: none; width: 90%; max-width: 600px; }
+.page.active { display: block; }
+
+.container {
+  background: white;
+  border-radius: 24px;
+  padding: 24px;
+  margin-top: 16px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  text-align: center;
+}
+
+h2 {
+  font-size: 20px;
+  color: #333;
+  margin-bottom: 16px;
+}
+
+.btn-row {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.sm-btn {
+  padding: 8px 14px;
+  border: 2px solid #ddd;
+  border-radius: 10px;
+  background: white;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.sm-btn:hover { transform: scale(1.05); }
+.sm-btn.active { border-color: #667eea; background: #eef0ff; color: #667eea; }
+
+.sm-btn.add { color: #22c55e; }
+.sm-btn.sub { color: #3b82f6; }
+.sm-btn.mul { color: #f59e0b; }
+.sm-btn.div { color: #ef4444; }
+
+/* ===== Quiz Page ===== */
+.score-bar {
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 16px;
+  background: #f0f0f0;
+  border-radius: 12px;
+  padding: 10px;
+}
+
+.score-item { text-align: center; }
+.score-label { font-size: 11px; color: #888; }
+.score-value { font-size: 22px; font-weight: bold; color: #333; }
+.score-value.correct { color: #22c55e; }
+.score-value.wrong { color: #ef4444; }
+.score-value.streak { color: #f59e0b; }
+
+.mode-select {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.mode-btn {
+  padding: 10px;
+  border: 3px solid #e0e0e0;
+  border-radius: 12px;
+  background: white;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.mode-btn:hover { transform: scale(1.05); }
+.mode-btn.active { border-color: #667eea; background: #eef0ff; }
+.mode-btn.add { color: #22c55e; }
+.mode-btn.sub { color: #3b82f6; }
+.mode-btn.mul { color: #f59e0b; }
+.mode-btn.div { color: #ef4444; }
+
+.level-select {
+  margin-bottom: 12px;
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+}
+
+.level-btn {
+  padding: 6px 16px;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  background: white;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.level-btn.active {
+  border-color: #764ba2;
+  background: #f3e8ff;
+  color: #764ba2;
+  font-weight: bold;
+}
+
+.question-area {
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  border-radius: 16px;
+  padding: 28px 16px;
+  margin-bottom: 16px;
+  min-height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.question-text {
+  font-size: 44px;
+  font-weight: bold;
+  color: #333;
+  letter-spacing: 4px;
+}
+
+.answer-area {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.answer-input {
+  flex: 1;
+  font-size: 28px;
+  text-align: center;
+  padding: 10px;
+  border: 3px solid #ddd;
+  border-radius: 12px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.answer-input:focus { border-color: #667eea; }
+
+.submit-btn {
+  padding: 10px 24px;
+  font-size: 18px;
+  font-weight: bold;
+  color: white;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.submit-btn:hover { transform: scale(1.05); }
+.submit-btn:active { transform: scale(0.95); }
+
+.feedback {
+  font-size: 24px;
+  font-weight: bold;
+  min-height: 40px;
+  line-height: 40px;
+}
+
+.feedback.correct { color: #22c55e; }
+.feedback.wrong { color: #ef4444; }
+
+/* ===== Hissan Page ===== */
+.h-sub-tabs {
+  display: flex;
+  gap: 4px;
+  justify-content: center;
+  margin-bottom: 12px;
+  background: #f0f0f0;
+  border-radius: 10px;
+  padding: 3px;
+}
+
+.h-sub-tab {
+  padding: 6px 16px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  font-size: 13px;
+  font-weight: bold;
+  cursor: pointer;
+  color: #888;
+  transition: all 0.2s;
+}
+
+.h-sub-tab.active {
+  background: white;
+  color: #667eea;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+}
+
+.h-problem-controls { margin-bottom: 12px; }
+.h-problem-controls.hidden { display: none; }
+
+.canvas-wrap {
+  position: relative;
+  margin: 0 auto 12px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: white;
+  border: 2px solid #e0e0e0;
+}
+
+.canvas-wrap canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+#bgCanvas { z-index: 1; }
+#drawCanvas { z-index: 2; touch-action: none; }
+
+.toolbar {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.tool-btn {
+  padding: 8px 14px;
+  border: 2px solid #ddd;
+  border-radius: 10px;
+  background: white;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.tool-btn:hover { transform: scale(1.05); }
+.tool-btn.active { border-color: #667eea; background: #eef0ff; }
+
+.action-row {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+}
+
+.action-btn {
+  padding: 10px 20px;
+  font-size: 15px;
+  font-weight: bold;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.action-btn:hover { transform: scale(1.05); }
+.action-btn:active { transform: scale(0.95); }
+
+.action-btn.next {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.action-btn.show-answer {
+  background: linear-gradient(135deg, #f59e0b, #ef4444);
+}
+
+.action-btn.clear {
+  background: #aaa;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 500px) {
+  .tab-btn { padding: 8px 16px; font-size: 14px; }
+  .container { padding: 16px; }
+  .question-text { font-size: 32px; }
+  .answer-input { font-size: 24px; }
+}
+</style>
+</head>
+<body>
+
+<!-- Tab Bar -->
+<div class="tab-bar">
+  <button class="tab-btn active" onclick="showPage('quiz')">けいさんクイズ</button>
+  <button class="tab-btn" onclick="showPage('hissan')">ひっさんノート</button>
+</div>
+
+<!-- ===== Quiz Page ===== -->
+<div id="quizPage" class="page active">
+  <div class="container">
+    <h2>🔢 けいさんクイズ</h2>
+
+    <div class="score-bar">
+      <div class="score-item">
+        <div class="score-label">せいかい</div>
+        <div class="score-value correct" id="correctCount">0</div>
+      </div>
+      <div class="score-item">
+        <div class="score-label">まちがい</div>
+        <div class="score-value wrong" id="wrongCount">0</div>
+      </div>
+      <div class="score-item">
+        <div class="score-label">れんぞく🔥</div>
+        <div class="score-value streak" id="streakCount">0</div>
+      </div>
+    </div>
+
+    <div class="mode-select">
+      <button class="mode-btn add active" onclick="setQuizMode('add')">＋ たし算</button>
+      <button class="mode-btn sub" onclick="setQuizMode('sub')">－ ひき算</button>
+      <button class="mode-btn mul" onclick="setQuizMode('mul')">× かけ算</button>
+      <button class="mode-btn div" onclick="setQuizMode('div')">÷ わり算</button>
+    </div>
+
+    <div class="level-select">
+      <button class="level-btn active" onclick="setQuizLevel('easy', this)">かんたん</button>
+      <button class="level-btn" onclick="setQuizLevel('normal', this)">ふつう</button>
+      <button class="level-btn" onclick="setQuizLevel('hard', this)">むずかしい</button>
+    </div>
+
+    <div class="question-area">
+      <div class="question-text" id="question"></div>
+    </div>
+
+    <div class="answer-area">
+      <input type="number" class="answer-input" id="answerInput" placeholder="？">
+      <button class="submit-btn" onclick="checkAnswer()">こたえる</button>
+    </div>
+
+    <div class="feedback" id="feedback"></div>
+  </div>
+</div>
+
+<!-- ===== Hissan Page ===== -->
+<div id="hissanPage" class="page">
+  <div class="container">
+    <h2>📝 ひっさんノート</h2>
+
+    <div class="h-sub-tabs">
+      <button class="h-sub-tab active" onclick="setHissanTab('mondai', this)">もんだい</button>
+      <button class="h-sub-tab" onclick="setHissanTab('free', this)">じゆうノート</button>
+    </div>
+
+    <div id="hProblemControls" class="h-problem-controls">
+      <div class="btn-row">
+        <button class="sm-btn add active" data-hmode="add" onclick="setHMode('add')">＋ たし算</button>
+        <button class="sm-btn sub" data-hmode="sub" onclick="setHMode('sub')">－ ひき算</button>
+        <button class="sm-btn mul" data-hmode="mul" onclick="setHMode('mul')">× かけ算</button>
+      </div>
+      <div class="btn-row">
+        <button class="sm-btn active" data-hlevel="easy" onclick="setHLevel('easy')">かんたん</button>
+        <button class="sm-btn" data-hlevel="normal" onclick="setHLevel('normal')">ふつう</button>
+        <button class="sm-btn" data-hlevel="hard" onclick="setHLevel('hard')">むずかしい</button>
+      </div>
+    </div>
+
+    <div class="canvas-wrap" id="canvasWrap">
+      <canvas id="bgCanvas"></canvas>
+      <canvas id="drawCanvas"></canvas>
+    </div>
+
+    <div class="toolbar">
+      <button class="tool-btn active" id="toolPen" onclick="setDrawTool('pen')">✏️ くろ</button>
+      <button class="tool-btn" id="toolRed" onclick="setDrawTool('red')">🔴 あか</button>
+      <button class="tool-btn" id="toolBlue" onclick="setDrawTool('blue')">🔵 あお</button>
+      <button class="tool-btn" id="toolEraser" onclick="setDrawTool('eraser')">消しゴム</button>
+    </div>
+
+    <div class="action-row">
+      <button class="action-btn clear" onclick="clearDrawing()">ぜんぶけす</button>
+      <button class="action-btn next" id="btnNext" onclick="newHissanProblem()">つぎのもんだい</button>
+      <button class="action-btn show-answer" id="btnShowAns" onclick="showHissanAnswer()">こたえをみる</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===== Page Switching =====
+function showPage(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(page + 'Page').classList.add('active');
+  event.target.classList.add('active');
+  if (page === 'hissan') initCanvas();
+}
+
+// ===== Quiz =====
+let qMode = 'add', qLevel = 'easy', qAnswer = 0;
+let qCorrect = 0, qWrong = 0, qStreak = 0;
+
+const goodMsg = ['すごい！🎉','せいかい！⭐','やったね！🌟','かんぺき！💯','さすが！✨','てんさい！🏆'];
+const badMsg = ['おしい！😣','もういっかい！💪','がんばれ！🔥','ドンマイ！😊'];
+
+function rand(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
+function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+
+function qRange() {
+  if (qLevel === 'easy') return { add: [1, 50], mul: [1, 9] };
+  if (qLevel === 'normal') return { add: [10, 200], mul: [2, 12] };
+  return { add: [50, 999], mul: [3, 19] };
+}
+
+function generateQuestion() {
+  const r = qRange();
+  let a, b, text;
+  if (qMode === 'add') {
+    a = rand(r.add[0], r.add[1]); b = rand(r.add[0], r.add[1]);
+    qAnswer = a + b; text = `${a} ＋ ${b} ＝`;
+  } else if (qMode === 'sub') {
+    a = rand(r.add[0], r.add[1]); b = rand(r.add[0], a);
+    qAnswer = a - b; text = `${a} － ${b} ＝`;
+  } else if (qMode === 'mul') {
+    a = rand(r.mul[0], r.mul[1]); b = rand(r.mul[0], r.mul[1]);
+    qAnswer = a * b; text = `${a} × ${b} ＝`;
+  } else {
+    b = rand(r.mul[0], r.mul[1]); qAnswer = rand(r.mul[0], r.mul[1]);
+    a = b * qAnswer; text = `${a} ÷ ${b} ＝`;
+  }
+  document.getElementById('question').textContent = text;
+  document.getElementById('answerInput').value = '';
+  document.getElementById('feedback').textContent = '';
+}
+
+function checkAnswer() {
+  const val = parseInt(document.getElementById('answerInput').value, 10);
+  if (isNaN(val)) return;
+  const fb = document.getElementById('feedback');
+  if (val === qAnswer) {
+    qCorrect++; qStreak++;
+    fb.textContent = pick(goodMsg); fb.className = 'feedback correct';
+  } else {
+    qWrong++; qStreak = 0;
+    fb.textContent = `${pick(badMsg)} こたえは ${qAnswer}`; fb.className = 'feedback wrong';
+  }
+  document.getElementById('correctCount').textContent = qCorrect;
+  document.getElementById('wrongCount').textContent = qWrong;
+  document.getElementById('streakCount').textContent = qStreak;
+  setTimeout(generateQuestion, 1200);
+}
+
+function setQuizMode(m) {
+  qMode = m;
+  document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+  document.querySelector(`.mode-btn.${m}`).classList.add('active');
+  generateQuestion();
+}
+
+function setQuizLevel(l, el) {
+  qLevel = l;
+  document.querySelectorAll('.level-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  generateQuestion();
+}
+
+document.getElementById('answerInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') checkAnswer();
+});
+
+generateQuestion();
+
+// ===== Hissan =====
+const COLS = 10, ROWS = 9;
+let CELL = 55;
+let hMode = 'add', hLevel = 'easy', hTab = 'mondai';
+let hA = 0, hB = 0, hAnswer = 0;
+let bgCanvas, drawCanvas, bgCtx, drawCtx;
+let canvasReady = false;
+
+// Drawing state
+let drawing = false, lastX = 0, lastY = 0;
+let drawTool = 'pen';
+const toolColors = { pen: '#333', red: '#e53e3e', blue: '#3182ce' };
+let penColor = '#333';
+
+function initCanvas() {
+  if (canvasReady) return;
+  bgCanvas = document.getElementById('bgCanvas');
+  drawCanvas = document.getElementById('drawCanvas');
+  bgCtx = bgCanvas.getContext('2d');
+  drawCtx = drawCanvas.getContext('2d');
+
+  const wrap = document.getElementById('canvasWrap');
+  const w = wrap.clientWidth;
+  CELL = Math.floor(w / COLS);
+  const cw = CELL * COLS;
+  const ch = CELL * ROWS;
+  const dpr = window.devicePixelRatio || 1;
+
+  wrap.style.height = ch + 'px';
+
+  [bgCanvas, drawCanvas].forEach(c => {
+    c.style.width = cw + 'px';
+    c.style.height = ch + 'px';
+    c.width = cw * dpr;
+    c.height = ch * dpr;
+    c.getContext('2d').scale(dpr, dpr);
+  });
+
+  // Pointer events for drawing
+  drawCanvas.addEventListener('pointerdown', onPointerDown);
+  drawCanvas.addEventListener('pointermove', onPointerMove);
+  drawCanvas.addEventListener('pointerup', onPointerUp);
+  drawCanvas.addEventListener('pointerleave', onPointerUp);
+  drawCanvas.addEventListener('pointercancel', onPointerUp);
+
+  canvasReady = true;
+  newHissanProblem();
+}
+
+function onPointerDown(e) {
+  e.preventDefault();
+  drawing = true;
+  const rect = drawCanvas.getBoundingClientRect();
+  lastX = e.clientX - rect.left;
+  lastY = e.clientY - rect.top;
+
+  drawCtx.beginPath();
+  drawCtx.moveTo(lastX, lastY);
+
+  if (drawTool === 'eraser') {
+    drawCtx.globalCompositeOperation = 'destination-out';
+    drawCtx.lineWidth = CELL * 0.6;
+  } else {
+    drawCtx.globalCompositeOperation = 'source-over';
+    drawCtx.strokeStyle = penColor;
+    const pressure = e.pressure > 0 ? e.pressure : 0.5;
+    drawCtx.lineWidth = 1.5 + pressure * 3.5;
+  }
+  drawCtx.lineCap = 'round';
+  drawCtx.lineJoin = 'round';
+}
+
+function onPointerMove(e) {
+  if (!drawing) return;
+  e.preventDefault();
+  const rect = drawCanvas.getBoundingClientRect();
+  const x = e.clientX - rect.left;
+  const y = e.clientY - rect.top;
+
+  if (drawTool !== 'eraser') {
+    const pressure = e.pressure > 0 ? e.pressure : 0.5;
+    drawCtx.lineWidth = 1.5 + pressure * 3.5;
+  }
+
+  drawCtx.lineTo(x, y);
+  drawCtx.stroke();
+  drawCtx.beginPath();
+  drawCtx.moveTo(x, y);
+
+  lastX = x;
+  lastY = y;
+}
+
+function onPointerUp(e) {
+  if (!drawing) return;
+  drawing = false;
+  drawCtx.beginPath();
+}
+
+function setDrawTool(tool) {
+  drawTool = tool;
+  if (tool !== 'eraser') penColor = toolColors[tool];
+  document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tool' + tool.charAt(0).toUpperCase() + tool.slice(1)).classList.add('active');
+}
+
+function clearDrawing() {
+  const dpr = window.devicePixelRatio || 1;
+  drawCtx.save();
+  drawCtx.setTransform(1, 0, 0, 1, 0, 0);
+  drawCtx.clearRect(0, 0, drawCanvas.width, drawCanvas.height);
+  drawCtx.restore();
+}
+
+// Grid drawing
+function drawGrid() {
+  const cw = CELL * COLS;
+  const ch = CELL * ROWS;
+  bgCtx.clearRect(0, 0, cw, ch);
+
+  // Fill background
+  bgCtx.fillStyle = '#fafbff';
+  bgCtx.fillRect(0, 0, cw, ch);
+
+  // Grid lines
+  bgCtx.strokeStyle = '#c7d2f0';
+  bgCtx.lineWidth = 0.5;
+
+  for (let i = 0; i <= COLS; i++) {
+    bgCtx.beginPath();
+    bgCtx.moveTo(i * CELL, 0);
+    bgCtx.lineTo(i * CELL, ch);
+    bgCtx.stroke();
+  }
+  for (let j = 0; j <= ROWS; j++) {
+    bgCtx.beginPath();
+    bgCtx.moveTo(0, j * CELL);
+    bgCtx.lineTo(cw, j * CELL);
+    bgCtx.stroke();
+  }
+
+  // Thicker lines every 5 cells
+  bgCtx.strokeStyle = '#a0b0e0';
+  bgCtx.lineWidth = 1.5;
+  for (let i = 0; i <= COLS; i += 5) {
+    bgCtx.beginPath();
+    bgCtx.moveTo(i * CELL, 0);
+    bgCtx.lineTo(i * CELL, ch);
+    bgCtx.stroke();
+  }
+  for (let j = 0; j <= ROWS; j += 5) {
+    bgCtx.beginPath();
+    bgCtx.moveTo(0, j * CELL);
+    bgCtx.lineTo(cw, j * CELL);
+    bgCtx.stroke();
+  }
+}
+
+function drawDigitInCell(digit, row, col, color, fontSize) {
+  bgCtx.font = `bold ${fontSize || CELL * 0.65}px 'Hiragino Kaku Gothic ProN', sans-serif`;
+  bgCtx.fillStyle = color || '#333';
+  bgCtx.textAlign = 'center';
+  bgCtx.textBaseline = 'middle';
+  bgCtx.fillText(String(digit), col * CELL + CELL / 2, row * CELL + CELL / 2);
+}
+
+function drawTextInCell(text, row, col, color, fontSize) {
+  bgCtx.font = `bold ${fontSize || CELL * 0.55}px 'Hiragino Kaku Gothic ProN', sans-serif`;
+  bgCtx.fillStyle = color || '#333';
+  bgCtx.textAlign = 'center';
+  bgCtx.textBaseline = 'middle';
+  bgCtx.fillText(text, col * CELL + CELL / 2, row * CELL + CELL / 2);
+}
+
+function drawHLine(row, fromCol, toCol) {
+  const y = row * CELL;
+  bgCtx.strokeStyle = '#333';
+  bgCtx.lineWidth = 2.5;
+  bgCtx.beginPath();
+  bgCtx.moveTo(fromCol * CELL, y);
+  bgCtx.lineTo(toCol * CELL, y);
+  bgCtx.stroke();
+}
+
+function hRange() {
+  if (hLevel === 'easy') return { add: [10, 99], mul: [2, 9] };
+  if (hLevel === 'normal') return { add: [100, 999], mul: [11, 99] };
+  return { add: [100, 9999], mul: [11, 999] };
+}
+
+function generateHissan() {
+  const r = hRange();
+  if (hMode === 'add') {
+    hA = rand(r.add[0], r.add[1]);
+    hB = rand(r.add[0], r.add[1]);
+    hAnswer = hA + hB;
+  } else if (hMode === 'sub') {
+    hA = rand(r.add[0], r.add[1]);
+    hB = rand(r.add[0], hA);
+    hAnswer = hA - hB;
+  } else {
+    if (hLevel === 'easy') {
+      hA = rand(r.mul[0], r.mul[1]);
+      hB = rand(2, 9);
+    } else if (hLevel === 'normal') {
+      hA = rand(r.mul[0], r.mul[1]);
+      hB = rand(2, 9);
+    } else {
+      hA = rand(r.mul[0], r.mul[1]);
+      hB = rand(2, 9);
+    }
+    hAnswer = hA * hB;
+  }
+}
+
+function drawHissanProblem() {
+  drawGrid();
+
+  if (hTab === 'free') return;
+
+  const aStr = String(hA);
+  const bStr = String(hB);
+  const rightCol = COLS - 2;
+
+  const opSymbol = hMode === 'add' ? '＋' : hMode === 'sub' ? '－' : '×';
+
+  // Row layout:
+  // Row 1: carry space (user writes here)
+  // Row 2: first number
+  // Row 3: operator + second number
+  // Row 4: line (drawn at top of row 4)
+  // Row 4-6: answer space
+
+  // Draw first number right-aligned
+  for (let i = 0; i < aStr.length; i++) {
+    drawDigitInCell(aStr[i], 2, rightCol - aStr.length + 1 + i);
+  }
+
+  // Draw operator
+  const opCol = rightCol - Math.max(aStr.length, bStr.length);
+  drawTextInCell(opSymbol, 3, opCol);
+
+  // Draw second number right-aligned
+  for (let i = 0; i < bStr.length; i++) {
+    drawDigitInCell(bStr[i], 3, rightCol - bStr.length + 1 + i);
+  }
+
+  // Draw horizontal line
+  drawHLine(4, opCol * CELL < 0 ? 0 : opCol, rightCol + 1);
+
+  // Draw "くりあがり" label (carry row hint)
+  bgCtx.font = `${CELL * 0.28}px sans-serif`;
+  bgCtx.fillStyle = '#bbb';
+  bgCtx.textAlign = 'left';
+  bgCtx.textBaseline = 'middle';
+  bgCtx.fillText('くりあがり↓', 0.2 * CELL, 1 * CELL + CELL / 2);
+}
+
+function newHissanProblem() {
+  generateHissan();
+  clearDrawing();
+  drawHissanProblem();
+}
+
+function showHissanAnswer() {
+  if (hTab === 'free') return;
+
+  const ansStr = String(hAnswer);
+  const rightCol = COLS - 2;
+
+  for (let i = 0; i < ansStr.length; i++) {
+    drawDigitInCell(ansStr[i], 5, rightCol - ansStr.length + 1 + i, '#e53e3e');
+  }
+}
+
+function setHissanTab(tab, el) {
+  hTab = tab;
+  document.querySelectorAll('.h-sub-tab').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+
+  const ctrl = document.getElementById('hProblemControls');
+  const btnNext = document.getElementById('btnNext');
+  const btnAns = document.getElementById('btnShowAns');
+
+  if (tab === 'free') {
+    ctrl.classList.add('hidden');
+    btnNext.style.display = 'none';
+    btnAns.style.display = 'none';
+    clearDrawing();
+    drawGrid();
+  } else {
+    ctrl.classList.remove('hidden');
+    btnNext.style.display = '';
+    btnAns.style.display = '';
+    newHissanProblem();
+  }
+}
+
+function setHMode(m) {
+  hMode = m;
+  document.querySelectorAll('[data-hmode]').forEach(b => b.classList.remove('active'));
+  document.querySelector(`[data-hmode="${m}"]`).classList.add('active');
+  newHissanProblem();
+}
+
+function setHLevel(l) {
+  hLevel = l;
+  document.querySelectorAll('[data-hlevel]').forEach(b => b.classList.remove('active'));
+  document.querySelector(`[data-hlevel="${l}"]`).classList.add('active');
+  newHissanProblem();
+}
+
+// Handle resize
+window.addEventListener('resize', () => {
+  if (!canvasReady) return;
+  canvasReady = false;
+  initCanvas();
+});
+</script>
+</body>
+</html>
