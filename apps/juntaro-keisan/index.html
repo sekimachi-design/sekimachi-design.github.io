@@ -78,15 +78,25 @@ h1 { text-align: center; color: white; font-size: 22px; text-shadow: 0 2px 8px r
 
 .h-cell.answer { background: white; border: 1px solid #c0c8e8; cursor: pointer; }
 .h-cell.answer canvas { display: block; touch-action: none; }
-.h-cell.answer.is-correct { background: #dcfce7 !important; border-color: #86efac !important; }
-.h-cell.answer.is-wrong { background: #fee2e2 !important; border-color: #fca5a5 !important; }
-.correct-overlay {
-  position: absolute; top: 0; left: 0; right: 0; bottom: 0;
-  display: flex; align-items: center; justify-content: center;
-  font-weight: bold; color: #dc2626; pointer-events: none;
-  background: rgba(254,226,226,0.5);
-}
 .h-line { height: 3px; background: #333; margin: 0 auto; }
+
+.answer-choices {
+  display: flex; gap: 10px; justify-content: center;
+  margin-top: 10px; padding: 8px 0;
+}
+.ans-btn {
+  flex: 1; max-width: 140px; padding: 14px 8px;
+  font-size: 24px; font-weight: bold;
+  border: 3px solid #c0c8e8; border-radius: 12px;
+  background: white; color: #302b63; cursor: pointer;
+  transition: all 0.15s;
+  -webkit-user-select: none; user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.ans-btn.selected { border-color: #3b82f6; background: #dbeafe; color: #1e40af; transform: scale(1.05); }
+.ans-btn.is-correct { border-color: #22c55e; background: #dcfce7; color: #16a34a; }
+.ans-btn.is-wrong { border-color: #ef4444; background: #fee2e2; color: #dc2626; }
+.ans-btn:active { transform: scale(0.95); }
 
 .feedback { text-align: center; font-size: 22px; font-weight: bold; min-height: 32px; line-height: 32px; }
 .feedback.ok { color: #22c55e; }
@@ -103,7 +113,7 @@ h1 { text-align: center; color: white; font-size: 22px; text-shadow: 0 2px 8px r
 .act-btn.check { background: linear-gradient(135deg, #f59e0b, #ef4444); }
 .act-btn.clear { background: #aaa; }
 .act-btn.erase { background: #e88; }
-.pen-hint { text-align: center; font-size: 12px; color: #999; margin-top: 6px; }
+
 
 /* Celebration */
 .celebrate-overlay {
@@ -205,24 +215,23 @@ h1 { text-align: center; color: white; font-size: 22px; text-shadow: 0 2px 8px r
 
   <div class="panel">
     <div class="progress-row">
-      <span class="progress-text" id="qProgress">もんだい 1/10</span>
-      <span class="score-display" id="qScoreDisp">0てん</span>
+      <span class="progress-text" id="qProgress">問題 1/10</span>
+      <span class="score-display" id="qScoreDisp">0点</span>
     </div>
     <div class="progress-dots" id="progressDots"></div>
   </div>
 
   <div class="panel">
     <div class="hissan-area" id="hissanArea"></div>
+    <div class="answer-choices" id="answerChoices"></div>
     <div class="feedback" id="feedback"></div>
-    <p class="pen-hint" id="penHint"></p>
   </div>
 
   <div class="panel">
     <div class="action-row">
       <button class="act-btn erase" onclick="clearLast()">← 1マス消す</button>
-      <button class="act-btn clear" onclick="clearAll()">ぜんぶ消す</button>
-      <button class="act-btn check" onclick="check()">こたえあわせ</button>
-      <button class="act-btn next" id="nextBtn" onclick="next()">つぎのもんだい</button>
+      <button class="act-btn clear" onclick="clearAll()">全部消す</button>
+      <button class="act-btn next" id="nextBtn" onclick="next()">次の問題</button>
     </div>
   </div>
 </div>
@@ -233,8 +242,8 @@ let lvIdx = 0, pA, pB, pAns;
 let qNum = 1, qScore = 0, checked = false;
 let drawing = false, activeCanvas = null, lastX = 0, lastY = 0, lastDrawnId = null;
 
-const goodMsg = ['すごい！🎉','せいかい！⭐','やったね！🌟','かんぺき！💯','さすが！✨','てんさい！🏆'];
-const badMsg = ['おしい！😣','がんばれ！💪','つぎはできるよ！🔥','ドンマイ！😊'];
+const goodMsg = ['すごい！🎉','正解！⭐','やったね！🌟','完ぺき！💯','さすが！✨','天才！🏆'];
+const badMsg = ['おしい！😣','がんばれ！💪','次はできるよ！🔥','ドンマイ！😊'];
 const REWARDS = [10, 15, 20, 25, 30];
 
 const LV = [
@@ -247,129 +256,6 @@ const LV = [
 
 function rand(a, b) { return Math.floor(Math.random() * (b - a + 1)) + a; }
 function pick(a) { return a[Math.floor(Math.random() * a.length)]; }
-
-// ===== Recognition =====
-let digitRefs = [];
-const NORM = 28;
-
-function initRecognition() {
-  const RS = 80;
-  const fonts = [
-    'bold 48px Arial','48px Arial','bold 48px Helvetica',
-    'bold 52px sans-serif','44px sans-serif','bold 44px Courier',
-    'bold 48px Georgia','52px Georgia','bold 54px Arial',
-    'bold 42px Verdana','48px Trebuchet MS','bold 52px Palatino',
-    'bold 36px Arial','bold 60px Arial','36px sans-serif',
-    '60px sans-serif','bold 40px Courier','bold 56px Georgia',
-    '44px Helvetica','bold 38px Verdana',
-    'italic 48px Arial','italic bold 46px Georgia',
-  ];
-  const c = document.createElement('canvas');
-  c.width = RS; c.height = RS;
-  const ctx = c.getContext('2d');
-  for (let d = 0; d <= 9; d++) {
-    for (const font of fonts) {
-      ctx.clearRect(0, 0, RS, RS);
-      ctx.fillStyle = '#000'; ctx.font = font;
-      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-      ctx.fillText(String(d), RS / 2, RS / 2 + 2);
-      addRef(c, d);
-    }
-    for (const [dx, dy] of [[-8,0],[8,0],[0,-8],[0,8],[-6,-6],[6,-6],[-6,6],[6,6]]) {
-      ctx.clearRect(0, 0, RS, RS);
-      ctx.fillStyle = '#000'; ctx.font = 'bold 48px Arial';
-      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-      ctx.fillText(String(d), RS / 2 + dx, RS / 2 + 2 + dy);
-      addRef(c, d);
-    }
-    for (const sz of [32, 40, 56, 64]) {
-      ctx.clearRect(0, 0, RS, RS);
-      ctx.fillStyle = '#000'; ctx.font = `bold ${sz}px Arial`;
-      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-      ctx.fillText(String(d), RS / 2, RS / 2 + 2);
-      addRef(c, d);
-    }
-    for (const lw of [2, 4, 6]) {
-      ctx.clearRect(0, 0, RS, RS);
-      ctx.strokeStyle = '#000'; ctx.lineWidth = lw;
-      ctx.font = 'bold 48px Arial'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-      ctx.strokeText(String(d), RS / 2, RS / 2 + 2);
-      ctx.fillStyle = '#000'; ctx.fillText(String(d), RS / 2, RS / 2 + 2);
-      addRef(c, d);
-    }
-    for (const angle of [-0.2, -0.1, 0.1, 0.2]) {
-      ctx.clearRect(0, 0, RS, RS);
-      ctx.save(); ctx.translate(RS / 2, RS / 2); ctx.rotate(angle);
-      ctx.fillStyle = '#000'; ctx.font = 'bold 48px Arial';
-      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-      ctx.fillText(String(d), 0, 2);
-      ctx.restore();
-      addRef(c, d);
-    }
-  }
-}
-
-function addRef(canvas, digit) {
-  const nd = normCanvas(canvas);
-  if (!nd) return;
-  const px = new Uint8Array(NORM * NORM);
-  let ink = 0;
-  for (let i = 0; i < NORM * NORM; i++) { px[i] = nd[i * 4 + 3] > 30 ? 1 : 0; ink += px[i]; }
-  if (ink < 3) return;
-  digitRefs.push({ digit, pixels: dilate(px, 2) });
-}
-
-function dilate(px, r) {
-  const out = new Uint8Array(NORM * NORM);
-  for (let y = 0; y < NORM; y++) for (let x = 0; x < NORM; x++) {
-    if (!px[y * NORM + x]) continue;
-    for (let dy = -r; dy <= r; dy++) for (let dx = -r; dx <= r; dx++) {
-      const ny = y + dy, nx = x + dx;
-      if (ny >= 0 && ny < NORM && nx >= 0 && nx < NORM) out[ny * NORM + nx] = 1;
-    }
-  }
-  return out;
-}
-
-function normCanvas(canvas) {
-  const w = canvas.width, h = canvas.height;
-  const data = canvas.getContext('2d').getImageData(0, 0, w, h).data;
-  let top = h, bot = 0, left = w, right = 0;
-  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
-    if (data[(y * w + x) * 4 + 3] > 30) { if (y < top) top = y; if (y > bot) bot = y; if (x < left) left = x; if (x > right) right = x; }
-  }
-  if (top >= bot || left >= right) return null;
-  const bw = right - left + 1, bh = bot - top + 1;
-  const t = document.createElement('canvas'); t.width = NORM; t.height = NORM;
-  const tc = t.getContext('2d');
-  const sc = Math.min((NORM - 4) / bw, (NORM - 4) / bh);
-  const sw = bw * sc, sh = bh * sc;
-  tc.drawImage(canvas, left, top, bw, bh, (NORM - sw) / 2, (NORM - sh) / 2, sw, sh);
-  return tc.getImageData(0, 0, NORM, NORM).data;
-}
-
-function recog(canvas) {
-  const nd = normCanvas(canvas);
-  if (!nd) return -1;
-  const raw = new Uint8Array(NORM * NORM);
-  let ink = 0;
-  for (let i = 0; i < NORM * NORM; i++) { raw[i] = nd[i * 4 + 3] > 30 ? 1 : 0; ink += raw[i]; }
-  if (ink < 3) return -1;
-  const inputPx = dilate(raw, 2);
-  const bestScore = new Float64Array(10);
-  for (const ref of digitRefs) {
-    let overlap = 0, union = 0;
-    for (let i = 0; i < NORM * NORM; i++) {
-      const a = inputPx[i], b = ref.pixels[i];
-      if (a || b) { union++; if (a && b) overlap++; }
-    }
-    const score = union > 0 ? overlap / union : 0;
-    if (score > bestScore[ref.digit]) bestScore[ref.digit] = score;
-  }
-  let best = -1, bv = 0;
-  for (let d = 0; d <= 9; d++) { if (bestScore[d] > bv) { bv = bestScore[d]; best = d; } }
-  return best;
-}
 
 // ===== Problem =====
 function hasMulCarry(a, b) {
@@ -428,6 +314,33 @@ function genProblem() {
   } while (true);
 }
 
+// ===== Answer Choices =====
+function genAnswerChoices(correct) {
+  const choices = new Set([correct]);
+  const range = Math.max(5, Math.floor(correct * 0.2));
+  while (choices.size < 3) {
+    const offset = rand(1, range);
+    const wrong = correct + (Math.random() < 0.5 ? offset : -offset);
+    if (wrong > 0 && wrong !== correct) choices.add(wrong);
+  }
+  return [...choices].sort(() => Math.random() - 0.5);
+}
+
+function renderChoices() {
+  const choices = genAnswerChoices(pAns);
+  const el = document.getElementById('answerChoices');
+  el.innerHTML = choices.map(v =>
+    `<button class="ans-btn" data-val="${v}" onclick="selectAns(this)">${v}</button>`
+  ).join('');
+}
+
+function selectAns(btn) {
+  if (checked) return;
+  document.querySelectorAll('.ans-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  check();
+}
+
 // ===== Grid =====
 function cellSize(nc) {
   const w = document.getElementById('hissanArea').clientWidth;
@@ -449,11 +362,9 @@ function render() {
   document.getElementById('hissanArea').innerHTML = '<div class="hissan-grid">' +
     (isMul2 ? renderMul2() : renderMul1()) + '</div>';
 
-  const lv = LV[lvIdx];
-  document.getElementById('penHint').textContent = lv.noCarry
-    ? '✏️ ' + lv.desc
-    : '✏️ ' + lv.desc + ' ／ 点線のマスは くりあがり用';
-  document.getElementById('nextBtn').textContent = qNum >= 10 ? 'けっかをみる' : 'つぎのもんだい';
+  renderChoices();
+
+  document.getElementById('nextBtn').textContent = qNum >= 10 ? '結果を見る' : '次の問題';
   setupCanvases();
 }
 
@@ -492,7 +403,7 @@ function renderMul1() {
     if (c >= anOff) {
       const di = c - anOff;
       const hasC = di < cFlags.length && cFlags[di];
-      h += makeAnswerCell(sz, 'a' + c, anS[di], hasC ? cW : 0, hasC ? cH : 0);
+      h += makeAnswerCell(sz, 'a' + c, hasC ? cW : 0, hasC ? cH : 0);
     } else {
       h += emptyCell(sz);
     }
@@ -541,7 +452,7 @@ function renderMul2() {
     if (c >= p1Off) {
       const di = c - p1Off;
       const hasC = di < cf1.length && cf1[di];
-      h += makeAnswerCell(sz, 'p1-' + c, p1S[di], hasC ? cW : 0, hasC ? cH : 0);
+      h += makeAnswerCell(sz, 'p1-' + c, hasC ? cW : 0, hasC ? cH : 0);
     } else {
       h += emptyCell(sz);
     }
@@ -554,7 +465,7 @@ function renderMul2() {
     if (c >= p2Off && c < p2Off + p2S.length) {
       const di = c - p2Off;
       const hasC = di < cf2.length && cf2[di];
-      h += makeAnswerCell(sz, 'p2-' + c, p2S[di], hasC ? cW : 0, hasC ? cH : 0);
+      h += makeAnswerCell(sz, 'p2-' + c, hasC ? cW : 0, hasC ? cH : 0);
     } else {
       h += emptyCell(sz);
     }
@@ -569,7 +480,7 @@ function renderMul2() {
     if (c >= anOff) {
       const di = c - anOff;
       const hasC = di < cfA.length && cfA[di];
-      h += makeAnswerCell(sz, 'a' + c, anS[di], hasC ? cW : 0, hasC ? cH : 0);
+      h += makeAnswerCell(sz, 'a' + c, hasC ? cW : 0, hasC ? cH : 0);
     } else {
       h += emptyCell(sz);
     }
@@ -584,9 +495,9 @@ function makeCarryBox(w, h, id) {
     `<canvas class="cell-canvas" data-cell-id="${id}" width="${cw}" height="${ch}" style="width:${w}px;height:${h}px"></canvas></div>`;
 }
 
-function makeAnswerCell(sz, id, correct, cbW, cbH) {
+function makeAnswerCell(sz, id, cbW, cbH) {
   const cw = sz * DPR, ch = sz * DPR;
-  let html = `<div class="h-cell answer" style="width:${sz}px;height:${sz}px" data-id="${id}"${correct ? ` data-correct="${correct}"` : ''}>`;
+  let html = `<div class="h-cell answer" style="width:${sz}px;height:${sz}px" data-id="${id}">`;
   if (cbW > 0 && cbH > 0) html += makeCarryBox(cbW, cbH, 'carry-' + id);
   html += `<canvas class="cell-canvas" data-cell-id="${id}" width="${cw}" height="${ch}" style="width:${sz}px;height:${sz}px"></canvas></div>`;
   return html;
@@ -648,8 +559,6 @@ function clearCanvasById(id) {
   const ctx = c.getContext('2d');
   ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0);
   ctx.clearRect(0, 0, c.width, c.height); ctx.restore();
-  const cell = c.closest('.answer');
-  if (cell) { cell.classList.remove('is-correct', 'is-wrong'); const ov = cell.querySelector('.correct-overlay'); if (ov) ov.remove(); }
 }
 
 function clearLast() { if (lastDrawnId) clearCanvasById(lastDrawnId); }
@@ -659,9 +568,8 @@ function clearAll() {
     const ctx = c.getContext('2d'); ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.clearRect(0, 0, c.width, c.height); ctx.restore();
   });
-  document.querySelectorAll('.h-cell.answer').forEach(c => {
-    c.classList.remove('is-correct', 'is-wrong');
-    const ov = c.querySelector('.correct-overlay'); if (ov) ov.remove();
+  document.querySelectorAll('.ans-btn').forEach(b => {
+    b.classList.remove('selected', 'is-correct', 'is-wrong');
   });
   document.getElementById('feedback').textContent = '';
   document.getElementById('feedback').className = 'feedback';
@@ -670,55 +578,51 @@ function clearAll() {
 
 function check() {
   if (checked) return;
+  const selected = document.querySelector('.ans-btn.selected');
+  if (!selected) {
+    const fb = document.getElementById('feedback');
+    fb.textContent = '答えを選んでね！';
+    fb.className = 'feedback ng';
+    return;
+  }
+
   checked = true;
-  let allOk = true;
-  document.querySelectorAll('[data-correct]').forEach(cell => {
-    const correct = cell.dataset.correct;
-    if (!correct) return;
-    const cid = cell.dataset.id;
-    const canvas = cell.querySelector(`canvas[data-cell-id="${cid}"]`);
-    const digit = canvas ? recog(canvas) : -1;
-    if (String(digit) === correct) {
-      cell.classList.add('is-correct');
-    } else {
-      cell.classList.add('is-wrong');
-      allOk = false;
-      const ov = document.createElement('div');
-      ov.className = 'correct-overlay';
-      ov.style.fontSize = (parseInt(cell.style.width) * 0.5) + 'px';
-      ov.textContent = correct + '(' + digit + ')';
-      cell.appendChild(ov);
-    }
+  const picked = parseInt(selected.dataset.val);
+  const isCorrect = picked === pAns;
+
+  document.querySelectorAll('.ans-btn').forEach(btn => {
+    if (parseInt(btn.dataset.val) === pAns) btn.classList.add('is-correct');
+    else if (btn.classList.contains('selected')) btn.classList.add('is-wrong');
   });
+
   const fb = document.getElementById('feedback');
-  if (allOk) {
+  if (isCorrect) {
     qScore += 10;
     fb.textContent = pick(goodMsg); fb.className = 'feedback ok';
     const el = document.getElementById('qScoreDisp');
     el.classList.remove('pulse'); void el.offsetWidth; el.classList.add('pulse');
   } else {
-    fb.textContent = pick(badMsg) + ' 赤い字がせいかいだよ'; fb.className = 'feedback ng';
+    fb.textContent = pick(badMsg) + ` 答えは ${pAns} だよ`; fb.className = 'feedback ng';
   }
   const dot = document.querySelectorAll('.dot')[qNum - 1];
-  if (dot) { dot.classList.remove('current'); dot.classList.add(allOk ? 'correct' : 'wrong'); }
+  if (dot) { dot.classList.remove('current'); dot.classList.add(isCorrect ? 'correct' : 'wrong'); }
   updateProgress();
-  document.getElementById('nextBtn').textContent = qNum >= 10 ? 'けっかをみる' : 'つぎのもんだい';
+  document.getElementById('nextBtn').textContent = qNum >= 10 ? '結果を見る' : '次の問題';
+
+  setTimeout(() => next(), 3000);
 }
 
 function next() {
   if (!checked) return;
-  if (qNum >= 10) {
-    showResults();
-    return;
-  }
+  if (qNum >= 10) { showResults(); return; }
   qNum++;
   render();
 }
 
 // ===== Progress =====
 function updateProgress() {
-  document.getElementById('qProgress').textContent = `もんだい ${qNum}/10`;
-  document.getElementById('qScoreDisp').textContent = `${qScore}てん`;
+  document.getElementById('qProgress').textContent = `問題 ${qNum}/10`;
+  document.getElementById('qScoreDisp').textContent = `${qScore}点`;
 }
 
 function renderDots() {
@@ -731,11 +635,8 @@ function renderDots() {
 
 // ===== Results =====
 function showResults() {
-  if (qScore === 100) {
-    celebrate();
-  } else {
-    showScoreScreen();
-  }
+  if (qScore === 100) celebrate();
+  else showScoreScreen();
 }
 
 function showScoreScreen() {
@@ -749,9 +650,9 @@ function showScoreScreen() {
   ov.className = 'results-overlay';
   ov.innerHTML = `<div class="results-box">
     <div class="results-emoji">${emoji}</div>
-    <div class="results-score">${qScore}<span class="results-unit">てん</span></div>
+    <div class="results-score">${qScore}<span class="results-unit">点</span></div>
     <div class="results-msg">${msg}</div>
-    <button class="results-retry" onclick="this.closest('.results-overlay').remove();setLv(lvIdx)">もういちど チャレンジ！</button>
+    <button class="results-retry" onclick="this.closest('.results-overlay').remove();setLv(lvIdx)">もう一度チャレンジ！</button>
   </div>`;
   document.body.appendChild(ov);
 }
@@ -797,10 +698,10 @@ function celebrate() {
   const m = document.createElement('div');
   m.className = 'celebrate-msg';
   m.innerHTML = `
-    <div class="celebrate-title">100てん！🎉</div>
+    <div class="celebrate-title">100点！🎉</div>
     <div class="celebrate-sub">NASAにいっぽ ちかづいた！</div>
     <div class="celebrate-reward">🎮 ${REWARDS[lvIdx]}ふん ゲームけん ゲット！</div>
-    <div class="celebrate-close">タップしてとじる</div>
+    <div class="celebrate-close">タップして閉じる</div>
   `;
   ov.appendChild(m);
   document.body.appendChild(ov);
@@ -822,7 +723,6 @@ function setLv(i) {
 }
 
 // ===== Init =====
-initRecognition();
 renderLevels();
 renderDots();
 render();
