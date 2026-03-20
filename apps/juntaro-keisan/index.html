@@ -591,8 +591,9 @@ function check() {
   const isCorrect = picked === pAns;
 
   document.querySelectorAll('.ans-btn').forEach(btn => {
+    btn.classList.remove('selected');
     if (parseInt(btn.dataset.val) === pAns) btn.classList.add('is-correct');
-    else if (btn.classList.contains('selected')) btn.classList.add('is-wrong');
+    else if (btn === selected) btn.classList.add('is-wrong');
   });
 
   const fb = document.getElementById('feedback');
