@@ -15,36 +15,36 @@ body {
 .app {
   width: 95%; max-width: 540px;
   display: flex; flex-direction: column;
-  padding: 12px 0 16px; gap: 10px;
+  padding: 6px 0 10px; gap: 5px;
 }
-h1 { text-align: center; color: white; font-size: 22px; text-shadow: 0 2px 8px rgba(0,0,0,0.3); }
+h1 { text-align: center; color: white; font-size: 16px; text-shadow: 0 2px 8px rgba(0,0,0,0.3); }
 .panel {
-  background: rgba(255,255,255,0.95); border-radius: 16px;
-  padding: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+  background: rgba(255,255,255,0.95); border-radius: 12px;
+  padding: 6px 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.2);
 }
-.btn-row { display: flex; gap: 6px; justify-content: center; flex-wrap: wrap; }
+.btn-row { display: flex; gap: 4px; justify-content: center; flex-wrap: wrap; }
 .lv-btn {
-  padding: 10px 18px; border: 2px solid #ddd; border-radius: 10px;
-  background: white; font-size: 15px; font-weight: bold;
+  padding: 5px 12px; border: 2px solid #ddd; border-radius: 8px;
+  background: white; font-size: 12px; font-weight: bold;
   cursor: pointer; transition: all 0.15s;
 }
 .lv-btn.active { border-color: #302b63; background: #e8e4ff; color: #302b63; }
 
-.progress-row { display: flex; justify-content: space-between; align-items: center; padding: 4px 8px; }
-.progress-text { font-size: 14px; color: #666; font-weight: bold; }
-.score-display { font-size: 20px; font-weight: bold; color: #302b63; transition: transform 0.3s; }
+.progress-row { display: flex; justify-content: space-between; align-items: center; padding: 2px 8px; }
+.progress-text { font-size: 12px; color: #666; font-weight: bold; }
+.score-display { font-size: 16px; font-weight: bold; color: #302b63; transition: transform 0.3s; }
 .score-display.pulse { animation: pulse-anim 0.4s ease-out; }
 @keyframes pulse-anim {
   0% { transform: scale(1); }
   50% { transform: scale(1.5); color: #22c55e; }
   100% { transform: scale(1); }
 }
-.progress-dots { display: flex; gap: 5px; justify-content: center; margin-top: 6px; }
+.progress-dots { display: flex; gap: 3px; justify-content: center; margin-top: 3px; }
 .dot {
-  width: 18px; height: 18px; border-radius: 50%;
+  width: 14px; height: 14px; border-radius: 50%;
   background: #e5e7eb; border: 2px solid #d1d5db;
   transition: all 0.3s; display: flex; align-items: center; justify-content: center;
-  font-size: 10px;
+  font-size: 8px;
 }
 .dot.current { border-color: #302b63; box-shadow: 0 0 8px rgba(48,43,99,0.5); background: #e8e4ff; }
 .dot.correct { background: #22c55e; border-color: #16a34a; }
@@ -52,7 +52,7 @@ h1 { text-align: center; color: white; font-size: 22px; text-shadow: 0 2px 8px r
 
 .hissan-area {
   display: flex; justify-content: center; align-items: center;
-  min-height: 180px; padding: 12px 0;
+  min-height: 120px; padding: 4px 0;
 }
 .hissan-grid { display: inline-block; }
 .h-row { display: flex; justify-content: center; }
@@ -81,13 +81,13 @@ h1 { text-align: center; color: white; font-size: 22px; text-shadow: 0 2px 8px r
 .h-line { height: 3px; background: #333; margin: 0 auto; }
 
 .answer-choices {
-  display: flex; gap: 10px; justify-content: center;
-  margin-top: 10px; padding: 8px 0;
+  display: flex; gap: 8px; justify-content: center;
+  margin-top: 6px; padding: 4px 0;
 }
 .ans-btn {
-  flex: 1; max-width: 140px; padding: 14px 8px;
-  font-size: 24px; font-weight: bold;
-  border: 3px solid #c0c8e8; border-radius: 12px;
+  flex: 1; max-width: 120px; padding: 10px 6px;
+  font-size: 20px; font-weight: bold;
+  border: 3px solid #c0c8e8; border-radius: 10px;
   background: white; color: #302b63; cursor: pointer;
   transition: all 0.15s;
   -webkit-user-select: none; user-select: none;
@@ -98,14 +98,14 @@ h1 { text-align: center; color: white; font-size: 22px; text-shadow: 0 2px 8px r
 .ans-btn.is-wrong { border-color: #ef4444; background: #fee2e2; color: #dc2626; }
 .ans-btn:active { transform: scale(0.95); }
 
-.feedback { text-align: center; font-size: 22px; font-weight: bold; min-height: 32px; line-height: 32px; }
+.feedback { text-align: center; font-size: 18px; font-weight: bold; min-height: 26px; line-height: 26px; }
 .feedback.ok { color: #22c55e; }
 .feedback.ng { color: #ef4444; }
 
-.action-row { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+.action-row { display: flex; gap: 6px; justify-content: center; flex-wrap: wrap; }
 .act-btn {
-  padding: 12px 18px; font-size: 15px; font-weight: bold;
-  color: white; border: none; border-radius: 10px;
+  padding: 8px 14px; font-size: 13px; font-weight: bold;
+  color: white; border: none; border-radius: 8px;
   cursor: pointer; transition: transform 0.1s;
 }
 .act-btn:active { transform: scale(0.95); }
@@ -229,7 +229,7 @@ h1 { text-align: center; color: white; font-size: 22px; text-shadow: 0 2px 8px r
 
   <div class="panel">
     <div class="action-row">
-      <button class="act-btn erase" onclick="clearLast()">← 1マス消す</button>
+      <button class="act-btn erase" onclick="undoLast()">← 戻る</button>
       <button class="act-btn clear" onclick="clearAll()">全部消す</button>
       <button class="act-btn next" id="nextBtn" onclick="next()">次の問題</button>
     </div>
@@ -240,7 +240,8 @@ h1 { text-align: center; color: white; font-size: 22px; text-shadow: 0 2px 8px r
 const DPR = window.devicePixelRatio || 1;
 let lvIdx = 0, pA, pB, pAns;
 let qNum = 1, qScore = 0, checked = false;
-let drawing = false, activeCanvas = null, lastX = 0, lastY = 0, lastDrawnId = null;
+let drawing = false, activeCanvas = null, lastX = 0, lastY = 0;
+let drawnHistory = [];
 
 const goodMsg = ['すごい！🎉','正解！⭐','やったね！🌟','完ぺき！💯','さすが！✨','天才！🏆'];
 const badMsg = ['おしい！😣','がんばれ！💪','次はできるよ！🔥','ドンマイ！😊'];
@@ -344,7 +345,7 @@ function selectAns(btn) {
 // ===== Grid =====
 function cellSize(nc) {
   const w = document.getElementById('hissanArea').clientWidth;
-  return Math.min(105, Math.floor((w - 10) / nc));
+  return Math.min(150, Math.floor((w - 10) / nc));
 }
 
 function emptyCell(sz) {
@@ -353,7 +354,7 @@ function emptyCell(sz) {
 
 function render() {
   genProblem();
-  checked = false; lastDrawnId = null;
+  checked = false; drawnHistory = [];
   document.getElementById('feedback').textContent = '';
   document.getElementById('feedback').className = 'feedback';
   updateProgress();
@@ -521,7 +522,8 @@ function onDown(e) {
   const c = e.target;
   c.setPointerCapture(e.pointerId);
   drawing = true; activeCanvas = c;
-  lastDrawnId = c.dataset.cellId;
+  const cid = c.dataset.cellId;
+  if (drawnHistory[drawnHistory.length - 1] !== cid) drawnHistory.push(cid);
   const r = c.getBoundingClientRect();
   lastX = e.clientX - r.left; lastY = e.clientY - r.top;
   const ctx = c.getContext('2d');
@@ -561,7 +563,11 @@ function clearCanvasById(id) {
   ctx.clearRect(0, 0, c.width, c.height); ctx.restore();
 }
 
-function clearLast() { if (lastDrawnId) clearCanvasById(lastDrawnId); }
+function undoLast() {
+  if (drawnHistory.length === 0) return;
+  const id = drawnHistory.pop();
+  clearCanvasById(id);
+}
 
 function clearAll() {
   document.querySelectorAll('.cell-canvas').forEach(c => {
@@ -573,7 +579,7 @@ function clearAll() {
   });
   document.getElementById('feedback').textContent = '';
   document.getElementById('feedback').className = 'feedback';
-  lastDrawnId = null;
+  drawnHistory = [];
 }
 
 function check() {
