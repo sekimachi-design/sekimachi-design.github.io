@@ -68,14 +68,6 @@ h1 { text-align: center; color: white; font-size: 16px; text-shadow: 0 2px 8px r
 .mc-cell { background: #e8ecff; border: 1px solid #c0c8e8; color: #1a1a2e; }
 .h-cell.fixed { background: #e8ecff; border: 1px solid #c0c8e8; color: #1a1a2e; }
 
-.carry-box {
-  position: absolute; top: 2px; left: 2px;
-  border: 1.5px dashed #333; border-radius: 3px;
-  background: rgba(255,255,255,0.85);
-  z-index: 3;
-}
-.carry-box canvas { display: block; touch-action: none; }
-
 .h-cell.answer { background: white; border: 1px solid #c0c8e8; cursor: pointer; }
 .h-cell.answer canvas { display: block; touch-action: none; }
 .h-line { height: 3px; background: #333; margin: 0 auto; }
@@ -203,6 +195,38 @@ h1 { text-align: center; color: white; font-size: 16px; text-shadow: 0 2px 8px r
   animation: bounce-in 0.5s ease-out 0.9s both;
 }
 .results-retry:active { transform: scale(0.95); }
+
+.history-btn {
+  padding: 5px 12px; border: 2px solid #ddd; border-radius: 8px;
+  background: white; font-size: 12px; font-weight: bold;
+  cursor: pointer; transition: all 0.15s; color: #302b63;
+}
+.history-overlay {
+  position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,20,0.92); z-index: 1000;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+}
+.history-box {
+  background: rgba(255,255,255,0.95); border-radius: 16px; padding: 20px;
+  width: 90%; max-width: 480px; max-height: 80vh; overflow-y: auto;
+}
+.history-title { font-size: 18px; font-weight: bold; color: #302b63; text-align: center; margin-bottom: 12px; }
+.history-chart { width: 100%; height: 200px; position: relative; margin-bottom: 12px; }
+.history-bar-row { display: flex; align-items: flex-end; gap: 3px; height: 160px; padding: 0 4px; border-bottom: 2px solid #ddd; }
+.history-bar {
+  flex: 1; min-width: 8px; max-width: 28px; border-radius: 4px 4px 0 0;
+  transition: height 0.3s; position: relative;
+}
+.history-bar-label { position: absolute; bottom: -18px; left: 50%; transform: translateX(-50%); font-size: 8px; color: #999; white-space: nowrap; }
+.history-close {
+  display: block; margin: 12px auto 0; padding: 10px 28px; font-size: 14px; font-weight: bold;
+  background: linear-gradient(135deg, #302b63, #24243e); color: white;
+  border: none; border-radius: 10px; cursor: pointer;
+}
+.gal-msg {
+  text-align: center; font-size: 13px; color: #e879f9; font-weight: bold;
+  margin-top: 4px; min-height: 20px;
+}
 </style>
 </head>
 <body>
@@ -211,6 +235,8 @@ h1 { text-align: center; color: white; font-size: 16px; text-shadow: 0 2px 8px r
 
   <div class="panel">
     <div class="btn-row" id="levelBar"></div>
+    <div style="text-align:center;margin-top:4px"><button class="history-btn" onclick="showHistory()">📊 きろく</button></div>
+    <div class="gal-msg" id="galMsg"></div>
   </div>
 
   <div class="panel">
@@ -242,13 +268,56 @@ let lvIdx = 0, pA, pB, pAns;
 let qNum = 1, qScore = 0, checked = false;
 let drawing = false, activeCanvas = null, lastX = 0, lastY = 0;
 let drawnHistory = [];
+let wrongProblems = [];
+let retryMode = false, retryProblems = [], retryTotal = 0;
 
-const goodMsg = ['すごい！🎉','正解！⭐','やったね！🌟','完ぺき！💯','さすが！✨','天才！🏆'];
-const badMsg = ['おしい！😣','がんばれ！💪','次はできるよ！🔥','ドンマイ！😊'];
+const goodMsg = ['まじ神ってる〜！🎉','それな！正解！⭐','やばっ天才すぎん？🌟','完ぺきすぎてウケる💯','ガチですごい！✨','推せる〜！🏆'];
+const badMsg = ['おしいっ！次いこ！😣','ドンマイ〜まだいける💪','ぜんぜんOK！次で取り返そ🔥','惜しみ〜！切り替えてこ😊'];
+
+const AudioCtx = window.AudioContext || window.webkitAudioContext;
+let audioCtx;
+function getAudioCtx() {
+  if (!audioCtx) audioCtx = new AudioCtx();
+  return audioCtx;
+}
+
+function playCorrectSound() {
+  const ctx = getAudioCtx();
+  const g = ctx.createGain();
+  g.connect(ctx.destination);
+  g.gain.setValueAtTime(0.3, ctx.currentTime);
+  g.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.4);
+  [523, 659, 784].forEach((freq, i) => {
+    const o = ctx.createOscillator();
+    o.type = 'sine';
+    o.frequency.value = freq;
+    o.connect(g);
+    o.start(ctx.currentTime + i * 0.1);
+    o.stop(ctx.currentTime + i * 0.1 + 0.2);
+  });
+}
+
+function playWrongSound() {
+  const ctx = getAudioCtx();
+  const g = ctx.createGain();
+  g.connect(ctx.destination);
+  g.gain.setValueAtTime(0.3, ctx.currentTime);
+  g.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.4);
+  [300, 280].forEach((freq, i) => {
+    const o = ctx.createOscillator();
+    o.type = 'square';
+    o.frequency.value = freq;
+    o.connect(g);
+    o.start(ctx.currentTime + i * 0.15);
+    o.stop(ctx.currentTime + i * 0.15 + 0.15);
+  });
+}
 const REWARDS = [10, 15, 20, 25, 30];
+const Q_PER_LEVEL = 5;
+const SCORE_PER_Q = 100 / Q_PER_LEVEL;
 
 const LV = [
-  { label: 'Lv.1', desc: '2けた×1けた', aMin: 11, aMax: 49, bMin: 2, bMax: 4, noCarry: true },
+  { label: 'Lv.1', desc: '2けた×1けた', aMin: 11, aMax: 49, bMin: 2, bMax: 4 },
   { label: 'Lv.2', desc: '2けた×1けた', aMin: 11, aMax: 99, bMin: 2, bMax: 9 },
   { label: 'Lv.3', desc: '2けた×2けた', aMin: 11, aMax: 99, bMin: 11, bMax: 99 },
   { label: 'Lv.4', desc: '3けた×1けた', aMin: 101, aMax: 999, bMin: 2, bMax: 9 },
@@ -259,60 +328,12 @@ function rand(a, b) { return Math.floor(Math.random() * (b - a + 1)) + a; }
 function pick(a) { return a[Math.floor(Math.random() * a.length)]; }
 
 // ===== Problem =====
-function hasMulCarry(a, b) {
-  let carry = 0;
-  const aS = String(a);
-  for (let i = aS.length - 1; i >= 0; i--) {
-    const prod = parseInt(aS[i]) * b + carry;
-    carry = Math.floor(prod / 10);
-    if (carry > 0 && i > 0) return true;
-  }
-  return carry > 0;
-}
-
-function mulCarryFlags(a, b) {
-  const aDigits = String(a).split('').map(Number);
-  const resLen = String(a * b).length;
-  const flags = new Array(resLen).fill(false);
-  let carry = 0;
-  for (let i = aDigits.length - 1; i >= 0; i--) {
-    const prod = aDigits[i] * b + carry;
-    carry = Math.floor(prod / 10);
-    const ansIdx = resLen - 1 - (aDigits.length - 1 - i);
-    if (carry > 0 && ansIdx - 1 >= 0) flags[ansIdx - 1] = true;
-  }
-  return flags;
-}
-
-function addCarryFlags(a, b) {
-  const sum = a + b;
-  const sumLen = String(sum).length;
-  const flags = new Array(sumLen).fill(false);
-  let carry = 0;
-  for (let pos = 0; pos < sumLen; pos++) {
-    const da = Math.floor(a / Math.pow(10, pos)) % 10;
-    const db = Math.floor(b / Math.pow(10, pos)) % 10;
-    const colSum = da + db + carry;
-    carry = Math.floor(colSum / 10);
-    const ansIdx = sumLen - 1 - pos;
-    if (carry > 0 && ansIdx - 1 >= 0) flags[ansIdx - 1] = true;
-  }
-  return flags;
-}
 
 function genProblem() {
   const lv = LV[lvIdx];
-  let tries = 0;
-  do {
-    pA = rand(lv.aMin, lv.aMax);
-    pB = rand(lv.bMin, lv.bMax);
-    pAns = pA * pB;
-    tries++;
-    if (tries > 200) break;
-    if (lv.noCarry && hasMulCarry(pA, pB)) continue;
-    if (!lv.noCarry && !hasMulCarry(pA, pB) && tries < 100) continue;
-    break;
-  } while (true);
+  pA = rand(lv.aMin, lv.aMax);
+  pB = rand(lv.bMin, lv.bMax);
+  pAns = pA * pB;
 }
 
 // ===== Answer Choices =====
@@ -353,7 +374,12 @@ function emptyCell(sz) {
 }
 
 function render() {
-  genProblem();
+  if (retryMode && retryProblems.length > 0) {
+    const p = retryProblems[qNum - 1];
+    pA = p.a; pB = p.b; pAns = p.ans;
+  } else {
+    genProblem();
+  }
   checked = false; drawnHistory = [];
   document.getElementById('feedback').textContent = '';
   document.getElementById('feedback').className = 'feedback';
@@ -365,7 +391,7 @@ function render() {
 
   renderChoices();
 
-  document.getElementById('nextBtn').textContent = qNum >= 10 ? '結果を見る' : '次の問題';
+  document.getElementById('nextBtn').textContent = qNum >= getTotal() ? '結果を見る' : '次の問題';
   setupCanvases();
 }
 
@@ -374,9 +400,6 @@ function renderMul1() {
   const maxD = Math.max(aS.length, bS.length, anS.length);
   const nc = maxD + 1;
   const sz = cellSize(nc);
-  const showCarry = !LV[lvIdx].noCarry;
-  const cFlags = showCarry ? mulCarryFlags(pA, pB) : [];
-  const cW = Math.floor(sz * 0.36), cH = Math.floor(sz * 0.36);
   let h = '';
 
   h += '<div class="h-row">';
@@ -401,13 +424,8 @@ function renderMul1() {
   h += '<div class="h-row">';
   const anOff = nc - anS.length;
   for (let c = 0; c < nc; c++) {
-    if (c >= anOff) {
-      const di = c - anOff;
-      const hasC = di < cFlags.length && cFlags[di];
-      h += makeAnswerCell(sz, 'a' + c, hasC ? cW : 0, hasC ? cH : 0);
-    } else {
-      h += emptyCell(sz);
-    }
+    if (c >= anOff) h += makeAnswerCell(sz, 'a' + c);
+    else h += emptyCell(sz);
   }
   h += '</div>';
   return h;
@@ -421,11 +439,6 @@ function renderMul2() {
   const maxD = Math.max(aS.length, bS.length, anS.length, p1S.length, p2S.length + 1);
   const nc = maxD + 1;
   const sz = cellSize(nc);
-  const showCarry = !LV[lvIdx].noCarry;
-  const cf1 = showCarry ? mulCarryFlags(pA, b1) : [];
-  const cf2 = showCarry ? mulCarryFlags(pA, b0) : [];
-  const cfA = showCarry ? addCarryFlags(p1, p2 * 10) : [];
-  const cW = Math.floor(sz * 0.36), cH = Math.floor(sz * 0.36);
   let h = '';
 
   h += '<div class="h-row">';
@@ -450,26 +463,16 @@ function renderMul2() {
   h += '<div class="h-row">';
   const p1Off = nc - p1S.length;
   for (let c = 0; c < nc; c++) {
-    if (c >= p1Off) {
-      const di = c - p1Off;
-      const hasC = di < cf1.length && cf1[di];
-      h += makeAnswerCell(sz, 'p1-' + c, hasC ? cW : 0, hasC ? cH : 0);
-    } else {
-      h += emptyCell(sz);
-    }
+    if (c >= p1Off) h += makeAnswerCell(sz, 'p1-' + c);
+    else h += emptyCell(sz);
   }
   h += '</div>';
 
   h += '<div class="h-row">';
   const p2Off = nc - p2S.length - 1;
   for (let c = 0; c < nc; c++) {
-    if (c >= p2Off && c < p2Off + p2S.length) {
-      const di = c - p2Off;
-      const hasC = di < cf2.length && cf2[di];
-      h += makeAnswerCell(sz, 'p2-' + c, hasC ? cW : 0, hasC ? cH : 0);
-    } else {
-      h += emptyCell(sz);
-    }
+    if (c >= p2Off && c < p2Off + p2S.length) h += makeAnswerCell(sz, 'p2-' + c);
+    else h += emptyCell(sz);
   }
   h += '</div>';
 
@@ -478,30 +481,17 @@ function renderMul2() {
   h += '<div class="h-row">';
   const anOff = nc - anS.length;
   for (let c = 0; c < nc; c++) {
-    if (c >= anOff) {
-      const di = c - anOff;
-      const hasC = di < cfA.length && cfA[di];
-      h += makeAnswerCell(sz, 'a' + c, hasC ? cW : 0, hasC ? cH : 0);
-    } else {
-      h += emptyCell(sz);
-    }
+    if (c >= anOff) h += makeAnswerCell(sz, 'a' + c);
+    else h += emptyCell(sz);
   }
   h += '</div>';
   return h;
 }
 
-function makeCarryBox(w, h, id) {
-  const cw = w * DPR, ch = h * DPR;
-  return `<div class="carry-box" style="width:${w}px;height:${h}px">` +
-    `<canvas class="cell-canvas" data-cell-id="${id}" width="${cw}" height="${ch}" style="width:${w}px;height:${h}px"></canvas></div>`;
-}
-
-function makeAnswerCell(sz, id, cbW, cbH) {
+function makeAnswerCell(sz, id) {
   const cw = sz * DPR, ch = sz * DPR;
-  let html = `<div class="h-cell answer" style="width:${sz}px;height:${sz}px" data-id="${id}">`;
-  if (cbW > 0 && cbH > 0) html += makeCarryBox(cbW, cbH, 'carry-' + id);
-  html += `<canvas class="cell-canvas" data-cell-id="${id}" width="${cw}" height="${ch}" style="width:${sz}px;height:${sz}px"></canvas></div>`;
-  return html;
+  return `<div class="h-cell answer" style="width:${sz}px;height:${sz}px" data-id="${id}">` +
+    `<canvas class="cell-canvas" data-cell-id="${id}" width="${cw}" height="${ch}" style="width:${sz}px;height:${sz}px"></canvas></div>`;
 }
 
 // ===== Drawing =====
@@ -604,37 +594,44 @@ function check() {
 
   const fb = document.getElementById('feedback');
   if (isCorrect) {
-    qScore += 10;
+    qScore += SCORE_PER_Q;
     fb.textContent = pick(goodMsg); fb.className = 'feedback ok';
     const el = document.getElementById('qScoreDisp');
     el.classList.remove('pulse'); void el.offsetWidth; el.classList.add('pulse');
+    playCorrectSound();
   } else {
     fb.textContent = pick(badMsg) + ` 答えは ${pAns} だよ`; fb.className = 'feedback ng';
+    wrongProblems.push({ a: pA, b: pB, ans: pAns });
+    playWrongSound();
   }
   const dot = document.querySelectorAll('.dot')[qNum - 1];
   if (dot) { dot.classList.remove('current'); dot.classList.add(isCorrect ? 'correct' : 'wrong'); }
   updateProgress();
-  document.getElementById('nextBtn').textContent = qNum >= 10 ? '結果を見る' : '次の問題';
+  document.getElementById('nextBtn').textContent = qNum >= getTotal() ? '結果を見る' : '次の問題';
 
   setTimeout(() => next(), 3000);
 }
 
 function next() {
   if (!checked) return;
-  if (qNum >= 10) { showResults(); return; }
+  if (qNum >= getTotal()) { showResults(); return; }
   qNum++;
   render();
 }
 
 // ===== Progress =====
+function getTotal() { return retryMode ? retryTotal : Q_PER_LEVEL; }
+
 function updateProgress() {
-  document.getElementById('qProgress').textContent = `問題 ${qNum}/10`;
+  const total = getTotal();
+  document.getElementById('qProgress').textContent = retryMode ? `やり直し ${qNum}/${total}` : `問題 ${qNum}/${total}`;
   document.getElementById('qScoreDisp').textContent = `${qScore}点`;
 }
 
 function renderDots() {
+  const total = getTotal();
   let h = '';
-  for (let i = 0; i < 10; i++) {
+  for (let i = 0; i < total; i++) {
     h += `<div class="dot${i === qNum - 1 ? ' current' : ''}">${i + 1}</div>`;
   }
   document.getElementById('progressDots').innerHTML = h;
@@ -642,6 +639,7 @@ function renderDots() {
 
 // ===== Results =====
 function showResults() {
+  if (!retryMode) saveResult(lvIdx, qScore);
   if (qScore === 100) celebrate();
   else showScoreScreen();
 }
@@ -655,11 +653,15 @@ function showScoreScreen() {
 
   const ov = document.createElement('div');
   ov.className = 'results-overlay';
+  const retryWrongBtn = wrongProblems.length > 0
+    ? `<button class="results-retry" style="margin-top:12px;background:linear-gradient(135deg,#ef4444,#dc2626)" onclick="this.closest('.results-overlay').remove();startRetry()">まちがえた ${wrongProblems.length}問 をやり直す</button>`
+    : '';
   ov.innerHTML = `<div class="results-box">
     <div class="results-emoji">${emoji}</div>
     <div class="results-score">${qScore}<span class="results-unit">点</span></div>
     <div class="results-msg">${msg}</div>
     <button class="results-retry" onclick="this.closest('.results-overlay').remove();setLv(lvIdx)">もう一度チャレンジ！</button>
+    ${retryWrongBtn}
   </div>`;
   document.body.appendChild(ov);
 }
@@ -724,15 +726,97 @@ function renderLevels() {
 
 function setLv(i) {
   lvIdx = i; qNum = 1; qScore = 0;
+  retryMode = false; retryProblems = []; retryTotal = 0; wrongProblems = [];
   document.querySelectorAll('.lv-btn').forEach((b, j) => b.classList.toggle('active', j === i));
   renderDots();
   render();
+  showGalMsg();
+}
+
+function startRetry() {
+  retryMode = true;
+  retryProblems = wrongProblems.slice();
+  retryTotal = retryProblems.length;
+  wrongProblems = [];
+  qNum = 1; qScore = 0;
+  renderDots();
+  render();
+}
+
+// ===== History =====
+const HISTORY_KEY = 'juntaro-keisan-history';
+
+function loadHistory() {
+  try { return JSON.parse(localStorage.getItem(HISTORY_KEY)) || []; }
+  catch { return []; }
+}
+
+function saveResult(level, score) {
+  const history = loadHistory();
+  history.push({ lv: level, score, date: new Date().toISOString() });
+  if (history.length > 200) history.splice(0, history.length - 200);
+  localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+}
+
+function showHistory() {
+  const history = loadHistory();
+  const lvHistory = history.filter(h => h.lv === lvIdx);
+  const last20 = lvHistory.slice(-20);
+
+  const ov = document.createElement('div');
+  ov.className = 'history-overlay';
+  ov.onclick = e => { if (e.target === ov) ov.remove(); };
+
+  let barsHtml = '';
+  if (last20.length === 0) {
+    barsHtml = '<div style="text-align:center;color:#999;padding:40px 0">まだきろくがないよ！</div>';
+  } else {
+    barsHtml = '<div class="history-bar-row">';
+    last20.forEach((h, i) => {
+      const pct = h.score;
+      const color = pct === 100 ? '#22c55e' : pct >= 60 ? '#3b82f6' : '#ef4444';
+      const d = new Date(h.date);
+      const label = `${d.getMonth() + 1}/${d.getDate()}`;
+      barsHtml += `<div class="history-bar" style="height:${Math.max(4, pct * 1.5)}px;background:${color}"><span class="history-bar-label">${label}</span></div>`;
+    });
+    barsHtml += '</div>';
+  }
+
+  const avg = last20.length > 0 ? Math.round(last20.reduce((s, h) => s + h.score, 0) / last20.length) : 0;
+  const best = last20.length > 0 ? Math.max(...last20.map(h => h.score)) : 0;
+  const count100 = last20.filter(h => h.score === 100).length;
+
+  ov.innerHTML = `<div class="history-box">
+    <div class="history-title">📊 Lv.${lvIdx + 1} のきろく</div>
+    <div class="history-chart">${barsHtml}</div>
+    <div style="display:flex;justify-content:space-around;margin:12px 0;font-size:13px;font-weight:bold;color:#302b63">
+      <span>平均 ${avg}点</span><span>最高 ${best}点</span><span>💯×${count100}回</span>
+    </div>
+    <div style="text-align:center;font-size:12px;color:#999">全${lvHistory.length}回中 最新${last20.length}回を表示</div>
+    <button class="history-close" onclick="this.closest('.history-overlay').remove()">とじる</button>
+  </div>`;
+  document.body.appendChild(ov);
+}
+
+// ===== Gal Messages =====
+const galStart = [
+  'よっしゃ〜今日もぶちかまそ！🔥',
+  'きょうのじゅんたろう、ガチで期待してる〜！✨',
+  'やるっしょ！いっちゃお〜💪',
+  'テンアゲで行くよ〜！🎵',
+  'じゅんたろうならイケる！まじ推し！💖',
+];
+
+function showGalMsg() {
+  const el = document.getElementById('galMsg');
+  if (el) el.textContent = pick(galStart);
 }
 
 // ===== Init =====
 renderLevels();
 renderDots();
 render();
+showGalMsg();
 </script>
 </body>
 </html>
