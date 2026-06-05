@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" fill="none">
+  <!-- Background circle -->
+  <circle cx="200" cy="200" r="195" fill="#f0f0f0"/>
+  <circle cx="200" cy="200" r="195" fill="url(#bg-gradient)" opacity="0.15"/>
+
+  <defs>
+    <linearGradient id="bg-gradient" x1="0" y1="0" x2="400" y2="400">
+      <stop offset="0%" stop-color="#6366f1"/>
+      <stop offset="100%" stop-color="#ec4899"/>
+    </linearGradient>
+    <clipPath id="circle-clip">
+      <circle cx="200" cy="200" r="195"/>
+    </clipPath>
+  </defs>
+
+  <g clip-path="url(#circle-clip)">
+    <!-- Body / Shoulders -->
+    <ellipse cx="200" cy="420" rx="140" ry="100" fill="#4a4a5a"/>
+    <!-- V-neck detail -->
+    <path d="M160 340 L200 375 L240 340" stroke="#3a3a4a" stroke-width="2" fill="none"/>
+
+    <!-- Neck -->
+    <rect x="180" y="295" width="40" height="45" rx="8" fill="#e8c4a0"/>
+
+    <!-- Face -->
+    <ellipse cx="200" cy="240" rx="75" ry="85" fill="#f0d0b0"/>
+
+    <!-- Hair back -->
+    <path d="M120 230 Q120 140 200 130 Q280 140 280 230 L280 290 Q260 310 240 300 Q230 295 225 280 L225 240
+             Q225 230 220 225 L180 225 Q175 230 175 240 L175 280 Q170 295 160 300 Q140 310 120 290 Z"
+          fill="#3d2b1f"/>
+
+    <!-- Bangs -->
+    <path d="M130 210 Q130 155 165 145 Q180 140 200 138 Q220 140 235 145 Q270 155 270 210
+             L265 200 Q260 180 245 175 Q230 185 215 188 Q200 190 185 188 Q170 185 155 175
+             Q140 180 135 200 Z"
+          fill="#3d2b1f"/>
+
+    <!-- Side hair strands -->
+    <path d="M130 210 Q125 250 128 280 Q130 295 135 300" stroke="#3d2b1f" stroke-width="20" fill="none" stroke-linecap="round"/>
+    <path d="M270 210 Q275 250 272 280 Q270 295 265 300" stroke="#3d2b1f" stroke-width="20" fill="none" stroke-linecap="round"/>
+
+    <!-- Eyes -->
+    <path d="M165 245 Q175 252 185 245" stroke="#3d2b1f" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <path d="M215 245 Q225 252 235 245" stroke="#3d2b1f" stroke-width="3" fill="none" stroke-linecap="round"/>
+
+    <!-- Eyebrows -->
+    <path d="M162 232 Q175 227 188 232" stroke="#3d2b1f" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <path d="M212 232 Q225 227 238 232" stroke="#3d2b1f" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+
+    <!-- Nose -->
+    <path d="M198 258 Q195 265 198 268 Q200 270 202 268" stroke="#d4a880" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+
+    <!-- Smile -->
+    <path d="M180 278 Q190 290 200 290 Q210 290 220 278" stroke="#c08060" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+
+    <!-- Blush -->
+    <ellipse cx="165" cy="272" rx="12" ry="7" fill="#f5a0a0" opacity="0.35"/>
+    <ellipse cx="235" cy="272" rx="12" ry="7" fill="#f5a0a0" opacity="0.35"/>
+
+    <!-- Earrings -->
+    <circle cx="132" cy="265" r="5" fill="#c0c0c0" opacity="0.7"/>
+    <circle cx="268" cy="265" r="5" fill="#c0c0c0" opacity="0.7"/>
+
+    <!-- Necklace -->
+    <path d="M170 340 Q200 355 230 340" stroke="#c0c0c0" stroke-width="1.5" fill="none"/>
+    <circle cx="200" cy="352" r="3" fill="#c0c0c0"/>
+
+    <!-- Laptop in hands -->
+    <rect x="145" y="365" width="110" height="6" rx="2" fill="#888" opacity="0.6"/>
+    <rect x="155" y="355" width="90" height="12" rx="2" fill="#aaa" opacity="0.5"/>
+
+    <!-- Design sparkles -->
+    <g opacity="0.4">
+      <path d="M310 160 L315 170 L310 180 L305 170 Z" fill="#6366f1"/>
+      <path d="M90 180 L93 186 L90 192 L87 186 Z" fill="#ec4899"/>
+      <path d="M320 260 L323 266 L320 272 L317 266 Z" fill="#6366f1"/>
+    </g>
+  </g>
+</svg>

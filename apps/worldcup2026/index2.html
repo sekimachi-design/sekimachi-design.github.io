@@ -1,0 +1,1309 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>SAMURAI BLUE 2026 – FIFA World Cup</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+/* ════════════════════════════════════════
+   DESIGN TOKENS
+════════════════════════════════════════ */
+:root {
+  --bg:        #050B1E;
+  --bg2:       #0A1428;
+  --primary:   #1440CC;
+  --accent:    #FFD54A;
+  --white:     #FFFFFF;
+  --sub:       rgba(255,255,255,0.65);
+  --sub2:      rgba(255,255,255,0.35);
+  --glass:     rgba(14,28,70,0.75);
+  --glass2:    rgba(255,255,255,0.08);
+  --border:    rgba(255,255,255,0.10);
+  --red:       #E8304A;
+  --green:     #2ECC71;
+  --radius:    16px;
+  --radius-sm: 10px;
+  --nav-h-sp:  68px;
+  --safe-b:    env(safe-area-inset-bottom, 0px);
+  --safe-t:    env(safe-area-inset-top, 0px);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { background: var(--bg); color-scheme: dark; scroll-behavior: smooth; }
+body {
+  font-family: 'Noto Sans JP', sans-serif;
+  background: var(--bg);
+  color: var(--white);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+button { cursor: pointer; -webkit-tap-highlight-color: transparent; }
+a { color: inherit; text-decoration: none; }
+
+/* ════════════════════════════════════════
+   LAYOUT — MOBILE FIRST
+════════════════════════════════════════ */
+.app-wrap {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* ── PAGE CONTAINER ── */
+.page {
+  display: none;
+  flex: 1;
+  padding-bottom: calc(var(--nav-h-sp) + var(--safe-b) + 8px);
+  min-height: 100vh;
+  background: var(--bg);
+}
+.page.active { display: block; }
+
+/* ════════════════════════════════════════
+   FLOATING BOTTOM NAV (MOBILE)
+════════════════════════════════════════ */
+.fnav {
+  position: fixed; bottom: 0; left: 0; right: 0; z-index: 200;
+  height: calc(var(--nav-h-sp) + var(--safe-b));
+  padding-bottom: var(--safe-b);
+  display: flex;
+  background: rgba(5, 11, 30, 0.88);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-top: 1px solid var(--border);
+}
+.fnav-btn {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 3px; padding: 8px 2px;
+  background: none; border: none;
+  color: var(--sub2); font-size: 10px;
+  font-family: 'Noto Sans JP', sans-serif;
+  transition: color .2s;
+  position: relative;
+}
+.fnav-btn svg {
+  width: 22px; height: 22px;
+  stroke: currentColor; fill: none;
+  stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round;
+}
+.fnav-btn.active { color: var(--accent); }
+.fnav-btn.active svg { stroke: var(--accent); }
+.fnav-btn.active::after {
+  content: ''; position: absolute; bottom: calc(var(--safe-b) + 2px);
+  left: 50%; transform: translateX(-50%);
+  width: 20px; height: 2px;
+  background: var(--accent); border-radius: 1px;
+}
+
+/* MORE drawer */
+.more-drawer {
+  position: fixed; bottom: calc(var(--nav-h-sp) + var(--safe-b));
+  left: 0; right: 0; z-index: 190;
+  background: rgba(9, 20, 40, 0.97);
+  backdrop-filter: blur(20px);
+  border-top: 1px solid var(--border);
+  padding: 16px 20px;
+  display: none;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  animation: slideDrawer .2s ease-out;
+}
+.more-drawer.open { display: grid; }
+@keyframes slideDrawer { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+.drawer-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 14px;
+  background: var(--glass2); border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--white); font-size: 13px; font-weight: 700;
+  background: none; border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+}
+.drawer-item svg { width: 18px; height: 18px; stroke: var(--accent); flex-shrink: 0; }
+.drawer-overlay {
+  position: fixed; inset: 0; z-index: 180;
+  display: none;
+}
+.drawer-overlay.open { display: block; }
+
+/* ════════════════════════════════════════
+   PC TOP NAV
+════════════════════════════════════════ */
+.pc-nav {
+  display: none;
+  position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+  height: 60px;
+  background: rgba(5, 11, 30, 0.92);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+  align-items: center;
+  padding: 0 32px;
+  gap: 0;
+}
+.pc-nav-logo {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 22px; letter-spacing: .06em;
+  color: var(--white); margin-right: 40px;
+  white-space: nowrap;
+  display: flex; align-items: center; gap: 8px;
+}
+.pc-nav-logo span { color: var(--accent); }
+.pc-nav-links { display: flex; gap: 4px; flex: 1; }
+.pc-nav-btn {
+  padding: 7px 16px; border-radius: 8px;
+  background: none; border: none;
+  color: var(--sub); font-size: 13px; font-weight: 700;
+  font-family: 'Noto Sans JP', sans-serif;
+  transition: color .15s, background .15s;
+  white-space: nowrap;
+}
+.pc-nav-btn:hover { color: var(--white); background: var(--glass2); }
+.pc-nav-btn.active { color: var(--accent); background: rgba(255,213,74,.08); }
+
+/* ════════════════════════════════════════
+   HERO
+════════════════════════════════════════ */
+.hero {
+  position: relative;
+  min-height: 100svh;
+  display: flex; flex-direction: column;
+  overflow: hidden;
+}
+.hero-bg {
+  position: absolute; inset: 0; z-index: 0;
+}
+.hero-bg img {
+  width: 100%; height: 100%;
+  object-fit: cover; object-position: center top;
+  display: none;
+}
+.hero-bg img.sp { display: block; }
+.hero-overlay {
+  position: absolute; inset: 0; z-index: 1;
+  background: linear-gradient(
+    180deg,
+    rgba(5,11,30,0.15) 0%,
+    rgba(5,11,30,0.40) 40%,
+    rgba(5,11,30,0.82) 70%,
+    rgba(5,11,30,1.00) 100%
+  );
+}
+.hero-inner {
+  position: relative; z-index: 2;
+  flex: 1; display: flex; flex-direction: column;
+  padding: calc(var(--safe-t) + 20px) 20px 0;
+}
+.hero-eyebrow {
+  font-size: 11px; letter-spacing: .18em;
+  color: rgba(255,255,255,.7); text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.hero-title-block {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  gap: 12px;
+}
+.hero-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(56px, 18vw, 88px);
+  line-height: .95; letter-spacing: .04em;
+  color: var(--white);
+  text-shadow: 0 2px 20px rgba(0,0,0,.5);
+}
+.hero-title em {
+  display: block;
+  font-style: normal;
+  font-size: .5em; letter-spacing: .16em;
+  color: rgba(255,255,255,.75);
+}
+.hero-trophy-wrap {
+  flex-shrink: 0;
+  width: clamp(100px, 30vw, 140px);
+}
+.hero-trophy-wrap img {
+  width: 100%; height: auto;
+  filter: drop-shadow(0 4px 32px rgba(255,213,74,.45));
+  animation: float 4s ease-in-out infinite;
+}
+@keyframes float { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-10px);} }
+
+/* Next Match Card */
+.hero-bottom {
+  margin-top: auto;
+  padding-bottom: 24px;
+}
+.next-match-card {
+  background: var(--glass);
+  border: 1px solid rgba(255,255,255,.15);
+  border-radius: var(--radius);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+.nmc-label {
+  padding: 10px 16px 0;
+  font-size: 10px; letter-spacing: .12em; text-transform: uppercase;
+  color: rgba(255,255,255,.55); font-weight: 700;
+  display: flex; align-items: center; gap: 6px;
+}
+.nmc-label::before {
+  content: ''; width: 6px; height: 6px; border-radius: 50%;
+  background: var(--accent); animation: pulse 2s infinite;
+}
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1);} 50%{opacity:.5;transform:scale(1.4);} }
+.nmc-teams {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 20px 10px;
+}
+.nmc-team { display: flex; align-items: center; gap: 10px; }
+.nmc-flag { font-size: 32px; line-height: 1; }
+.nmc-name { font-size: 18px; font-weight: 900; }
+.nmc-name.jp { color: var(--accent); }
+.nmc-vs {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 20px; color: var(--sub2);
+}
+.nmc-info {
+  border-top: 1px solid rgba(255,255,255,.1);
+  padding: 10px 16px;
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 8px;
+}
+.nmc-datetime {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 28px; letter-spacing: .03em;
+  color: var(--white);
+  display: flex; align-items: baseline; gap: 8px;
+}
+.nmc-datetime small {
+  font-family: 'Noto Sans JP', sans-serif;
+  font-size: 11px; font-weight: 700;
+  color: var(--sub); letter-spacing: .05em;
+}
+.nmc-kickoff {
+  font-size: 11px; font-weight: 900;
+  background: var(--accent); color: #050B1E;
+  padding: 4px 10px; border-radius: 6px;
+  letter-spacing: .05em;
+  white-space: nowrap;
+}
+
+/* HOME Grid Menu */
+.home-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  padding: 0 20px 24px;
+}
+.grid-item {
+  aspect-ratio: 1;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 8px;
+  background: var(--glass2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 10px 6px;
+  transition: background .15s, border-color .15s, transform .1s;
+}
+.grid-item:active { transform: scale(.95); }
+.grid-item svg {
+  width: 26px; height: 26px;
+  stroke: var(--accent); fill: none;
+  stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round;
+}
+.grid-item-label {
+  font-size: 10px; font-weight: 700;
+  color: var(--white); text-align: center; line-height: 1.3;
+}
+
+/* ════════════════════════════════════════
+   PAGE HEADER
+════════════════════════════════════════ */
+.page-header {
+  display: flex; align-items: flex-end; justify-content: space-between;
+  padding: 52px 20px 20px;
+}
+.page-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 32px; letter-spacing: .04em;
+  display: flex; align-items: center; gap: 10px;
+}
+.page-title::before {
+  content: ''; width: 4px; height: 28px;
+  background: var(--accent); border-radius: 2px; flex-shrink: 0;
+}
+.page-sub { font-size: 11px; color: var(--sub); letter-spacing: .05em; }
+
+/* ════════════════════════════════════════
+   SECTION HEADING
+════════════════════════════════════════ */
+.sh { display: flex; align-items: center; gap: 10px; padding: 0 20px; margin-bottom: 14px; }
+.sh-bar { width: 3px; height: 18px; border-radius: 2px; flex-shrink: 0; }
+.sh-text { font-size: 13px; font-weight: 700; }
+.sh-sub { font-size: 11px; color: var(--sub); margin-left: auto; }
+
+/* ════════════════════════════════════════
+   SCHEDULE PAGE
+════════════════════════════════════════ */
+.filter-row {
+  display: flex; gap: 8px; padding: 0 20px 20px;
+  overflow-x: auto; scrollbar-width: none;
+}
+.filter-row::-webkit-scrollbar { display: none; }
+.filter-btn {
+  flex-shrink: 0; padding: 8px 18px; border-radius: 100px;
+  background: rgba(255,255,255,.06); border: 1px solid var(--border);
+  color: var(--sub); font-size: 12px; font-weight: 700;
+  font-family: 'Noto Sans JP', sans-serif;
+  transition: all .15s;
+}
+.filter-btn.active {
+  background: var(--primary); border-color: var(--primary); color: #fff;
+}
+
+.match-card {
+  margin: 0 20px 12px;
+  background: rgba(255,255,255,.04);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  transition: border-color .2s;
+}
+.match-card.featured { border-color: rgba(255,213,74,.35); }
+.mc-top {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 14px 0;
+}
+.mc-status {
+  font-size: 10px; font-weight: 700; letter-spacing: .1em;
+  display: flex; align-items: center; gap: 5px;
+}
+.mc-status.next { color: var(--accent); }
+.mc-status.next::before {
+  content: ''; width: 5px; height: 5px; border-radius: 50%;
+  background: var(--accent); animation: pulse 2s infinite;
+}
+.mc-group { font-size: 10px; color: var(--sub2); }
+.mc-teams {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 20px 8px;
+}
+.mc-team { display: flex; flex-direction: column; align-items: center; gap: 5px; flex: 1; }
+.mc-flag { font-size: 32px; }
+.mc-name { font-size: 13px; font-weight: 700; }
+.mc-name.jp { color: var(--accent); }
+.mc-score {
+  font-family: 'Bebas Neue', sans-serif; font-size: 28px;
+  color: var(--sub2); min-width: 50px; text-align: center;
+}
+.mc-footer {
+  border-top: 1px solid rgba(255,255,255,.06);
+  padding: 8px 14px;
+  display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
+}
+.mc-chip { font-size: 11px; color: var(--sub); }
+.mc-detail-btn {
+  margin-left: auto; background: none;
+  border: 1px solid var(--border); border-radius: 100px;
+  padding: 3px 12px; font-size: 11px; color: var(--sub);
+  font-family: 'Noto Sans JP', sans-serif;
+}
+.mc-detail { display: none; border-top: 1px solid rgba(255,255,255,.06); padding: 14px; }
+.mc-detail.open { display: block; }
+.mc-detail-text { font-size: 12px; color: var(--sub); line-height: 1.7; }
+.mc-detail-text strong { color: var(--white); }
+
+/* ════════════════════════════════════════
+   PLAYERS PAGE
+════════════════════════════════════════ */
+.pos-filter {
+  display: flex; gap: 8px; padding: 0 20px 20px;
+}
+.pos-btn {
+  flex: 1; padding: 8px 4px; text-align: center;
+  border-radius: 100px; background: rgba(255,255,255,.06);
+  border: 1px solid var(--border); color: var(--sub);
+  font-size: 12px; font-weight: 700;
+  font-family: 'Noto Sans JP', sans-serif; transition: all .15s;
+}
+.pos-btn.active { background: var(--primary); border-color: var(--primary); color: #fff; }
+
+.player-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 10px; padding: 0 20px;
+}
+.player-card {
+  background: rgba(255,255,255,.04);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px; cursor: pointer;
+  transition: border-color .2s, transform .1s;
+  position: relative; overflow: hidden;
+}
+.player-card:active { transform: scale(.97); }
+.player-card.open { border-color: var(--primary); }
+.pc-bg-num {
+  position: absolute; top: 6px; right: 10px;
+  font-family: 'Bebas Neue', sans-serif; font-size: 44px;
+  color: rgba(255,255,255,.06); line-height: 1; pointer-events: none;
+}
+.pc-pos {
+  display: inline-block; font-size: 9px; font-weight: 700;
+  padding: 2px 7px; border-radius: 4px; margin-bottom: 6px;
+}
+.pc-pos.GK { background: rgba(255,213,74,.2); color: var(--accent); }
+.pc-pos.DF { background: rgba(30,100,255,.25); color: #7FB8FF; }
+.pc-pos.MF { background: rgba(46,204,113,.2); color: #2ECC71; }
+.pc-pos.FW { background: rgba(232,48,74,.2); color: #FF7087; }
+.pc-name { font-size: 14px; font-weight: 900; line-height: 1.2; margin-bottom: 2px; }
+.pc-en { font-size: 9px; color: var(--sub2); margin-bottom: 6px; }
+.pc-club { font-size: 10px; color: var(--sub); }
+.pc-wc {
+  display: inline-block; font-size: 9px; font-weight: 700;
+  background: rgba(255,213,74,.12); color: var(--accent);
+  padding: 2px 7px; border-radius: 4px; margin-top: 4px;
+}
+/* player expand body */
+.pc-body { display: none; margin-top: 12px; border-top: 1px solid rgba(255,255,255,.07); padding-top: 10px; }
+.player-card.open .pc-body { display: block; }
+.pc-stats { display: flex; gap: 5px; margin-bottom: 8px; }
+.pc-stat {
+  flex: 1; background: rgba(255,255,255,.04); border-radius: 7px;
+  padding: 7px 4px; text-align: center;
+}
+.pc-stat-val { font-size: 12px; font-weight: 900; display: block; margin-bottom: 1px; }
+.pc-stat-key { font-size: 8px; color: var(--sub); }
+.pc-ab { margin-bottom: 8px; }
+.pc-ab-row { display: flex; align-items: center; gap: 6px; margin-bottom: 4px; }
+.pc-ab-label { font-size: 9px; color: var(--sub); width: 66px; flex-shrink: 0; }
+.pc-ab-bar { flex: 1; height: 3px; background: rgba(255,255,255,.1); border-radius: 2px; overflow: hidden; }
+.pc-ab-fill { height: 100%; border-radius: 2px; background: var(--primary); width: 0; transition: width .6s ease; }
+.pc-ab-val { font-size: 9px; font-weight: 700; color: var(--sub); width: 18px; text-align: right; }
+.pc-epi { font-size: 10px; color: var(--sub); line-height: 1.6; margin-bottom: 6px; }
+.pc-tags { display: flex; flex-wrap: wrap; gap: 3px; }
+.pc-tag { font-size: 9px; padding: 2px 6px; border-radius: 3px; background: rgba(20,64,204,.2); color: rgba(255,255,255,.45); }
+.pos-group-label {
+  grid-column: 1/-1;
+  font-size: 10px; font-weight: 700; color: var(--sub2);
+  letter-spacing: .12em; text-transform: uppercase;
+  display: flex; align-items: center; gap: 8px;
+  margin-top: 8px; padding-top: 4px;
+}
+.pos-group-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+/* ════════════════════════════════════════
+   STANDINGS
+════════════════════════════════════════ */
+.st-card {
+  margin: 0 20px 14px;
+  background: rgba(255,255,255,.04);
+  border: 1px solid var(--border);
+  border-radius: var(--radius); overflow: hidden;
+}
+.st-head {
+  display: grid; grid-template-columns: 26px 1fr 30px 30px 30px 30px 36px;
+  padding: 9px 14px;
+  font-size: 10px; color: var(--sub2); font-weight: 700;
+  letter-spacing: .05em; border-bottom: 1px solid rgba(255,255,255,.06);
+}
+.st-row {
+  display: grid; grid-template-columns: 26px 1fr 30px 30px 30px 30px 36px;
+  padding: 11px 14px; align-items: center;
+  border-bottom: 1px solid rgba(255,255,255,.04);
+  transition: background .15s;
+}
+.st-row:last-child { border-bottom: none; }
+.st-row.jpn { background: rgba(20,64,204,.12); }
+.st-row.gold { background: rgba(255,213,74,.06); }
+.st-pos { font-size: 11px; color: var(--sub2); font-weight: 700; }
+.st-pos.g { color: var(--accent); }
+.st-team { display: flex; align-items: center; gap: 8px; }
+.st-flag { font-size: 16px; }
+.st-tname { font-size: 12px; font-weight: 700; }
+.st-tname.jp { color: var(--accent); }
+.st-num { font-size: 11px; text-align: center; color: var(--sub); }
+.st-pts { font-family: 'Bebas Neue', sans-serif; font-size: 16px; text-align: right; color: var(--accent); }
+
+.info-box {
+  margin: 0 20px 10px;
+  background: rgba(255,255,255,.04); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); padding: 11px 14px;
+  font-size: 12px; color: var(--sub); line-height: 1.6;
+}
+.scenario {
+  margin: 0 20px 10px;
+  padding: 13px 16px; border-radius: var(--radius-sm); border: 1px solid;
+}
+.scenario.green { background: rgba(46,204,113,.07); border-color: rgba(46,204,113,.2); }
+.scenario.gold { background: rgba(255,213,74,.07); border-color: rgba(255,213,74,.2); }
+.scenario-label { font-size: 9px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; margin-bottom: 4px; opacity: .7; }
+.scenario.green .scenario-label { color: #2ECC71; }
+.scenario.gold .scenario-label { color: var(--accent); }
+.scenario-text { font-size: 12px; font-weight: 700; color: var(--white); line-height: 1.6; }
+
+/* ════════════════════════════════════════
+   GROUPS
+════════════════════════════════════════ */
+.group-filter {
+  display: flex; gap: 6px; padding: 0 20px 20px;
+  overflow-x: auto; scrollbar-width: none;
+}
+.group-filter::-webkit-scrollbar { display: none; }
+.gf-all { flex-shrink: 0; padding: 0 14px; height: 34px; border-radius: 17px; background: rgba(255,255,255,.06); border: 1px solid var(--border); color: var(--sub); font-size: 12px; font-weight: 700; font-family: 'Noto Sans JP', sans-serif; transition: all .15s; }
+.gf-all.active { background: var(--primary); border-color: var(--primary); color: #fff; }
+.gf-btn { flex-shrink: 0; width: 34px; height: 34px; border-radius: 50%; background: rgba(255,255,255,.06); border: 1px solid var(--border); color: var(--sub); font-size: 11px; font-weight: 700; font-family: 'Noto Sans JP', sans-serif; display: flex; align-items: center; justify-content: center; transition: all .15s; }
+.gf-btn.active { background: var(--primary); border-color: var(--primary); color: #fff; }
+.gf-btn.jp-f { border-color: rgba(255,213,74,.4); }
+
+.group-card {
+  margin: 0 20px 10px;
+  background: rgba(255,255,255,.04); border: 1px solid var(--border);
+  border-radius: var(--radius); overflow: hidden;
+}
+.group-card.jp-group { border-color: rgba(255,213,74,.2); }
+.group-card.hidden { display: none; }
+.gc-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 13px 14px; cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.gc-title { font-size: 14px; font-weight: 700; }
+.gc-title.jp { color: var(--accent); }
+.gc-chevron { font-size: 12px; color: var(--sub2); transition: transform .2s; }
+.group-card.open .gc-chevron { transform: rotate(180deg); }
+.gc-teams-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 1px; background: rgba(255,255,255,.06);
+  border-top: 1px solid rgba(255,255,255,.06);
+}
+.gc-team {
+  background: var(--bg); padding: 9px 11px;
+  display: flex; align-items: center; gap: 8px;
+}
+.gc-team.jp { background: rgba(20,64,204,.08); }
+.gc-team-flag { font-size: 16px; }
+.gc-team-name { font-size: 11px; font-weight: 700; }
+.gc-team-conf { font-size: 9px; color: var(--sub2); }
+.gc-note { display: none; padding: 11px 14px; border-top: 1px solid rgba(255,255,255,.06); font-size: 11px; color: var(--sub); line-height: 1.6; }
+.group-card.open .gc-note { display: block; }
+
+/* ════════════════════════════════════════
+   HISTORY
+════════════════════════════════════════ */
+.hist-card {
+  margin: 0 20px 10px;
+  background: rgba(255,255,255,.04); border: 1px solid var(--border);
+  border-radius: var(--radius); overflow: hidden;
+  cursor: pointer; -webkit-tap-highlight-color: transparent;
+}
+.hc-head {
+  display: flex; align-items: center; gap: 14px;
+  padding: 14px;
+}
+.hc-year {
+  font-family: 'Bebas Neue', sans-serif; font-size: 32px;
+  color: var(--accent); min-width: 66px;
+}
+.hc-meta { flex: 1; }
+.hc-host { font-size: 11px; color: var(--sub); }
+.hc-result { font-size: 13px; font-weight: 700; margin-top: 2px; }
+.hc-result.r-r16, .hc-result.r-r8 { color: var(--green); }
+.hc-result.r-out { color: var(--sub); }
+.hc-chevron { color: var(--sub2); transition: transform .2s; font-size: 12px; }
+.hist-card.open .hc-chevron { transform: rotate(180deg); }
+.hc-body { display: none; border-top: 1px solid rgba(255,255,255,.06); padding: 12px 14px; }
+.hist-card.open .hc-body { display: block; }
+.hc-section { font-size: 9px; font-weight: 700; color: var(--sub2); letter-spacing: .1em; text-transform: uppercase; margin: 8px 0 5px; }
+.hc-match-row { display: flex; align-items: center; gap: 8px; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,.04); }
+.hc-match-row:last-child { border-bottom: none; }
+.hc-score { font-family: 'Bebas Neue', sans-serif; font-size: 16px; min-width: 38px; text-align: center; padding: 2px 5px; border-radius: 5px; }
+.hc-score.w { background: rgba(46,204,113,.15); color: #2ECC71; }
+.hc-score.d { background: rgba(255,213,74,.15); color: var(--accent); }
+.hc-score.l { background: rgba(232,48,74,.15); color: #FF7087; }
+.hc-opp { font-size: 12px; font-weight: 700; flex: 1; }
+.hc-stage { font-size: 10px; color: var(--sub); }
+.hc-players { display: flex; flex-wrap: wrap; gap: 5px; }
+.hc-player { font-size: 10px; padding: 3px 9px; border-radius: 5px; background: rgba(20,64,204,.15); color: rgba(255,255,255,.65); }
+.hc-note { font-size: 11px; color: var(--sub); line-height: 1.65; margin-top: 8px; }
+
+/* ════════════════════════════════════════
+   MODAL
+════════════════════════════════════════ */
+.modal-wrap { position: fixed; inset: 0; z-index: 300; display: none; align-items: flex-end; }
+.modal-wrap.open { display: flex; }
+.modal-bd { position: absolute; inset: 0; background: rgba(0,0,0,.65); backdrop-filter: blur(4px); }
+.modal {
+  position: relative; z-index: 1; width: 100%;
+  max-height: 88vh; overflow-y: auto;
+  background: #0C1830; border-radius: 22px 22px 0 0;
+  border-top: 1px solid var(--border);
+  padding: 18px 20px calc(20px + var(--safe-b));
+  animation: slideUp .28s ease-out;
+}
+@keyframes slideUp { from{transform:translateY(100%);} to{transform:translateY(0);} }
+.modal-handle { width: 34px; height: 4px; background: var(--border); border-radius: 2px; margin: 0 auto 18px; }
+.modal-close { position: absolute; top: 18px; right: 18px; width: 30px; height: 30px; border-radius: 50%; background: rgba(255,255,255,.08); border: 1px solid var(--border); color: var(--sub); display: flex; align-items: center; justify-content: center; font-size: 14px; }
+
+/* ════════════════════════════════════════
+   PC BREAKPOINT (≥768px)
+════════════════════════════════════════ */
+@media (min-width: 768px) {
+  :root { --nav-h-sp: 0px; }
+  .fnav { display: none; }
+  .more-drawer, .drawer-overlay { display: none !important; }
+  .pc-nav { display: flex; }
+
+  .page { padding-bottom: 40px; padding-top: 60px; }
+  .page-header { padding-top: 32px; }
+
+  /* Home PC */
+  #page-home { background: var(--bg); }
+  .hero { min-height: 70vh; max-height: 80vh; }
+  .hero-bg img.sp { display: none; }
+  .hero-bg img.pc { display: block; }
+  .hero-inner { padding: 24px 48px 0; }
+  .hero-title { font-size: clamp(80px, 8vw, 120px); }
+  .hero-trophy-wrap { width: clamp(140px, 18vw, 200px); }
+  .nmc-name { font-size: 22px; }
+  .nmc-flag { font-size: 40px; }
+  .nmc-datetime { font-size: 34px; }
+
+  .hero-bottom { padding: 0 48px 32px; }
+  .next-match-card { max-width: 480px; }
+
+  .home-grid {
+    grid-template-columns: repeat(6, 1fr);
+    padding: 0 48px 32px;
+    gap: 14px;
+  }
+  .grid-item { aspect-ratio: auto; padding: 18px 10px; gap: 10px; }
+  .grid-item svg { width: 30px; height: 30px; }
+  .grid-item-label { font-size: 11px; }
+
+  /* General pages PC */
+  .page-header { padding: 32px 48px 24px; }
+  .sh { padding: 0 48px; }
+  .filter-row, .pos-filter, .group-filter { padding-left: 48px; padding-right: 48px; }
+
+  /* 2-col for schedule/players/groups/history */
+  .match-cards-wrap, .player-grid-wrap, .group-cards-wrap, .hist-cards-wrap {
+    max-width: 1080px; margin: 0 auto;
+  }
+
+  .match-card, .group-card, .hist-card, .info-box, .scenario { margin-left: 48px; margin-right: 48px; }
+  .st-card { margin-left: 48px; margin-right: 48px; max-width: 700px; }
+  .player-grid { padding: 0 48px; grid-template-columns: repeat(4, 1fr); }
+
+  /* PC font scaling */
+  .pc-name { font-size: 15px; }
+  .pc-en { font-size: 10px; }
+  .mc-name { font-size: 15px; }
+  .mc-flag { font-size: 38px; }
+  .match-card { max-width: 600px; }
+  .group-card { max-width: 600px; }
+  .hist-card { max-width: 600px; }
+}
+
+@media (min-width: 1200px) {
+  .hero-inner { padding: 32px 80px 0; }
+  .hero-bottom { padding: 0 80px 40px; }
+  .home-grid { padding: 0 80px 40px; grid-template-columns: repeat(6, 1fr); }
+  .page-header { padding: 32px 80px 24px; }
+  .sh { padding: 0 80px; }
+  .filter-row, .pos-filter, .group-filter { padding-left: 80px; padding-right: 80px; }
+  .match-card, .group-card, .hist-card, .info-box, .scenario { margin-left: 80px; margin-right: 80px; }
+  .st-card { margin-left: 80px; margin-right: 80px; }
+  .player-grid { padding: 0 80px; grid-template-columns: repeat(5, 1fr); }
+}
+
+/* ════════════════════════════════════════
+   ANIMATION UTILITIES
+════════════════════════════════════════ */
+.fade-in { opacity: 0; transform: translateY(16px); transition: opacity .4s ease, transform .4s ease; }
+.fade-in.visible { opacity: 1; transform: none; }
+</style>
+</head>
+<body>
+
+<!-- ══ PC TOP NAV ══ -->
+<nav class="pc-nav" id="pcNav">
+  <div class="pc-nav-logo">⚽ SAMURAI <span>BLUE</span></div>
+  <div class="pc-nav-links">
+    <button class="pc-nav-btn active" onclick="showPage('home',this)">ホーム</button>
+    <button class="pc-nav-btn" onclick="showPage('schedule',this)">試合日程</button>
+    <button class="pc-nav-btn" onclick="showPage('players',this)">選手名鑑</button>
+    <button class="pc-nav-btn" onclick="showPage('table',this)">順位表</button>
+    <button class="pc-nav-btn" onclick="showPage('groups',this)">全グループ</button>
+    <button class="pc-nav-btn" onclick="showPage('tournament',this)">トーナメント</button>
+    <button class="pc-nav-btn" onclick="showPage('history',this)">W杯全記録</button>
+  </div>
+</nav>
+
+<!-- ══ FLOATING BOTTOM NAV (MOBILE) ══ -->
+<nav class="fnav">
+  <button class="fnav-btn active" onclick="showPage('home',this,true)">
+    <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+    ホーム
+  </button>
+  <button class="fnav-btn" onclick="showPage('schedule',this,true)">
+    <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+    日程
+  </button>
+  <button class="fnav-btn" onclick="showPage('players',this,true)">
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+    選手
+  </button>
+  <button class="fnav-btn" onclick="showPage('table',this,true)">
+    <svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+    順位表
+  </button>
+  <button class="fnav-btn" id="moreBtn" onclick="toggleDrawer()">
+    <svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    MORE
+  </button>
+</nav>
+
+<!-- MORE Drawer -->
+<div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
+<div class="more-drawer" id="moreDrawer">
+  <button class="drawer-item" onclick="showPage('groups',null,true);closeDrawer()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+    全グループ
+  </button>
+  <button class="drawer-item" onclick="showPage('tournament',null,true);closeDrawer()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/></svg>
+    トーナメント
+  </button>
+  <button class="drawer-item" onclick="showPage('history',null,true);closeDrawer()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
+    W杯全記録
+  </button>
+  <button class="drawer-item" onclick="closeDrawer()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    閉じる
+  </button>
+</div>
+
+<!-- ════ HOME ════ -->
+<div id="page-home" class="page active">
+  <section class="hero">
+    <div class="hero-bg">
+      <img class="sp" src="bg-sp.jpg" alt="">
+      <img class="pc" src="bg-pc.jpg" alt="">
+    </div>
+    <div class="hero-overlay"></div>
+    <div class="hero-inner">
+      <div class="hero-eyebrow">FIFA World Cup 2026 · North America</div>
+      <div class="hero-title-block">
+        <div class="hero-title">SAMURAI<br><em>BLUE</em></div>
+        <div class="hero-trophy-wrap">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/0a/FIFA_World_Cup_Trophy_2010.jpg/220px-FIFA_World_Cup_Trophy_2010.jpg" alt="Trophy" onerror="this.style.fontSize='80px';this.outerHTML='<div style=&quot;font-size:80px;line-height:1;filter:drop-shadow(0 0 30px rgba(255,213,74,.5));animation:float 4s ease-in-out infinite&quot;>🏆</div>'">
+        </div>
+      </div>
+      <div class="hero-bottom">
+        <div class="next-match-card fade-in">
+          <div class="nmc-label">次の試合 · グループF 第1戦</div>
+          <div class="nmc-teams">
+            <div class="nmc-team">
+              <div class="nmc-flag">🇯🇵</div>
+              <div class="nmc-name jp">日本</div>
+            </div>
+            <div class="nmc-vs">VS</div>
+            <div class="nmc-team" style="flex-direction:row-reverse">
+              <div class="nmc-flag">🇳🇱</div>
+              <div class="nmc-name">オランダ</div>
+            </div>
+          </div>
+          <div class="nmc-info">
+            <div class="nmc-datetime">
+              6.15 <small>SUN</small> 05:00
+            </div>
+            <div class="nmc-kickoff">KICKOFF</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Grid Menu -->
+  <div class="home-grid">
+    <button class="grid-item fade-in" onclick="showPage('schedule',document.querySelectorAll('.fnav-btn')[1],true)">
+      <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      <div class="grid-item-label">試合日程</div>
+    </button>
+    <button class="grid-item fade-in" onclick="showPage('players',document.querySelectorAll('.fnav-btn')[2],true)">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+      <div class="grid-item-label">選手名鑑</div>
+    </button>
+    <button class="grid-item fade-in" onclick="showPage('table',document.querySelectorAll('.fnav-btn')[3],true)">
+      <svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      <div class="grid-item-label">グループ順位</div>
+    </button>
+    <button class="grid-item fade-in" onclick="showPage('groups',null,true)">
+      <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      <div class="grid-item-label">全グループ</div>
+    </button>
+    <button class="grid-item fade-in" onclick="showPage('tournament',null,true)">
+      <svg viewBox="0 0 24 24"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/></svg>
+      <div class="grid-item-label">トーナメント</div>
+    </button>
+    <button class="grid-item fade-in" onclick="showPage('history',null,true)">
+      <svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/><line x1="8" y1="7" x2="16" y2="7"/><line x1="8" y1="11" x2="16" y2="11"/></svg>
+      <div class="grid-item-label">W杯全記録<br>1998-2026</div>
+    </button>
+  </div>
+</div>
+
+<!-- ════ SCHEDULE ════ -->
+<div id="page-schedule" class="page">
+  <div class="page-header">
+    <div class="page-title">試合日程</div>
+    <div class="page-sub">グループ F</div>
+  </div>
+  <div class="filter-row">
+    <button class="filter-btn active">グループステージ</button>
+    <button class="filter-btn">決勝T</button>
+    <button class="filter-btn">全試合</button>
+  </div>
+  <!-- 第1戦 -->
+  <div class="match-card featured">
+    <div class="mc-top">
+      <div class="mc-status next">次の試合 · 第1戦</div>
+      <div class="mc-group">グループF</div>
+    </div>
+    <div class="mc-teams">
+      <div class="mc-team"><div class="mc-flag">🇯🇵</div><div class="mc-name jp">日本</div></div>
+      <div class="mc-score">?-?</div>
+      <div class="mc-team"><div class="mc-flag">🇳🇱</div><div class="mc-name">オランダ</div></div>
+    </div>
+    <div class="mc-footer">
+      <div class="mc-chip">🕔 6/15（日）05:00 JST</div>
+      <div class="mc-chip">📍 ダラス，TX</div>
+      <button class="mc-detail-btn" onclick="toggleMC(this)">詳細 ▾</button>
+    </div>
+    <div class="mc-detail">
+      <div class="mc-detail-text">
+        <div style="margin-bottom:7px"><strong>📺 放送</strong>：NHK総合・BS・DAZN</div>
+        <div style="margin-bottom:7px"><strong>🏟 会場</strong>：AT&Tスタジアム（収容約80,000人）</div>
+        <div style="margin-bottom:7px"><strong>🇳🇱 オランダ</strong>：FIFAランク7位。ファン・ダイク（LFC）、ガクポ（LFC）、メインウー（Man City）。</div>
+        <div style="margin-bottom:7px"><strong>🏅 過去対戦</strong>：日本0勝1分2敗（得点2・失点6）</div>
+        <div><strong>🎯 観戦ポイント</strong>：久保vsファン・ダイク、遠藤のデュエル、ハイプレス戦術</div>
+      </div>
+    </div>
+  </div>
+  <!-- 第2戦 -->
+  <div class="match-card">
+    <div class="mc-top">
+      <div class="mc-status" style="color:var(--sub2)">第2戦</div>
+      <div class="mc-group">グループF</div>
+    </div>
+    <div class="mc-teams">
+      <div class="mc-team"><div class="mc-flag">🇹🇳</div><div class="mc-name">チュニジア</div></div>
+      <div class="mc-score">?-?</div>
+      <div class="mc-team"><div class="mc-flag">🇯🇵</div><div class="mc-name jp">日本</div></div>
+    </div>
+    <div class="mc-footer">
+      <div class="mc-chip">🕔 6/21（土）13:00 JST ⭐昼間！</div>
+      <div class="mc-chip">📍 モンテレイ，MEX</div>
+      <button class="mc-detail-btn" onclick="toggleMC(this)">詳細 ▾</button>
+    </div>
+    <div class="mc-detail">
+      <div class="mc-detail-text">
+        <div style="margin-bottom:7px"><strong>🏟 会場</strong>：エスタディオBBVA（モンテレイ）</div>
+        <div style="margin-bottom:7px"><strong>🇹🇳 チュニジア</strong>：FIFAランク40位。アフリカ予選10試合無失点の鉄壁守備。</div>
+        <div><strong>🏅 過去対戦</strong>：日本2勝2分0敗（相性良好！）</div>
+      </div>
+    </div>
+  </div>
+  <!-- 第3戦 -->
+  <div class="match-card">
+    <div class="mc-top">
+      <div class="mc-status" style="color:var(--sub2)">第3戦 · 最終節 🔥</div>
+      <div class="mc-group">グループF</div>
+    </div>
+    <div class="mc-teams">
+      <div class="mc-team"><div class="mc-flag">🇯🇵</div><div class="mc-name jp">日本</div></div>
+      <div class="mc-score">?-?</div>
+      <div class="mc-team"><div class="mc-flag">🇸🇪</div><div class="mc-name">スウェーデン</div></div>
+    </div>
+    <div class="mc-footer">
+      <div class="mc-chip">🕔 6/26（木）08:00 JST</div>
+      <div class="mc-chip">📍 ダラス，TX</div>
+      <button class="mc-detail-btn" onclick="toggleMC(this)">詳細 ▾</button>
+    </div>
+    <div class="mc-detail">
+      <div class="mc-detail-text">
+        <div style="margin-bottom:7px"><strong>🏟 会場</strong>：AT&Tスタジアム・チュニジアvs蘭と同時KO</div>
+        <div style="margin-bottom:7px"><strong>🇸🇪 スウェーデン</strong>：FIFAランク38位。イサク（Newcastle）・クルゼフスキ（Spurs）の2トップが強力。</div>
+        <div><strong>🏅 過去対戦</strong>：日本1勝1敗</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════ PLAYERS ════ -->
+<div id="page-players" class="page">
+  <div class="page-header">
+    <div class="page-title">選手名鑑</div>
+    <div class="page-sub">2026 W杯メンバー 26名</div>
+  </div>
+  <div class="pos-filter">
+    <button class="pos-btn active" onclick="filterPos('ALL',this)">全員</button>
+    <button class="pos-btn" onclick="filterPos('GK',this)">GK</button>
+    <button class="pos-btn" onclick="filterPos('DF',this)">DF</button>
+    <button class="pos-btn" onclick="filterPos('MF',this)">MF</button>
+    <button class="pos-btn" onclick="filterPos('FW',this)">FW</button>
+  </div>
+  <div class="player-grid" id="playerGrid"></div>
+  <div style="height:16px"></div>
+</div>
+
+<!-- ════ TABLE ════ -->
+<div id="page-table" class="page">
+  <div class="page-header">
+    <div class="page-title">グループF 順位表</div>
+  </div>
+  <div class="st-card">
+    <div class="st-head">
+      <div>#</div><div>チーム</div><div>試</div><div>勝</div><div>分</div><div>負</div><div style="text-align:right">PT</div>
+    </div>
+    <div class="st-row gold"><div class="st-pos g">1</div><div class="st-team"><span class="st-flag">🇳🇱</span><span class="st-tname">オランダ</span></div><div class="st-num">0</div><div class="st-num">0</div><div class="st-num">0</div><div class="st-num">0</div><div class="st-pts">0</div></div>
+    <div class="st-row jpn"><div class="st-pos">2</div><div class="st-team"><span class="st-flag">🇯🇵</span><span class="st-tname jp">日本 ★</span></div><div class="st-num">0</div><div class="st-num">0</div><div class="st-num">0</div><div class="st-num">0</div><div class="st-pts">0</div></div>
+    <div class="st-row"><div class="st-pos">3</div><div class="st-team"><span class="st-flag">🇸🇪</span><span class="st-tname">スウェーデン</span></div><div class="st-num">0</div><div class="st-num">0</div><div class="st-num">0</div><div class="st-num">0</div><div class="st-pts">0</div></div>
+    <div class="st-row"><div class="st-pos">4</div><div class="st-team"><span class="st-flag">🇹🇳</span><span class="st-tname">チュニジア</span></div><div class="st-num">0</div><div class="st-num">0</div><div class="st-num">0</div><div class="st-num">0</div><div class="st-pts">0</div></div>
+  </div>
+  <div class="info-box">🟢 <strong>自動突破</strong>：上位2チーム　🔵 <strong>3位通過も可</strong>：12グループ中3位上位8チーム</div>
+  <div class="sh" style="margin-top:8px"><div class="sh-bar" style="background:var(--primary)"></div><div class="sh-text">突破シナリオ</div></div>
+  <div class="scenario green"><div class="scenario-label">🏆 理想</div><div class="scenario-text">チュニジア戦勝利 → オランダかスウェーデンでさらに1勝 → グループ2位以内で確実突破！</div></div>
+  <div class="scenario gold"><div class="scenario-label">⚡ 夢</div><div class="scenario-text">オランダを撃破してグループ首位！Optaも「グループを覆しうるのは日本」と高評価。ドーハの奇跡再来なるか！</div></div>
+</div>
+
+<!-- ════ GROUPS ════ -->
+<div id="page-groups" class="page">
+  <div class="page-header">
+    <div class="page-title">全グループ</div>
+    <div class="page-sub">48カ国 · 12グループ</div>
+  </div>
+  <div class="info-box">📅 グループステージ：6/11〜6/27　🏟 開幕戦：メキシコ vs 南アフリカ（メキシコシティ）　🏆 決勝：7/19 MetLife Stadium (NJ)</div>
+  <div class="group-filter" id="groupFilter">
+    <button class="gf-all active" onclick="filterGroup('all',this)">すべて</button>
+  </div>
+  <div id="groupsGrid"></div>
+</div>
+
+<!-- ════ TOURNAMENT ════ -->
+<div id="page-tournament" class="page">
+  <div class="page-header">
+    <div class="page-title">決勝トーナメント</div>
+    <div class="page-sub">準々決勝〜決勝</div>
+  </div>
+  <div class="info-box">🆕 <strong>2026年から新設のラウンド32！</strong> 12グループの1位・2位（計24チーム）＋各グループ3位のうち成績上位8チームが出場。計32チームが決勝トーナメントを戦う。</div>
+  <div class="sh"><div class="sh-bar" style="background:var(--accent)"></div><div class="sh-text">大会日程</div></div>
+  <div class="info-box">
+    <div style="display:flex;gap:10px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none">
+      <div style="flex-shrink:0;background:rgba(20,64,204,.2);border:1px solid rgba(20,64,204,.4);border-radius:8px;padding:10px 14px;text-align:center;min-width:110px">
+        <div style="font-size:11px;font-weight:700;color:var(--white)">グループS</div>
+        <div style="font-size:10px;color:var(--sub);margin-top:2px">6/11〜6/27</div>
+        <div style="font-size:10px;color:var(--sub)">48チーム・72試合</div>
+      </div>
+      <div style="flex-shrink:0;align-self:center;color:var(--sub2)">▶</div>
+      <div style="flex-shrink:0;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 14px;text-align:center;min-width:100px">
+        <div style="font-size:11px;font-weight:700">ラウンド32</div>
+        <div style="font-size:10px;color:var(--sub);margin-top:2px">6/28〜7/2</div>
+        <div style="font-size:10px;color:var(--sub)">32チーム・16試合</div>
+      </div>
+      <div style="flex-shrink:0;align-self:center;color:var(--sub2)">▶</div>
+      <div style="flex-shrink:0;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 14px;text-align:center;min-width:100px">
+        <div style="font-size:11px;font-weight:700">ラウンド16</div>
+        <div style="font-size:10px;color:var(--sub);margin-top:2px">7/3〜7/6</div>
+        <div style="font-size:10px;color:var(--sub)">16チーム・8試合</div>
+      </div>
+      <div style="flex-shrink:0;align-self:center;color:var(--sub2)">▶</div>
+      <div style="flex-shrink:0;background:rgba(255,213,74,.08);border:1px solid rgba(255,213,74,.25);border-radius:8px;padding:10px 14px;text-align:center;min-width:80px">
+        <div style="font-size:11px;font-weight:700;color:var(--accent)">決勝</div>
+        <div style="font-size:10px;color:var(--sub);margin-top:2px">7/19</div>
+        <div style="font-size:10px;color:var(--sub)">NJ</div>
+      </div>
+    </div>
+  </div>
+  <div class="sh"><div class="sh-bar" style="background:var(--accent)"></div><div class="sh-text">日本の進路予測</div></div>
+  <div class="scenario green"><div class="scenario-label">グループ1位通過の場合</div><div class="scenario-text">6/29 グワダルーペ（メキシコ）でR32 → R16 → QF → SF → 決勝（MetLife）</div></div>
+  <div class="scenario gold"><div class="scenario-label">グループ2位通過の場合</div><div class="scenario-text">6/29 ヒューストン（テキサス）でR32 → 同様に勝ち上がりを目指す</div></div>
+</div>
+
+<!-- ════ HISTORY ════ -->
+<div id="page-history" class="page">
+  <div class="page-header">
+    <div class="page-title">W杯全記録</div>
+    <div class="page-sub">1998–2026</div>
+  </div>
+  <div class="info-box">日本は1998年から8大会連続出場！全大会の試合結果・監督・主要選手を収録。タップで詳細表示。</div>
+  <div id="histList"></div>
+</div>
+
+<!-- ════ TEAM MODAL ════ -->
+<div class="modal-wrap" id="teamModal">
+  <div class="modal-bd" onclick="closeModal()"></div>
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div id="modalBody"></div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════
+//  NAVIGATION
+// ══════════════════════════
+function showPage(id, btn, isMobile) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+
+  // mobile nav
+  document.querySelectorAll('.fnav-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+
+  // pc nav
+  document.querySelectorAll('.pc-nav-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.pc-nav-btn').forEach(b => {
+    if (b.getAttribute('onclick') && b.getAttribute('onclick').includes("'"+id+"'")) b.classList.add('active');
+  });
+
+  // lazy render
+  if (id === 'players' && !document.getElementById('playerGrid').dataset.rendered) renderPlayers();
+  if (id === 'groups' && !document.getElementById('groupsGrid').dataset.rendered) renderGroups();
+  if (id === 'history' && !document.getElementById('histList').dataset.rendered) renderHistory();
+
+  window.scrollTo(0, 0);
+  triggerFadeIn();
+}
+
+function toggleDrawer() {
+  document.getElementById('moreDrawer').classList.toggle('open');
+  document.getElementById('drawerOverlay').classList.toggle('open');
+}
+function closeDrawer() {
+  document.getElementById('moreDrawer').classList.remove('open');
+  document.getElementById('drawerOverlay').classList.remove('open');
+}
+
+// ══════════════════════════
+//  MATCH CARD TOGGLE
+// ══════════════════════════
+function toggleMC(btn) {
+  const d = btn.closest('.match-card').querySelector('.mc-detail');
+  const open = d.classList.toggle('open');
+  btn.textContent = open ? '閉じる ▴' : '詳細 ▾';
+}
+
+// ══════════════════════════
+//  PLAYERS DATA
+// ══════════════════════════
+const PLAYERS = [
+  {pos:'GK',num:1,ja:'鈴木 彩艶',en:'SUZUKI Zion',caps:24,wc:1,club:'パルマ（イタリア）',stats:[{l:'身長',v:'190cm'},{l:'代表',v:'24試合'},{l:'W杯',v:'2回目'}],abilities:[{n:'反射神経',v:90},{n:'ポジショニング',v:86},{n:'フィード',v:80}],epi:'浦和レッズから欧州へ。190cm・100kgの体格と鋭い反射神経が武器。',tags:['#セリエA','#正GK']},
+  {pos:'GK',num:12,ja:'大迫 敬介',en:'OSAKO Keisuke',caps:15,wc:0,club:'サンフレッチェ広島',stats:[{l:'身長',v:'186cm'},{l:'代表',v:'15試合'},{l:'J1',v:'ベストイレブン'}],abilities:[{n:'反射神経',v:86},{n:'セービング',v:88},{n:'統率力',v:82}],epi:'2024年J1ベストイレブン受賞。国内組のセカンドGK。',tags:['#広島','#Jリーグ']},
+  {pos:'GK',num:23,ja:'早川 友基',en:'HAYAKAWA Tomoki',caps:3,wc:0,club:'鹿島アントラーズ',stats:[{l:'身長',v:'188cm'},{l:'代表',v:'3試合'},{l:'2025',v:'J1MVP'}],abilities:[{n:'セービング',v:85},{n:'ポジショニング',v:84},{n:'キック',v:80}],epi:'2025年J1リーグMVP。鹿島9年ぶりのリーグ優勝に貢献。',tags:['#鹿島','#J1MVP']},
+  {pos:'DF',num:4,ja:'板倉 滉',en:'ITAKURA Ko',caps:40,wc:1,club:'アヤックス（オランダ）',stats:[{l:'代表',v:'40試合'},{l:'クラブ',v:'Ajax'},{l:'身長',v:'187cm'}],abilities:[{n:'対人守備',v:92},{n:'空中戦',v:90},{n:'ビルドアップ',v:85}],epi:'史上初の日本人アヤックス選手。オランダリーグで日々プレーし、初戦のオランダを知り尽くす。',tags:['#Ajax','#オランダリーグ']},
+  {pos:'DF',num:5,ja:'冨安 健洋',en:'TOMIYASU Takehiro',caps:60,wc:2,club:'アヤックス（オランダ）',stats:[{l:'代表',v:'60試合'},{l:'W杯',v:'2回'},{l:'前クラブ',v:'Arsenal'}],abilities:[{n:'対人守備',v:93},{n:'空中戦',v:91},{n:'攻撃参加',v:82}],epi:'アーセナルからアヤックスへ。怪我を乗り越えた不屈の闘将。板倉とのアヤックスコンビが守備の要。',tags:['#元Arsenal','#Ajax']},
+  {pos:'DF',num:3,ja:'谷口 彰悟',en:'TANIGUCHI Shogo',caps:55,wc:2,club:'シント＝トロイデン（ベルギー）',stats:[{l:'代表',v:'55試合'},{l:'W杯',v:'2回'},{l:'STVV',v:'新キャプテン'}],abilities:[{n:'対人守備',v:88},{n:'読み',v:90},{n:'統率力',v:86}],epi:'34歳のベテランCB。川崎フロンターレ出身でW杯2大会経験。2025/26シーズンのSTVV新キャプテン。',tags:['#熊本出身','#ベテランCB']},
+  {pos:'DF',num:2,ja:'菅原 由勢',en:'SUGAWARA Yukinari',caps:32,wc:1,club:'ヴェルダー・ブレーメン（ドイツ）',stats:[{l:'代表',v:'32試合'},{l:'W杯',v:'1回'},{l:'クラブ',v:'Bremen'}],abilities:[{n:'スプリント',v:90},{n:'クロス',v:86},{n:'対人守備',v:84}],epi:'右WBの第一候補。スプリント力とクロスの精度が持ち味。',tags:['#ブレーメン','#右WB']},
+  {pos:'DF',num:21,ja:'伊藤 洋輝',en:'ITO Hiroki',caps:28,wc:1,club:'バイエルン（ドイツ）',stats:[{l:'代表',v:'28試合'},{l:'クラブ',v:'Bayern'},{l:'身長',v:'188cm'}],abilities:[{n:'フィジカル',v:91},{n:'左足精度',v:88},{n:'対人守備',v:86}],epi:'バイエルンでブンデスリーガ2連覇に貢献。左WB・CB兼任の万能プレーヤー。',tags:['#Bayern','#左利きCB']},
+  {pos:'DF',num:16,ja:'瀬古 歩夢',en:'SEKO Ayumu',caps:8,wc:0,club:'ル・アーヴル（フランス）',stats:[{l:'代表',v:'8試合'},{l:'クラブ',v:'Le Havre'}],abilities:[{n:'対人守備',v:84},{n:'空中戦',v:86},{n:'ビルドアップ',v:83}],epi:'クラブ史上初の日本人として加入した将来有望な若手CB。',tags:['#大阪出身','#若手CB']},
+  {pos:'DF',num:6,ja:'長友 佑都',en:'NAGATOMO Yuto',caps:146,wc:4,club:'FC東京（Jリーグ）',stats:[{l:'代表',v:'146試合'},{l:'W杯',v:'5回目！'},{l:'年齢',v:'39歳'}],abilities:[{n:'スタミナ',v:96},{n:'守備力',v:82},{n:'メンタル',v:99}],epi:'39歳でW杯5大会目という偉業！インテル、ガラタサライを渡り歩いたレジェンド。',tags:['#レジェンド','#5大会目']},
+  {pos:'DF',num:20,ja:'鈴木 淳之介',en:'SUZUKI Junnosuke',caps:4,wc:0,club:'FCコペンハーゲン（デンマーク）',stats:[{l:'代表',v:'4試合'},{l:'クラブ',v:'CPH'},{l:'年齢',v:'22歳'}],abilities:[{n:'スピード',v:86},{n:'対人守備',v:84},{n:'フィジカル',v:85}],epi:'22歳の電撃抜擢。ブラジル戦で先発しエステバンを完封。CL本戦7試合経験を持つ実力者。',tags:['#22歳','#コペンハーゲン']},
+  {pos:'DF',num:15,ja:'渡辺 剛',en:'WATANABE Tsuyoshi',caps:10,wc:0,club:'フェイエノールト（オランダ）',stats:[{l:'代表',v:'10試合'},{l:'クラブ',v:'Feyenoord'}],abilities:[{n:'対人守備',v:85},{n:'空中戦',v:86},{n:'読み',v:83}],epi:'上田綺世とフェイエノールトでチームメイト。急浮上して選出。',tags:['#フェイエノールト','#千葉出身']},
+  {pos:'MF',num:8,ja:'遠藤 航',en:'ENDO Wataru',caps:73,wc:2,club:'リヴァプール（イングランド）',stats:[{l:'代表',v:'73試合'},{l:'クラブ',v:'Liverpool'},{l:'W杯',v:'3回目'}],abilities:[{n:'ボール奪取',v:96},{n:'予測力',v:94},{n:'統率力',v:90}],epi:'「デュエル王」のキャプテン。好物は静岡おでん。長女への「帰ってきたよ」動画がファンの涙を誘う。',tags:['#キャプテン','#Liverpool','#デュエル王']},
+  {pos:'MF',num:14,ja:'伊東 純也',en:'ITO Junya',caps:68,wc:2,club:'KRCヘンク（ベルギー）',stats:[{l:'代表',v:'68試合'},{l:'代表得点',v:'20G'},{l:'W杯',v:'2回'}],abilities:[{n:'スプリント',v:95},{n:'ドリブル',v:90},{n:'クロス',v:88}],epi:'圧倒的なスプリント速度が武器の右WB。ランスからヘンクへ復帰し本来の輝きを取り戻した。',tags:['#右WB','#スプリント王']},
+  {pos:'MF',num:10,ja:'堂安 律',en:'DOAN Ritsu',caps:58,wc:2,club:'フランクフルト（ドイツ）',stats:[{l:'代表',v:'58試合'},{l:'代表得点',v:'14G'},{l:'クラブ',v:'Frankfurt'}],abilities:[{n:'シュート',v:93},{n:'ドリブル',v:90},{n:'アジリティ',v:88}],epi:'2022年スペイン戦「あの折り返し」で歴史に名を刻む。フランクフルトではキャプテン。好物はたこ焼き。',tags:['#2022ヒーロー','#フランクフルト']},
+  {pos:'MF',num:7,ja:'田中 碧',en:'TANAKA Ao',caps:40,wc:1,club:'リーズ・ユナイテッド（イングランド）',stats:[{l:'代表',v:'40試合'},{l:'代表得点',v:'6G'},{l:'クラブ',v:'Leeds'}],abilities:[{n:'パス精度',v:90},{n:'運動量',v:91},{n:'左足',v:89}],epi:'「川崎コンビ」の一角。2022年スペイン戦で決勝ゴール。好物はラーメン（家系）。',tags:['#川崎出身','#Leeds']},
+  {pos:'MF',num:17,ja:'鎌田 大地',en:'KAMADA Daichi',caps:50,wc:2,club:'クリスタル・パレス（イングランド）',stats:[{l:'代表',v:'50試合'},{l:'代表得点',v:'12G'},{l:'クラブ',v:'C.Palace'}],abilities:[{n:'テクニック',v:92},{n:'ゲームメイク',v:91},{n:'シュート',v:88}],epi:'トップ下として攻撃のタクトを振るう。フランクフルト時代にELで世界に名を轟かせた。',tags:['#岡山出身','#トップ下']},
+  {pos:'MF',num:9,ja:'中村 敬斗',en:'NAKAMURA Keito',caps:28,wc:1,club:'スタッド・ランス（フランス）',stats:[{l:'代表',v:'28試合'},{l:'代表得点',v:'8G'},{l:'クラブ',v:'Reims'}],abilities:[{n:'スピード',v:90},{n:'ドリブル',v:88},{n:'シュート',v:87}],epi:'左WG・シャドーで躍動する快速アタッカー。スプリントとシュートで魅了する。',tags:['#東京出身','#快速']},
+  {pos:'MF',num:13,ja:'佐野 海舟',en:'SANO Kaishu',caps:22,wc:0,club:'マインツ（ドイツ）',stats:[{l:'代表',v:'22試合'},{l:'クラブ',v:'Mainz'},{l:'役割',v:'守備的MF'}],abilities:[{n:'ボール奪取',v:89},{n:'運動量',v:92},{n:'プレス',v:90}],epi:'「中盤の新エンジン」。マインツでブンデスリーガに定着。献身的な守備が光る。',tags:['#マインツ','#守備的MF']},
+  {pos:'MF',num:11,ja:'久保 建英',en:'KUBO Takefusa',caps:50,wc:1,club:'レアル・ソシエダ（スペイン）',stats:[{l:'代表',v:'50試合'},{l:'代表得点',v:'9G'},{l:'ラ・リーガ',v:'月間MVP'}],abilities:[{n:'ドリブル',v:96},{n:'テクニック',v:95},{n:'視野',v:91}],epi:'10歳でスペインへ渡りバルセロナのラ・マシア入団。日本人初のラ・リーガ月間MVP獲得！',tags:['#元バルセロナ','#注目']},
+  {pos:'MF',num:22,ja:'鈴木 唯人',en:'SUZUKI Yuito',caps:8,wc:0,club:'SCフライブルク（ドイツ）',stats:[{l:'代表',v:'8試合'},{l:'クラブ',v:'Freiburg'}],abilities:[{n:'ドリブル',v:87},{n:'テクニック',v:86},{n:'得点力',v:85}],epi:'ブレンビーで21得点の活躍を経てフライブルクへ。攻撃的MFの切り札。',tags:['#フライブルク','#23歳']},
+  {pos:'FW',num:18,ja:'上田 綺世',en:'UEDA Ayase',caps:32,wc:1,club:'フェイエノールト（オランダ）',stats:[{l:'代表',v:'32試合'},{l:'代表得点',v:'14G'},{l:'クラブ',v:'Feyenoord'}],abilities:[{n:'決定力',v:92},{n:'ポジショニング',v:90},{n:'ヘディング',v:85}],epi:'1トップの本命。ポストプレーと裏抜けを兼ね備える絶対的エース。',tags:['#エース','#フェイエノールト']},
+  {pos:'FW',num:19,ja:'前田 大然',en:'MAEDA Daizen',caps:37,wc:1,club:'セルティック（スコットランド）',stats:[{l:'代表',v:'37試合'},{l:'代表得点',v:'11G'},{l:'24/25',v:'MVP'}],abilities:[{n:'スピード',v:97},{n:'プレッシング',v:96},{n:'運動量',v:95}],epi:'24/25シーズン33得点でプレミアシップMVP！チーム最速のハイプレス魔人。',tags:['#Celtic','#MVP','#ハイプレス']},
+  {pos:'FW',num:16,ja:'小川 航基',en:'OGAWA Koki',caps:20,wc:0,club:'NECナイメヘン（オランダ）',stats:[{l:'代表',v:'20試合'},{l:'代表得点',v:'9G'},{l:'最終予選',v:'6戦4G'}],abilities:[{n:'ポストプレー',v:88},{n:'ヘディング',v:90},{n:'決定力',v:87}],epi:'最終予選6試合4ゴールで得点ランクトップ。中国戦でのヘッド2発が鮮烈。',tags:['#静岡出身','#勝負強い']},
+  {pos:'FW',num:24,ja:'塩貝 健人',en:'SHIOGAI Kento',caps:5,wc:0,club:'ヴォルフスブルク（ドイツ）',stats:[{l:'代表',v:'5試合'},{l:'クラブ',v:'Wolfsburg'},{l:'移籍額',v:'約18億円'}],abilities:[{n:'スピード',v:88},{n:'決定力',v:87},{n:'ドリブル',v:86}],epi:'慶大から欧州5大リーグへ駆け上がった異色の経歴。2026年1月に約18億円規模で移籍。',tags:['#ヴォルフスブルク','#異色経歴']},
+  {pos:'FW',num:25,ja:'後藤 啓介',en:'GOTO Keisuke',caps:3,wc:0,club:'シント＝トロイデン（ベルギー）',stats:[{l:'代表',v:'3試合'},{l:'クラブ',v:'STVV'},{l:'年齢',v:'20歳'}],abilities:[{n:'スピード',v:86},{n:'決定力',v:84},{n:'フィジカル',v:83}],epi:'20歳。STVVで25/26シーズン2桁ゴール。代表初選出から半年でW杯切符を掴んだ最年少候補。',tags:['#20歳','#最年少']},
+];
+
+const WC_DATA = [
+  {year:1998,host:'🇫🇷 フランス',result:'グループステージ敗退',rc:'r-out',coach:'岡田武史',matches:[{s:'0-1',o:'アルゼンチン',r:'l',st:'GL'},{s:'0-1',o:'クロアチア',r:'l',st:'GL'},{s:'1-2',o:'ジャマイカ',r:'l',st:'GL'}],players:[{n:'中山雅史',note:'日本初W杯ゴール'},{n:'川口能活',note:'GK'},{n:'名波浩',note:'MF'}],note:'日本初のW杯本大会出場。0勝3敗。カズ（三浦知良）の選外が今も語り草。'},
+  {year:2002,host:'🇯🇵🇰🇷 日韓共催',result:'ベスト16',rc:'r-r16',coach:'トルシエ',matches:[{s:'2-2',o:'ベルギー',r:'d',st:'GL'},{s:'1-0',o:'ロシア',r:'w',st:'GL'},{s:'2-0',o:'チュニジア',r:'w',st:'GL'},{s:'0-1',o:'トルコ',r:'l',st:'R16'}],players:[{n:'稲本潤一',note:'2得点'},{n:'中田英寿',note:'チームの心臓'},{n:'鈴木隆行',note:'ベルギー戦同点弾'}],note:'自国開催で初のベスト16。グループ首位通過で日本中が熱狂した。'},
+  {year:2006,host:'🇩🇪 ドイツ',result:'グループステージ敗退',rc:'r-out',coach:'ジーコ',matches:[{s:'1-3',o:'オーストラリア',r:'l',st:'GL'},{s:'0-0',o:'クロアチア',r:'d',st:'GL'},{s:'1-4',o:'ブラジル',r:'l',st:'GL'}],players:[{n:'中田英寿',note:'最後のW杯・引退'},{n:'玉田圭司',note:'ブラジル戦ゴール'}],note:'オーストラリア戦で終了間際に3点逆転負け。中田英寿がピッチに倒れた姿は名場面。'},
+  {year:2010,host:'🇿🇦 南アフリカ',result:'ベスト16',rc:'r-r16',coach:'岡田武史',matches:[{s:'1-0',o:'カメルーン',r:'w',st:'GL'},{s:'0-1',o:'オランダ',r:'l',st:'GL'},{s:'3-1',o:'デンマーク',r:'w',st:'GL'},{s:'0-0(PK3-5)',o:'パラグアイ',r:'l',st:'R16'}],players:[{n:'本田圭佑',note:'2ゴール'},{n:'遠藤保仁',note:'GM'},{n:'長友佑都',note:'LB'}],note:'「崩壊寸前」と言われた岡田ジャパンが奇跡の躍進。PK戦惜敗。'},
+  {year:2014,host:'🇧🇷 ブラジル',result:'グループステージ敗退',rc:'r-out',coach:'ザッケローニ',matches:[{s:'1-2',o:'コートジボワール',r:'l',st:'GL'},{s:'0-0',o:'ギリシャ',r:'d',st:'GL'},{s:'1-4',o:'コロンビア',r:'l',st:'GL'}],players:[{n:'本田圭佑',note:'CIVゴール'},{n:'香川真司',note:'MF'},{n:'岡崎慎司',note:'COLゴール'}],note:'0勝2敗1分でGL敗退。コートジボワール戦でリードしながら逆転負けが痛恨。'},
+  {year:2018,host:'🇷🇺 ロシア',result:'ベスト16',rc:'r-r16',coach:'西野朗',matches:[{s:'2-1',o:'コロンビア',r:'w',st:'GL'},{s:'2-2',o:'セネガル',r:'d',st:'GL'},{s:'0-1',o:'ポーランド',r:'l',st:'GL'},{s:'2-3',o:'ベルギー',r:'l',st:'R16'}],players:[{n:'香川真司',note:'コロンビアPK'},{n:'大迫勇也',note:'「半端ないって」'},{n:'乾貴士',note:'2試合でG'}],note:'ベルギー戦は2-0から逆転負けの「ロストフの14秒」として歴史に残る名勝負。'},
+  {year:2022,host:'🇶🇦 カタール',result:'ベスト16',rc:'r-r16',coach:'森保一',matches:[{s:'2-1',o:'ドイツ',r:'w',st:'GL'},{s:'0-1',o:'コスタリカ',r:'l',st:'GL'},{s:'2-1',o:'スペイン',r:'w',st:'GL'},{s:'1-1(PK1-3)',o:'クロアチア',r:'l',st:'R16'}],players:[{n:'堂安律',note:'G×2'},{n:'浅野拓磨',note:'逆転弾'},{n:'三笘薫',note:'「1ミリ」'}],note:'ドーハの奇跡！ドイツとスペインをどちらも撃破してグループ首位通過。PK戦で惜敗。'},
+  {year:2026,host:'🇺🇸🇨🇦🇲🇽 北中米',result:'目標：初のベスト8！',rc:'r-r8',coach:'森保一',matches:[{s:'？',o:'オランダ',r:'d',st:'GL 6/15'},{s:'？',o:'チュニジア',r:'d',st:'GL 6/21'},{s:'？',o:'スウェーデン',r:'d',st:'GL 6/26'}],players:[{n:'久保建英',note:'攻撃の柱'},{n:'遠藤航',note:'キャプテン'},{n:'堂安律',note:'#10'}],note:'グループFにオランダ・チュニジア・スウェーデン。悲願のベスト8、「新しい景色」を見に行く！'},
+];
+
+const ALL_GROUPS = [
+  {id:'A',teams:[{flag:'🇲🇽',ja:'メキシコ',conf:'CONCACAF'},{flag:'🇿🇦',ja:'南アフリカ',conf:'CAF'},{flag:'🇰🇷',ja:'韓国',conf:'AFC'},{flag:'🇨🇿',ja:'チェコ',conf:'UEFA'}],note:'メキシコがアステカで開幕戦。韓国はキム・ミンジェが守備の要。'},
+  {id:'B',teams:[{flag:'🇨🇦',ja:'カナダ',conf:'CONCACAF'},{flag:'🇧🇦',ja:'ボスニア・ヘルツェゴビナ',conf:'UEFA'},{flag:'🇶🇦',ja:'カタール',conf:'AFC'},{flag:'🇨🇭',ja:'スイス',conf:'UEFA'}],note:'カナダは全試合ホームで戦う地の利あり。'},
+  {id:'C',teams:[{flag:'🇧🇷',ja:'ブラジル',conf:'CONMEBOL'},{flag:'🇲🇦',ja:'モロッコ',conf:'CAF'},{flag:'🇭🇹',ja:'ハイチ',conf:'CONCACAF'},{flag:'🏴󠁧󠁢󠁳󠁣󠁴󠁿',ja:'スコットランド',conf:'UEFA'}],note:'5度の世界王者ブラジルが頭一つ抜ける。2022年4強のモロッコが対抗。'},
+  {id:'D',teams:[{flag:'🇺🇸',ja:'アメリカ',conf:'CONCACAF'},{flag:'🇵🇾',ja:'パラグアイ',conf:'CONMEBOL'},{flag:'🇦🇺',ja:'オーストラリア',conf:'AFC'},{flag:'🇹🇷',ja:'トルコ',conf:'UEFA'}],note:'開催国USAはLAのSoFiスタジアムからスタート。'},
+  {id:'E',teams:[{flag:'🇩🇪',ja:'ドイツ',conf:'UEFA'},{flag:'🇨🇼',ja:'キュラソー',conf:'CONCACAF'},{flag:'🇨🇮',ja:'コートジボワール',conf:'CAF'},{flag:'🇪🇨',ja:'エクアドル',conf:'CONMEBOL'}],note:'4度の世界王者ドイツが本命。キュラソーはW杯初出場！'},
+  {id:'F',jp:true,teams:[{flag:'🇳🇱',ja:'オランダ',conf:'UEFA'},{flag:'🇯🇵',ja:'日本',conf:'AFC',jp:true},{flag:'🇸🇪',ja:'スウェーデン',conf:'UEFA'},{flag:'🇹🇳',ja:'チュニジア',conf:'CAF'}],note:'最激戦グループ。Optaも「グループを覆しうるのは日本」と評価！'},
+  {id:'G',teams:[{flag:'🇧🇪',ja:'ベルギー',conf:'UEFA'},{flag:'🇪🇬',ja:'エジプト',conf:'CAF'},{flag:'🇮🇷',ja:'イラン',conf:'AFC'},{flag:'🇳🇿',ja:'ニュージーランド',conf:'OFC'}],note:'ベルギーはデ・ブルイネが中心。エジプトのモハメド・サラーが最後のW杯。'},
+  {id:'H',teams:[{flag:'🇪🇸',ja:'スペイン',conf:'UEFA'},{flag:'🇨🇻',ja:'カーボベルデ',conf:'CAF'},{flag:'🇸🇦',ja:'サウジアラビア',conf:'AFC'},{flag:'🇺🇾',ja:'ウルグアイ',conf:'CONMEBOL'}],note:'EURO2024王者スペイン、ラミン・ヤマルが最注目。'},
+  {id:'I',teams:[{flag:'🇫🇷',ja:'フランス',conf:'UEFA'},{flag:'🇸🇳',ja:'セネガル',conf:'CAF'},{flag:'🇮🇶',ja:'イラク',conf:'AFC'},{flag:'🇳🇴',ja:'ノルウェー',conf:'UEFA'}],note:'ムバッペ率いるフランスが優勝候補筆頭。ハーランドは予選16得点！'},
+  {id:'J',teams:[{flag:'🇦🇷',ja:'アルゼンチン',conf:'CONMEBOL'},{flag:'🇩🇿',ja:'アルジェリア',conf:'CAF'},{flag:'🇦🇹',ja:'オーストリア',conf:'UEFA'},{flag:'🇯🇴',ja:'ヨルダン',conf:'AFC'}],note:'前回王者アルゼンチン（メッシ）が圧倒的本命。ヨルダンはW杯初出場。'},
+  {id:'K',teams:[{flag:'🇵🇹',ja:'ポルトガル',conf:'UEFA'},{flag:'🇨🇩',ja:'コンゴ民主共和国',conf:'CAF'},{flag:'🇺🇿',ja:'ウズベキスタン',conf:'AFC'},{flag:'🇨🇴',ja:'コロンビア',conf:'CONMEBOL'}],note:'ロナウド（6度目）率いるポルトガルが本命。ウズベキスタンは初出場！'},
+  {id:'L',teams:[{flag:'🏴󠁧󠁢󠁥󠁮󠁧󠁿',ja:'イングランド',conf:'UEFA'},{flag:'🇭🇷',ja:'クロアチア',conf:'UEFA'},{flag:'🇬🇭',ja:'ガーナ',conf:'CAF'},{flag:'🇵🇦',ja:'パナマ',conf:'CONCACAF'}],note:'2018年準決勝で激突したイングランドとクロアチアが再び同組。'},
+];
+
+// ══════════════════════════
+//  RENDER PLAYERS
+// ══════════════════════════
+function renderPlayers() {
+  document.getElementById('playerGrid').dataset.rendered = '1';
+  buildPlayerGrid('ALL');
+}
+function filterPos(pos, btn) {
+  document.querySelectorAll('.pos-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  buildPlayerGrid(pos);
+}
+function buildPlayerGrid(pos) {
+  const grid = document.getElementById('playerGrid');
+  const posOrder = ['GK','DF','MF','FW'];
+  const posLabel = {GK:'ゴールキーパー',DF:'ディフェンダー',MF:'ミッドフィールダー',FW:'フォワード'};
+  const posColor = {GK:'var(--accent)',DF:'#7FB8FF',MF:'#2ECC71',FW:'#FF7087'};
+  let html = '';
+  posOrder.forEach(p => {
+    if (pos !== 'ALL' && pos !== p) return;
+    const grp = PLAYERS.filter(pl => pl.pos === p);
+    html += `<div class="pos-group-label">${posLabel[p]}</div>`;
+    grp.forEach((pl, i) => {
+      const id = p + '_' + i;
+      const abRows = pl.abilities.map(a => `
+        <div class="pc-ab-row">
+          <div class="pc-ab-label">${a.n}</div>
+          <div class="pc-ab-bar"><div class="pc-ab-fill" data-val="${a.v}" style="background:${posColor[pl.pos]}"></div></div>
+          <div class="pc-ab-val">${a.v}</div>
+        </div>`).join('');
+      const stats = pl.stats.map(s => `<div class="pc-stat"><span class="pc-stat-val" style="color:${posColor[pl.pos]}">${s.v}</span><span class="pc-stat-key">${s.l}</span></div>`).join('');
+      html += `
+<div class="player-card" id="pc-${id}" onclick="togglePC(this)">
+  <div class="pc-bg-num">${pl.num}</div>
+  <div class="pc-pos ${pl.pos}">${pl.pos}</div>
+  <div class="pc-name">${pl.ja}</div>
+  <div class="pc-en">${pl.en}</div>
+  <div class="pc-club">${pl.club}</div>
+  ${pl.wc > 0 ? `<div class="pc-wc">🏆 W杯${pl.wc}回</div>` : ''}
+  <div class="pc-body">
+    <div class="pc-stats">${stats}</div>
+    <div class="pc-ab">${abRows}</div>
+    <div class="pc-epi">${pl.epi}</div>
+    <div class="pc-tags">${pl.tags.map(t => `<span class="pc-tag">${t}</span>`).join('')}</div>
+  </div>
+</div>`;
+    });
+  });
+  grid.innerHTML = html;
+}
+function togglePC(card) {
+  const wasOpen = card.classList.contains('open');
+  card.classList.toggle('open');
+  if (!wasOpen) {
+    card.querySelectorAll('.pc-ab-fill').forEach(bar => {
+      bar.style.width = '0';
+      requestAnimationFrame(() => requestAnimationFrame(() => { bar.style.width = bar.dataset.val + '%'; }));
+    });
+  }
+}
+
+// ══════════════════════════
+//  RENDER GROUPS
+// ══════════════════════════
+function renderGroups() {
+  document.getElementById('groupsGrid').dataset.rendered = '1';
+  const filterEl = document.getElementById('groupFilter');
+  ALL_GROUPS.forEach(g => {
+    const btn = document.createElement('button');
+    btn.className = 'gf-btn' + (g.jp ? ' jp-f' : '');
+    btn.textContent = g.id + (g.jp ? ' 🇯🇵' : '');
+    btn.onclick = () => {
+      document.querySelectorAll('.gf-btn,.gf-all').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      filterGroup(g.id, btn);
+    };
+    filterEl.appendChild(btn);
+  });
+  document.getElementById('groupsGrid').innerHTML = ALL_GROUPS.map(g => `
+<div class="group-card ${g.jp ? 'jp-group' : ''}" data-group="${g.id}">
+  <div class="gc-header" onclick="this.parentElement.classList.toggle('open')">
+    <div class="gc-title ${g.jp ? 'jp' : ''}">グループ ${g.id}${g.jp ? ' 🇯🇵' : ''}</div>
+    <div class="gc-chevron">▾</div>
+  </div>
+  <div class="gc-teams-grid">
+    ${g.teams.map(t => `
+    <div class="gc-team ${t.jp ? 'jp' : ''}">
+      <div class="gc-team-flag">${t.flag}</div>
+      <div><div class="gc-team-name">${t.ja}</div><div class="gc-team-conf">${t.conf}</div></div>
+    </div>`).join('')}
+  </div>
+  <div class="gc-note">${g.note}</div>
+</div>`).join('');
+}
+function filterGroup(id, btn) {
+  document.querySelectorAll('.group-card').forEach(c => {
+    c.classList.toggle('hidden', id !== 'all' && c.dataset.group !== id);
+  });
+}
+
+// ══════════════════════════
+//  RENDER HISTORY
+// ══════════════════════════
+function renderHistory() {
+  document.getElementById('histList').dataset.rendered = '1';
+  document.getElementById('histList').innerHTML = [...WC_DATA].reverse().map(w => `
+<div class="hist-card" onclick="this.classList.toggle('open')">
+  <div class="hc-head">
+    <div class="hc-year">${w.year}</div>
+    <div class="hc-meta"><div class="hc-host">${w.host}</div><div class="hc-result ${w.rc}">${w.result}</div></div>
+    <div class="hc-chevron">▾</div>
+  </div>
+  <div class="hc-body">
+    <div class="hc-section">監督：${w.coach}</div>
+    <div class="hc-section">試合結果</div>
+    ${w.matches.map(m => `
+    <div class="hc-match-row">
+      <div class="hc-score ${m.r}">${m.s}</div>
+      <div><div class="hc-opp">vs ${m.o}</div><div class="hc-stage">${m.st}</div></div>
+    </div>`).join('')}
+    <div class="hc-section">主要選手</div>
+    <div class="hc-players">${w.players.map(pl => `<span class="hc-player">${pl.n} <span style="opacity:.6;font-size:.85em">${pl.note}</span></span>`).join('')}</div>
+    <div class="hc-note">${w.note}</div>
+  </div>
+</div>`).join('');
+}
+
+// ══════════════════════════
+//  MODAL
+// ══════════════════════════
+function closeModal() { document.getElementById('teamModal').classList.remove('open'); }
+
+// ══════════════════════════
+//  FADE IN OBSERVER
+// ══════════════════════════
+function triggerFadeIn() {
+  setTimeout(() => {
+    document.querySelectorAll('.fade-in:not(.visible)').forEach(el => {
+      const obs = new IntersectionObserver(entries => {
+        entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); } });
+      }, { threshold: 0.05 });
+      obs.observe(el);
+    });
+  }, 50);
+}
+triggerFadeIn();
+</script>
+</body>
+</html>

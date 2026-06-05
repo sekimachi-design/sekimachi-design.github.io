@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>こうたろう 算数マスターへの道</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'Hiragino Kaku Gothic ProN', 'Yu Gothic', sans-serif;
+  background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+  min-height: 100vh; min-height: 100dvh;
+  display: flex; justify-content: center;
+}
+.app {
+  width: 95%; max-width: 540px;
+  display: flex; flex-direction: column;
+  padding: 6px 0 10px; gap: 5px;
+}
+h1 { text-align: center; color: white; font-size: 16px; text-shadow: 0 2px 8px rgba(0,0,0,0.3); }
+.panel {
+  background: rgba(255,255,255,0.95); border-radius: 12px;
+  padding: 6px 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+}
+.btn-row { display: flex; gap: 4px; justify-content: center; flex-wrap: wrap; }
+.lv-btn {
+  padding: 5px 10px; border: 2px solid #ddd; border-radius: 8px;
+  background: white; font-size: 11px; font-weight: bold;
+  cursor: pointer; transition: all 0.15s;
+}
+.lv-btn.active { border-color: #302b63; background: #e8e4ff; color: #302b63; }
+
+.progress-row { display: flex; justify-content: space-between; align-items: center; padding: 0 8px; }
+.progress-text { font-size: 11px; color: #666; font-weight: bold; }
+.score-display { font-size: 14px; font-weight: bold; color: #302b63; transition: transform 0.3s; }
+.score-display.pulse { animation: pulse-anim 0.4s ease-out; }
+@keyframes pulse-anim {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.5); color: #22c55e; }
+  100% { transform: scale(1); }
+}
+.progress-dots { display: flex; gap: 2px; justify-content: center; margin-top: 1px; }
+.dot {
+  width: 10px; height: 10px; border-radius: 50%;
+  background: #e5e7eb; border: 1.5px solid #d1d5db;
+  transition: all 0.3s; display: flex; align-items: center; justify-content: center;
+  font-size: 0;
+}
+.dot.current { border-color: #302b63; box-shadow: 0 0 8px rgba(48,43,99,0.5); background: #e8e4ff; }
+.dot.correct { background: #22c55e; border-color: #16a34a; }
+.dot.wrong { background: #ef4444; border-color: #dc2626; }
+
+.question-area {
+  display: flex; justify-content: center; align-items: center;
+  min-height: 60px; padding: 8px;
+  font-size: 24px; font-weight: bold; color: #1a1a2e;
+  text-align: center; line-height: 1.6;
+}
+
+.frac {
+  display: inline-flex; flex-direction: column; align-items: center;
+  vertical-align: middle; margin: 0 2px; position: relative;
+}
+.frac-num, .frac-den {
+  font-size: 20px; line-height: 1.1; padding: 1px 4px;
+}
+.frac-bar {
+  width: 100%; min-width: 20px; height: 2px; background: #1a1a2e;
+}
+
+.answer-choices {
+  display: flex; gap: 8px; justify-content: center;
+  margin-top: 6px; padding: 4px 0;
+}
+.ans-btn {
+  flex: 1; max-width: 140px; padding: 10px 6px;
+  font-size: 18px; font-weight: bold;
+  border: 3px solid #c0c8e8; border-radius: 10px;
+  background: white; color: #302b63; cursor: pointer;
+  transition: all 0.15s;
+  -webkit-user-select: none; user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  display: flex; align-items: center; justify-content: center;
+  min-height: 50px;
+}
+.ans-btn .frac { margin: 0 1px; }
+.ans-btn .frac-num, .ans-btn .frac-den { font-size: 16px; }
+.ans-btn.selected { border-color: #3b82f6; background: #dbeafe; color: #1e40af; transform: scale(1.05); }
+.ans-btn.is-correct { border-color: #22c55e; background: #dcfce7; color: #16a34a; }
+.ans-btn.is-wrong { border-color: #ef4444; background: #fee2e2; color: #dc2626; }
+.ans-btn:active { transform: scale(0.95); }
+
+.scratch-area {
+  position: relative; margin-top: 6px;
+  border: 2px dashed #c0c8e8; border-radius: 8px;
+  background: #f8f9ff; overflow: hidden;
+}
+.scratch-area canvas { display: block; touch-action: none; width: 100%; }
+.scratch-label {
+  position: absolute; top: 4px; left: 8px;
+  font-size: 10px; color: #aab; pointer-events: none;
+}
+.scratch-clear {
+  position: absolute; top: 4px; right: 6px;
+  font-size: 10px; color: #999; background: rgba(255,255,255,0.8);
+  border: 1px solid #ddd; border-radius: 4px; padding: 1px 6px;
+  cursor: pointer;
+}
+
+.feedback { text-align: center; font-size: 18px; font-weight: bold; min-height: 26px; line-height: 26px; }
+.feedback.ok { color: #22c55e; }
+.feedback.ng { color: #ef4444; }
+
+.action-row { display: flex; gap: 6px; justify-content: center; }
+.act-btn {
+  padding: 8px 14px; font-size: 13px; font-weight: bold;
+  color: white; border: none; border-radius: 8px;
+  cursor: pointer; transition: transform 0.1s;
+}
+.act-btn:active { transform: scale(0.95); }
+.act-btn.next { background: linear-gradient(135deg, #302b63, #24243e); }
+
+.celebrate-overlay {
+  position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+  background: radial-gradient(ellipse at center, #0a0a2e 0%, #000 100%);
+  z-index: 1000; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; overflow: hidden; cursor: pointer;
+}
+.rocket { position: absolute; font-size: 80px; left: 50%; transform: translateX(-50%); animation: rocket-launch 2.5s ease-in forwards; }
+@keyframes rocket-launch {
+  0% { bottom: -100px; }
+  40% { bottom: 30%; }
+  100% { bottom: 120%; }
+}
+.rocket-trail {
+  position: absolute; left: 50%; transform: translateX(-50%);
+  width: 6px; border-radius: 3px;
+  background: linear-gradient(to top, #ff6b35, #ffd700, transparent);
+  animation: trail-fade 2.5s ease-in forwards;
+}
+@keyframes trail-fade {
+  0% { bottom: -100px; height: 60px; opacity: 1; }
+  40% { bottom: 25%; height: 120px; opacity: 0.8; }
+  100% { bottom: 110%; height: 40px; opacity: 0; }
+}
+.confetti {
+  position: absolute; border-radius: 2px;
+  animation: confetti-fall linear forwards;
+}
+@keyframes confetti-fall {
+  0% { top: -20px; opacity: 1; transform: rotate(0deg) scale(1); }
+  100% { top: 110vh; opacity: 0.3; transform: rotate(1080deg) scale(0.5); }
+}
+.star-bg {
+  position: absolute; color: white; opacity: 0;
+  animation: star-twinkle 2s ease-in-out infinite;
+}
+@keyframes star-twinkle {
+  0%, 100% { opacity: 0.2; transform: scale(0.8); }
+  50% { opacity: 1; transform: scale(1.3); }
+}
+.celebrate-msg {
+  position: relative; z-index: 10; text-align: center; padding: 20px;
+}
+.celebrate-title {
+  font-size: 48px; font-weight: bold; color: #ffd700;
+  text-shadow: 0 0 30px rgba(255,215,0,0.6);
+  animation: bounce-in 0.6s ease-out 1s both;
+}
+.celebrate-sub {
+  font-size: 22px; color: #a5b4fc; margin-top: 12px;
+  animation: bounce-in 0.6s ease-out 1.5s both;
+}
+.celebrate-reward {
+  font-size: 26px; color: #4ade80; font-weight: bold; margin-top: 20px;
+  background: rgba(255,255,255,0.1); padding: 14px 28px; border-radius: 14px;
+  border: 2px solid rgba(74,222,128,0.3);
+  animation: bounce-in 0.6s ease-out 2s both;
+}
+.celebrate-close {
+  font-size: 14px; color: rgba(255,255,255,0.4); margin-top: 24px;
+  animation: bounce-in 0.6s ease-out 2.5s both;
+}
+@keyframes bounce-in {
+  0% { transform: scale(0) rotate(-10deg); opacity: 0; }
+  60% { transform: scale(1.15) rotate(2deg); opacity: 1; }
+  100% { transform: scale(1) rotate(0); opacity: 1; }
+}
+
+.results-overlay {
+  position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,20,0.92); z-index: 1000;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+}
+.results-box { text-align: center; }
+.results-emoji { font-size: 80px; animation: bounce-in 0.5s ease-out both; }
+.results-score { font-size: 64px; font-weight: bold; color: white; margin-top: 8px; animation: bounce-in 0.5s ease-out 0.3s both; }
+.results-unit { font-size: 28px; color: #a5b4fc; }
+.results-msg { font-size: 22px; color: #ccc; margin-top: 8px; animation: bounce-in 0.5s ease-out 0.6s both; }
+.results-retry {
+  margin-top: 28px; padding: 16px 36px; font-size: 20px; font-weight: bold;
+  background: linear-gradient(135deg, #302b63, #24243e); color: white;
+  border: none; border-radius: 14px; cursor: pointer;
+  animation: bounce-in 0.5s ease-out 0.9s both;
+}
+.results-retry:active { transform: scale(0.95); }
+</style>
+</head>
+<body>
+<div class="app">
+  <h1>🚀 こうたろう 算数マスターへの道</h1>
+
+  <div class="panel">
+    <div class="btn-row" id="levelBar"></div>
+  </div>
+
+  <div class="panel">
+    <div class="progress-row">
+      <span class="progress-text" id="qProgress">問題 1/10</span>
+      <span class="score-display" id="qScoreDisp">0点</span>
+    </div>
+    <div class="progress-dots" id="progressDots"></div>
+  </div>
+
+  <div class="panel">
+    <div class="question-area" id="questionArea"></div>
+    <div class="scratch-area" id="scratchArea">
+      <span class="scratch-label">計算スペース</span>
+      <button class="scratch-clear" onclick="clearScratch()">消す</button>
+      <canvas id="scratchCanvas"></canvas>
+    </div>
+    <div class="answer-choices" id="answerChoices"></div>
+    <div class="feedback" id="feedback"></div>
+  </div>
+
+  <div class="panel">
+    <div class="action-row">
+      <button class="act-btn next" id="nextBtn" onclick="next()">次の問題</button>
+    </div>
+  </div>
+</div>
+
+<script>
+let lvIdx = 0, qNum = 1, qScore = 0, checked = false;
+let currentAnswer = null;
+let currentAnswerType = 'number';
+
+const goodMsg = ['すごい！🎉','正解！⭐','やったね！🌟','完ぺき！💯','さすが！✨','天才！🏆'];
+const badMsg = ['おしい！😣','がんばれ！💪','次はできるよ！🔥','ドンマイ！😊'];
+const REWARDS = [10, 15, 20, 25, 30];
+
+const LV = [
+  { label: 'Lv.1', desc: '小数×÷' },
+  { label: 'Lv.2', desc: '分数＋−' },
+  { label: 'Lv.3', desc: '分数×' },
+  { label: 'Lv.4', desc: '面積・体積' },
+  { label: 'Lv.5', desc: '割合' },
+];
+
+function rand(a, b) { return Math.floor(Math.random() * (b - a + 1)) + a; }
+function pick(a) { return a[Math.floor(Math.random() * a.length)]; }
+function gcd(a, b) { a = Math.abs(a); b = Math.abs(b); while (b) { [a, b] = [b, a % b]; } return a; }
+
+function fracHtml(num, den) {
+  if (den === 1) return `<span>${num}</span>`;
+  return `<span class="frac"><span class="frac-num">${num}</span><span class="frac-bar"></span><span class="frac-den">${den}</span></span>`;
+}
+
+function simplify(n, d) {
+  const g = gcd(n, d);
+  return [n / g, d / g];
+}
+
+// ===== Problem Generators =====
+
+function genDecimal() {
+  const isMul = Math.random() < 0.5;
+  let text, ans;
+  if (isMul) {
+    const patterns = [
+      () => { const a = (rand(11, 99) / 10); const b = rand(2, 9); return [a, b, a * b]; },
+      () => { const a = (rand(11, 99) / 10); const b = (rand(11, 99) / 10); return [a, b, a * b]; },
+      () => { const a = rand(2, 9); const b = (rand(11, 99) / 10); return [a, b, a * b]; },
+    ];
+    const [a, b, raw] = pick(patterns)();
+    ans = Math.round(raw * 100) / 100;
+    text = `${a} × ${b} = ?`;
+  } else {
+    const divisor = rand(2, 9);
+    const resultX10 = rand(11, 99);
+    const result = resultX10 / 10;
+    const dividend = Math.round(result * divisor * 10) / 10;
+    ans = result;
+    text = `${dividend} ÷ ${divisor} = ?`;
+  }
+  currentAnswer = ans;
+  currentAnswerType = 'number';
+  return text;
+}
+
+function genFracAdd() {
+  const isSub = Math.random() < 0.5;
+  const dens = [2, 3, 4, 5, 6, 8];
+  let d1 = pick(dens), d2 = pick(dens);
+  while (d1 === d2 && Math.random() < 0.5) d2 = pick(dens);
+  let n1 = rand(1, d1 - 1), n2 = rand(1, d2 - 1);
+
+  const lcd = (d1 * d2) / gcd(d1, d2);
+  let resNum;
+  if (isSub) {
+    const v1 = n1 * (lcd / d1), v2 = n2 * (lcd / d2);
+    if (v1 <= v2) { [n1, d1, n2, d2] = [n2, d2, n1, d1]; }
+    resNum = n1 * (lcd / d1) - n2 * (lcd / d2);
+  } else {
+    resNum = n1 * (lcd / d1) + n2 * (lcd / d2);
+  }
+  const [sn, sd] = simplify(resNum, lcd);
+  currentAnswer = { num: sn, den: sd };
+  currentAnswerType = 'frac';
+  const op = isSub ? '−' : '＋';
+  return `${fracHtml(n1, d1)} ${op} ${fracHtml(n2, d2)} = ?`;
+}
+
+function genFracMul() {
+  const dens = [2, 3, 4, 5, 6, 7, 8];
+  const d1 = pick(dens), d2 = pick(dens);
+  const n1 = rand(1, d1 - 1), n2 = rand(1, d2 - 1);
+  const [sn, sd] = simplify(n1 * n2, d1 * d2);
+  currentAnswer = { num: sn, den: sd };
+  currentAnswerType = 'frac';
+  return `${fracHtml(n1, d1)} × ${fracHtml(n2, d2)} = ?`;
+}
+
+function genArea() {
+  const type = rand(0, 3);
+  let text, ans;
+  if (type === 0) {
+    const base = rand(3, 15), height = rand(3, 15);
+    ans = base * height / 2;
+    text = `底辺${base}cm、高さ${height}cmの<br>三角形の面積は？（cm²）`;
+  } else if (type === 1) {
+    const base = rand(3, 15), height = rand(3, 15);
+    ans = base * height;
+    text = `底辺${base}cm、高さ${height}cmの<br>平行四辺形の面積は？（cm²）`;
+  } else if (type === 2) {
+    const a = rand(3, 12), b = rand(3, 12), h = rand(3, 10);
+    ans = (a + b) * h / 2;
+    text = `上底${a}cm、下底${b}cm、高さ${h}cmの<br>台形の面積は？（cm²）`;
+  } else {
+    const w = rand(2, 10), d = rand(2, 10), h = rand(2, 10);
+    ans = w * d * h;
+    text = `たて${w}cm、横${d}cm、高さ${h}cmの<br>直方体の体積は？（cm³）`;
+  }
+  currentAnswer = ans;
+  currentAnswerType = 'number';
+  return text;
+}
+
+function genPercent() {
+  const type = rand(0, 1);
+  let text, ans;
+  if (type === 0) {
+    const total = pick([20, 40, 50, 60, 80, 100, 120, 150, 200, 250, 300, 400, 500]);
+    const pct = pick([10, 15, 20, 25, 30, 40, 50, 60, 75, 80]);
+    ans = total * pct / 100;
+    text = `${total}人の${pct}%は何人？`;
+  } else {
+    const base = pick([20, 25, 40, 50, 80, 100, 200]);
+    const pct = pick([10, 20, 25, 30, 40, 50, 60, 75, 80]);
+    const part = base * pct / 100;
+    ans = pct;
+    text = `${part}は${base}の何%？`;
+  }
+  currentAnswer = ans;
+  currentAnswerType = 'number';
+  return text;
+}
+
+// ===== Answer Choices =====
+
+function genNumberChoices(correct) {
+  const choices = new Set([correct]);
+  const range = Math.max(1, Math.round(Math.abs(correct) * 0.2)) || 1;
+  let tries = 0;
+  while (choices.size < 3 && tries < 50) {
+    tries++;
+    const offset = rand(1, range);
+    let wrong = correct + (Math.random() < 0.5 ? offset : -offset);
+    wrong = Math.round(wrong * 100) / 100;
+    if (wrong > 0 && wrong !== correct) choices.add(wrong);
+  }
+  while (choices.size < 3) {
+    choices.add(correct + choices.size);
+  }
+  return [...choices].sort(() => Math.random() - 0.5);
+}
+
+function genFracChoices(correct) {
+  const { num, den } = correct;
+  const choices = [{ num, den }];
+
+  const wrongPatterns = [
+    () => ({ num, den: den * 2 }),
+    () => ({ num: num * 2, den }),
+    () => ({ num: num + 1, den }),
+    () => ({ num: Math.max(1, num - 1), den }),
+    () => ({ num, den: Math.max(1, den - 1) }),
+    () => ({ num: num + den, den }),
+    () => ({ num, den: num + den }),
+    () => {
+      const nd = den + rand(1, 3);
+      return { num: Math.max(1, rand(1, nd - 1)), den: nd };
+    },
+  ];
+
+  const shuffled = wrongPatterns.sort(() => Math.random() - 0.5);
+  for (const fn of shuffled) {
+    if (choices.length >= 3) break;
+    const w = fn();
+    if (w.num <= 0 || w.den <= 0) continue;
+    const [sn, sd] = simplify(w.num, w.den);
+    if (sn === num && sd === den) continue;
+    if (choices.some(c => c.num === sn && c.den === sd)) continue;
+    choices.push({ num: sn, den: sd });
+  }
+
+  while (choices.length < 3) {
+    const w = { num: rand(1, 9), den: rand(2, 9) };
+    const [sn, sd] = simplify(w.num, w.den);
+    if (sn === num && sd === den) continue;
+    if (choices.some(c => c.num === sn && c.den === sd)) continue;
+    choices.push({ num: sn, den: sd });
+  }
+
+  return choices.sort(() => Math.random() - 0.5);
+}
+
+function renderChoices() {
+  const el = document.getElementById('answerChoices');
+  if (currentAnswerType === 'frac') {
+    const choices = genFracChoices(currentAnswer);
+    el.innerHTML = choices.map(c =>
+      `<button class="ans-btn" data-num="${c.num}" data-den="${c.den}" onclick="selectAns(this)">${fracHtml(c.num, c.den)}</button>`
+    ).join('');
+  } else {
+    const choices = genNumberChoices(currentAnswer);
+    el.innerHTML = choices.map(v =>
+      `<button class="ans-btn" data-val="${v}" onclick="selectAns(this)">${v}</button>`
+    ).join('');
+  }
+}
+
+function selectAns(btn) {
+  if (checked) return;
+  document.querySelectorAll('.ans-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  checkAnswer();
+}
+
+function isCorrectChoice(btn) {
+  if (currentAnswerType === 'frac') {
+    return parseInt(btn.dataset.num) === currentAnswer.num && parseInt(btn.dataset.den) === currentAnswer.den;
+  }
+  return parseFloat(btn.dataset.val) === currentAnswer;
+}
+
+function getCorrectDisplay() {
+  if (currentAnswerType === 'frac') {
+    const { num, den } = currentAnswer;
+    if (den === 1) return `${num}`;
+    return `${num}/${den}`;
+  }
+  return `${currentAnswer}`;
+}
+
+// ===== Core =====
+
+function genProblem() {
+  if (lvIdx === 0) return genDecimal();
+  if (lvIdx === 1) return genFracAdd();
+  if (lvIdx === 2) return genFracMul();
+  if (lvIdx === 3) return genArea();
+  return genPercent();
+}
+
+function render() {
+  checked = false;
+  document.getElementById('feedback').textContent = '';
+  document.getElementById('feedback').className = 'feedback';
+  updateProgress();
+
+  const questionHtml = genProblem();
+  document.getElementById('questionArea').innerHTML = questionHtml;
+  clearScratch();
+  renderChoices();
+  document.getElementById('nextBtn').textContent = qNum >= 10 ? '結果を見る' : '次の問題';
+}
+
+function checkAnswer() {
+  if (checked) return;
+  const selected = document.querySelector('.ans-btn.selected');
+  if (!selected) return;
+
+  checked = true;
+  const isCorrect = isCorrectChoice(selected);
+
+  document.querySelectorAll('.ans-btn').forEach(btn => {
+    btn.classList.remove('selected');
+    if (isCorrectChoice(btn)) btn.classList.add('is-correct');
+    else if (btn === selected) btn.classList.add('is-wrong');
+  });
+
+  const fb = document.getElementById('feedback');
+  if (isCorrect) {
+    qScore += 10;
+    fb.textContent = pick(goodMsg); fb.className = 'feedback ok';
+    const el = document.getElementById('qScoreDisp');
+    el.classList.remove('pulse'); void el.offsetWidth; el.classList.add('pulse');
+  } else {
+    fb.textContent = pick(badMsg) + ` 答えは ${getCorrectDisplay()} だよ`; fb.className = 'feedback ng';
+  }
+  const dot = document.querySelectorAll('.dot')[qNum - 1];
+  if (dot) { dot.classList.remove('current'); dot.classList.add(isCorrect ? 'correct' : 'wrong'); }
+  updateProgress();
+  document.getElementById('nextBtn').textContent = qNum >= 10 ? '結果を見る' : '次の問題';
+
+  setTimeout(() => next(), 3000);
+}
+
+function next() {
+  if (!checked) return;
+  if (qNum >= 10) { showResults(); return; }
+  qNum++;
+  render();
+}
+
+function updateProgress() {
+  document.getElementById('qProgress').textContent = `問題 ${qNum}/10`;
+  document.getElementById('qScoreDisp').textContent = `${qScore}点`;
+}
+
+function renderDots() {
+  let h = '';
+  for (let i = 0; i < 10; i++) {
+    h += `<div class="dot${i === qNum - 1 ? ' current' : ''}">${i + 1}</div>`;
+  }
+  document.getElementById('progressDots').innerHTML = h;
+}
+
+// ===== Results =====
+function showResults() {
+  if (qScore === 100) celebrate();
+  else showScoreScreen();
+}
+
+function showScoreScreen() {
+  let emoji, msg;
+  if (qScore >= 80) { emoji = '🛸'; msg = 'あとすこしで算数マスター！'; }
+  else if (qScore >= 60) { emoji = '☁️'; msg = 'いい調子！がんばろう！'; }
+  else if (qScore >= 40) { emoji = '✈️'; msg = 'もうちょっと練習しよう！'; }
+  else { emoji = '🚀'; msg = 'もう一回チャレンジ！'; }
+
+  const ov = document.createElement('div');
+  ov.className = 'results-overlay';
+  ov.innerHTML = `<div class="results-box">
+    <div class="results-emoji">${emoji}</div>
+    <div class="results-score">${qScore}<span class="results-unit">点</span></div>
+    <div class="results-msg">${msg}</div>
+    <button class="results-retry" onclick="this.closest('.results-overlay').remove();setLv(lvIdx)">もう一度チャレンジ！</button>
+  </div>`;
+  document.body.appendChild(ov);
+}
+
+function celebrate() {
+  const ov = document.createElement('div');
+  ov.className = 'celebrate-overlay';
+  ov.onclick = () => ov.remove();
+
+  for (let i = 0; i < 25; i++) {
+    const s = document.createElement('div');
+    s.className = 'star-bg'; s.textContent = '✦';
+    s.style.left = Math.random() * 100 + '%';
+    s.style.top = Math.random() * 100 + '%';
+    s.style.fontSize = (10 + Math.random() * 18) + 'px';
+    s.style.animationDelay = Math.random() * 3 + 's';
+    ov.appendChild(s);
+  }
+
+  for (let i = 0; i < 50; i++) {
+    const c = document.createElement('div');
+    c.className = 'confetti';
+    c.style.left = Math.random() * 100 + '%';
+    c.style.animationDelay = (0.5 + Math.random() * 2.5) + 's';
+    c.style.animationDuration = (2 + Math.random() * 3) + 's';
+    c.style.background = ['#ff6b6b', '#ffd93d', '#6bcb77', '#4d96ff', '#ff6fff', '#ff9f43'][i % 6];
+    c.style.width = (6 + Math.random() * 10) + 'px';
+    c.style.height = (6 + Math.random() * 10) + 'px';
+    c.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+    ov.appendChild(c);
+  }
+
+  const r = document.createElement('div');
+  r.className = 'rocket'; r.textContent = '🚀';
+  ov.appendChild(r);
+
+  const trail = document.createElement('div');
+  trail.className = 'rocket-trail';
+  ov.appendChild(trail);
+
+  const m = document.createElement('div');
+  m.className = 'celebrate-msg';
+  m.innerHTML = `
+    <div class="celebrate-title">100点！🎉</div>
+    <div class="celebrate-sub">算数マスターに近づいた！</div>
+    <div class="celebrate-reward">🎮 ${REWARDS[lvIdx]}ふん ゲームけん ゲット！</div>
+    <div class="celebrate-close">タップして閉じる</div>
+  `;
+  ov.appendChild(m);
+  document.body.appendChild(ov);
+  setTimeout(() => { if (ov.parentNode) ov.remove(); }, 10000);
+}
+
+// ===== UI =====
+function renderLevels() {
+  document.getElementById('levelBar').innerHTML = LV.map((l, i) =>
+    `<button class="lv-btn${i === lvIdx ? ' active' : ''}" onclick="setLv(${i})">${l.label} ${l.desc}</button>`
+  ).join('');
+}
+
+function setLv(i) {
+  lvIdx = i; qNum = 1; qScore = 0;
+  document.querySelectorAll('.lv-btn').forEach((b, j) => b.classList.toggle('active', j === i));
+  renderDots();
+  render();
+}
+
+// ===== Scratch Pad =====
+const DPR = window.devicePixelRatio || 1;
+let scratchDrawing = false, scratchLastX = 0, scratchLastY = 0;
+
+function setupScratch() {
+  const canvas = document.getElementById('scratchCanvas');
+  const area = document.getElementById('scratchArea');
+  const w = area.clientWidth - 4;
+  const h = 300;
+  canvas.style.width = w + 'px';
+  canvas.style.height = h + 'px';
+  canvas.width = w * DPR;
+  canvas.height = h * DPR;
+  const ctx = canvas.getContext('2d');
+  ctx.scale(DPR, DPR);
+
+  canvas.addEventListener('pointerdown', scratchDown);
+  canvas.addEventListener('pointermove', scratchMove);
+  canvas.addEventListener('pointerup', scratchUp);
+  canvas.addEventListener('pointercancel', scratchUp);
+}
+
+function scratchDown(e) {
+  e.preventDefault();
+  const c = e.target;
+  c.setPointerCapture(e.pointerId);
+  scratchDrawing = true;
+  const r = c.getBoundingClientRect();
+  scratchLastX = e.clientX - r.left;
+  scratchLastY = e.clientY - r.top;
+  const ctx = c.getContext('2d');
+  ctx.strokeStyle = '#333';
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(scratchLastX, scratchLastY);
+}
+
+function scratchMove(e) {
+  if (!scratchDrawing) return;
+  e.preventDefault();
+  const c = document.getElementById('scratchCanvas');
+  const r = c.getBoundingClientRect();
+  const x = Math.max(0, Math.min(e.clientX - r.left, r.width));
+  const y = Math.max(0, Math.min(e.clientY - r.top, r.height));
+  const ctx = c.getContext('2d');
+  ctx.lineTo(x, y);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(x, y);
+}
+
+function scratchUp() {
+  scratchDrawing = false;
+}
+
+function clearScratch() {
+  const c = document.getElementById('scratchCanvas');
+  const ctx = c.getContext('2d');
+  ctx.save();
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.clearRect(0, 0, c.width, c.height);
+  ctx.restore();
+}
+
+renderLevels();
+renderDots();
+render();
+setupScratch();
+</script>
+</body>
+</html>

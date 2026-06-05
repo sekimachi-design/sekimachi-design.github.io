@@ -1,0 +1,1294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SORA Coffee — Specialty Coffee &amp; Cozy Space in Melbourne</title>
+  <meta name="description" content="SORA Coffee — A hidden gem cafe in Melbourne CBD. Enjoy hand-dripped specialty coffee and homemade sweets in a warm, relaxing atmosphere.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,300;1,9..40,400&family=Noto+Sans+JP:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>☕</text></svg>">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --brown: #3C2415;
+      --brown-light: #5A3A28;
+      --cream: #FFF8F0;
+      --beige: #F5E6D3;
+      --gold: #C8956C;
+      --gold-light: #D4A87C;
+      --gold-dark: #A87750;
+      --text: #3C2415;
+      --text-light: #4A3328;
+      --text-muted: #6B5545;
+      --white: #FFFFFF;
+      --shadow-sm: 0 1px 3px rgba(60,36,21,0.06);
+      --shadow-md: 0 4px 16px rgba(60,36,21,0.08);
+      --shadow-lg: 0 8px 32px rgba(60,36,21,0.12);
+      --shadow-xl: 0 16px 48px rgba(60,36,21,0.16);
+      --radius: 16px;
+      --radius-sm: 8px;
+      --radius-lg: 24px;
+      --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    html { scroll-behavior: smooth; font-size: 16px; }
+
+    body {
+      font-family: 'Noto Sans JP', 'DM Sans', sans-serif;
+      background: var(--cream);
+      color: var(--text);
+      line-height: 1.8;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      overflow-x: hidden;
+    }
+
+    /* ── Demo Banner ── */
+    .demo-banner {
+      background: var(--brown);
+      color: var(--beige);
+      text-align: center;
+      padding: 10px 20px;
+      font-size: 0.8rem;
+      letter-spacing: 0.02em;
+      line-height: 1.6;
+      position: relative;
+      z-index: 1001;
+    }
+    .demo-banner a {
+      color: var(--gold-light);
+      text-decoration: underline;
+      text-underline-offset: 2px;
+      transition: color var(--transition);
+    }
+    .demo-banner a:hover { color: var(--white); }
+
+    /* ── Typography ── */
+    h1, h2, h3, h4 {
+      font-family: 'DM Sans', 'Noto Sans JP', sans-serif;
+      font-weight: 600;
+      line-height: 1.3;
+    }
+
+    .section-label {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 12px;
+      display: block;
+    }
+
+    .section-title {
+      font-size: clamp(1.6rem, 4vw, 2.4rem);
+      color: var(--brown);
+      margin-bottom: 20px;
+      letter-spacing: -0.01em;
+    }
+
+    .section-subtitle {
+      font-size: 1.05rem;
+      color: var(--text-light);
+      max-width: 560px;
+      font-weight: 400;
+      line-height: 2;
+    }
+
+    /* ── Layout ── */
+    .container {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    section {
+      padding: 100px 0;
+    }
+
+    /* ── Fade-in Animation ── */
+    .fade-in {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1),
+                  transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .fade-in.is-visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .fade-in-delay-1 { transition-delay: 0.1s; }
+    .fade-in-delay-2 { transition-delay: 0.2s; }
+    .fade-in-delay-3 { transition-delay: 0.3s; }
+    .fade-in-delay-4 { transition-delay: 0.4s; }
+
+    /* ── Navigation ── */
+    .nav {
+      position: relative;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      padding: 0 24px;
+      transition: background var(--transition), box-shadow var(--transition), padding var(--transition);
+    }
+    .nav-scrolled {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      background: rgba(255, 248, 240, 0.95);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      box-shadow: var(--shadow-sm);
+    }
+    .nav-inner {
+      max-width: 1120px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 72px;
+    }
+    .nav-logo {
+      color: var(--brown);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      line-height: 1;
+    }
+    .logo-icon {
+      display: block;
+      height: 54px;
+      width: auto;
+    }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 36px;
+      list-style: none;
+    }
+    .nav-links a {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--text-light);
+      text-decoration: none;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      transition: color var(--transition);
+      position: relative;
+    }
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -4px;
+      left: 0;
+      width: 0;
+      height: 1.5px;
+      background: var(--gold);
+      transition: width var(--transition);
+    }
+    .nav-links a:hover { color: var(--brown); }
+    .nav-links a:hover::after { width: 100%; }
+
+    /* Mobile menu */
+    .nav-toggle {
+      display: none;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 8px;
+      flex-direction: column;
+      gap: 5px;
+    }
+    .nav-toggle span {
+      display: block;
+      width: 22px;
+      height: 1.5px;
+      background: var(--brown);
+      transition: all var(--transition);
+    }
+    .nav-toggle.active span:nth-child(1) { transform: rotate(45deg) translate(4px, 5px); }
+    .nav-toggle.active span:nth-child(2) { opacity: 0; }
+    .nav-toggle.active span:nth-child(3) { transform: rotate(-45deg) translate(4px, -5px); }
+
+    /* ── Hero ── */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+      padding: 120px 24px 80px;
+      background:
+        linear-gradient(175deg, rgba(60,36,21,0.35) 0%, rgba(60,36,21,0.2) 100%),
+        url('images/cafe/hero.jpg') center/cover no-repeat;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background:
+        repeating-linear-gradient(90deg, transparent, transparent 80px, rgba(60,36,21,0.015) 80px, rgba(60,36,21,0.015) 81px),
+        repeating-linear-gradient(0deg, transparent, transparent 80px, rgba(60,36,21,0.015) 80px, rgba(60,36,21,0.015) 81px);
+      pointer-events: none;
+    }
+    .hero-content {
+      text-align: center;
+      position: relative;
+      z-index: 1;
+      max-width: 720px;
+    }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255,255,255,0.2);
+      border: 1px solid rgba(255,255,255,0.4);
+      backdrop-filter: blur(8px);
+      padding: 8px 20px;
+      border-radius: 100px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #FFFFFF;
+      letter-spacing: 0.06em;
+      margin-bottom: 32px;
+      text-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    }
+    .hero-badge::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      background: var(--gold);
+      border-radius: 50%;
+    }
+    .hero h1 {
+      font-family: 'Noto Sans JP', sans-serif;
+      font-size: clamp(1.8rem, 5vw, 3rem);
+      font-weight: 600;
+      color: var(--cream);
+      line-height: 1.5;
+      margin-bottom: 24px;
+      letter-spacing: 0.04em;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    }
+    .hero-sub {
+      font-size: clamp(1rem, 2vw, 1.15rem);
+      color: rgba(255,255,255,0.95);
+      font-weight: 400;
+      line-height: 2;
+      margin-bottom: 48px;
+      letter-spacing: 0.02em;
+      text-shadow: 0 1px 4px rgba(0,0,0,0.3);
+    }
+    .hero-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--gold);
+      color: var(--white);
+      padding: 16px 40px;
+      border-radius: 100px;
+      text-decoration: none;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      transition: all var(--transition);
+      border: none;
+      cursor: pointer;
+    }
+    .hero-cta:hover {
+      background: var(--brown-light);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-lg);
+    }
+    .hero-cta svg {
+      width: 16px;
+      height: 16px;
+      transition: transform var(--transition);
+    }
+    .hero-cta:hover svg { transform: translateX(3px); }
+
+    .hero-scroll {
+      position: absolute;
+      bottom: 40px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      color: var(--text-muted);
+      font-size: 0.7rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      font-family: 'DM Sans', sans-serif;
+    }
+    .hero-scroll-line {
+      width: 1px;
+      height: 40px;
+      background: linear-gradient(to bottom, var(--gold), transparent);
+      animation: scrollPulse 2s ease-in-out infinite;
+    }
+    @keyframes scrollPulse {
+      0%, 100% { opacity: 0.4; transform: scaleY(1); }
+      50% { opacity: 1; transform: scaleY(1.2); }
+    }
+
+    /* ── About ── */
+    .about { background: var(--white); }
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      align-items: center;
+    }
+    .about-image {
+      aspect-ratio: 4/5;
+      border-radius: var(--radius-lg);
+      background: url('images/cafe/about.jpg') center/cover no-repeat;
+      position: relative;
+      overflow: hidden;
+    }
+    .about-image::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at 30% 40%, rgba(255,255,255,0.15) 0%, transparent 50%),
+        radial-gradient(circle at 70% 70%, rgba(60,36,21,0.2) 0%, transparent 40%);
+    }
+    .about-image::after {
+      content: 'Interior';
+      position: absolute;
+      bottom: 24px;
+      left: 24px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: rgba(255,248,240,0.7);
+      background: rgba(60,36,21,0.3);
+      backdrop-filter: blur(10px);
+      padding: 8px 16px;
+      border-radius: 100px;
+    }
+    .about-text h2 { margin-bottom: 24px; }
+    .about-text p {
+      color: var(--text-light);
+      font-weight: 400;
+      font-size: 1rem;
+      line-height: 2.2;
+      margin-bottom: 16px;
+    }
+    .about-features {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-top: 32px;
+    }
+    .about-feature {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.9rem;
+      color: var(--text-light);
+    }
+    .about-feature-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: var(--beige);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 1rem;
+    }
+
+    /* ── Menu ── */
+    .menu { background: var(--cream); }
+    .menu-header {
+      text-align: center;
+      margin-bottom: 60px;
+    }
+    .menu-header .section-subtitle { margin: 0 auto; }
+    .menu-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 24px;
+    }
+    .menu-card {
+      background: var(--white);
+      border-radius: var(--radius);
+      overflow: hidden;
+      transition: all var(--transition);
+      border: 1px solid rgba(60,36,21,0.04);
+    }
+    .menu-card:hover {
+      transform: translateY(-6px);
+      box-shadow: var(--shadow-lg);
+    }
+    .menu-card-image {
+      aspect-ratio: 1;
+      position: relative;
+      overflow: hidden;
+    }
+    .menu-card:nth-child(1) .menu-card-image {
+      background: url('images/cafe/latte.jpg') center/cover no-repeat;
+    }
+    .menu-card:nth-child(2) .menu-card-image {
+      background: url('images/cafe/blend.jpg') center/cover no-repeat;
+    }
+    .menu-card:nth-child(3) .menu-card-image {
+      background: url('images/cafe/tea.jpg') center/cover no-repeat;
+    }
+    .menu-card:nth-child(4) .menu-card-image {
+      background: url('images/cafe/scone.jpg') center/cover no-repeat;
+    }
+    .menu-card-image::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 40% 40%, rgba(255,255,255,0.2) 0%, transparent 60%);
+    }
+    .menu-card-image::after {
+      position: absolute;
+      bottom: 12px;
+      right: 12px;
+      font-size: 1.6rem;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+    }
+    .menu-card:nth-child(1) .menu-card-image::after { content: ''; }
+    .menu-card:nth-child(2) .menu-card-image::after { content: ''; }
+    .menu-card:nth-child(3) .menu-card-image::after { content: ''; }
+    .menu-card:nth-child(4) .menu-card-image::after { content: ''; }
+    .menu-card-body { padding: 20px; }
+    .menu-card-category {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 6px;
+    }
+    .menu-card-name {
+      font-family: 'Noto Sans JP', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: var(--brown);
+      margin-bottom: 6px;
+    }
+    .menu-card-desc {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      font-weight: 400;
+      line-height: 1.7;
+      margin-bottom: 12px;
+    }
+    .menu-card-price {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: var(--brown);
+      letter-spacing: -0.01em;
+    }
+
+    /* ── Gallery ── */
+    .gallery { background: var(--white); }
+    .gallery-header {
+      text-align: center;
+      margin-bottom: 60px;
+    }
+    .gallery-header .section-subtitle { margin: 0 auto; }
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-template-rows: auto auto;
+      gap: 16px;
+    }
+    .gallery-item {
+      border-radius: var(--radius);
+      overflow: hidden;
+      position: relative;
+      cursor: pointer;
+      transition: all var(--transition);
+    }
+    .gallery-item:hover { transform: scale(1.02); }
+    .gallery-item::before {
+      content: '';
+      display: block;
+      padding-bottom: 100%;
+    }
+    .gallery-item::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+    }
+    .gallery-item:nth-child(1) {
+      grid-column: 1 / 2;
+      grid-row: 1 / 3;
+      background: url('images/cafe/gallery1.jpg') center/cover no-repeat;
+    }
+    .gallery-item:nth-child(1)::before { padding-bottom: calc(200% + 16px); }
+    .gallery-item:nth-child(2) {
+      background: url('images/cafe/gallery2.jpg') center/cover no-repeat;
+    }
+    .gallery-item:nth-child(3) {
+      background: url('images/cafe/gallery3.jpg') center/cover no-repeat;
+    }
+    .gallery-item:nth-child(4) {
+      background: url('images/cafe/gallery4.jpg') center/cover no-repeat;
+    }
+    .gallery-item:nth-child(5) {
+      background: url('images/cafe/gallery5.jpg') center/cover no-repeat;
+    }
+    .gallery-item::after {
+      background: radial-gradient(circle at 50% 50%, rgba(255,255,255,0.1) 0%, transparent 70%);
+    }
+    .gallery-label {
+      position: absolute;
+      bottom: 16px;
+      left: 16px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.7rem;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: rgba(255,248,240,0.8);
+      z-index: 1;
+      background: rgba(60,36,21,0.25);
+      backdrop-filter: blur(8px);
+      padding: 6px 14px;
+      border-radius: 100px;
+    }
+
+    /* ── Access ── */
+    .access { background: var(--beige); }
+    .access-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      align-items: start;
+    }
+    .access-info h2 { margin-bottom: 32px; }
+    .access-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+    .access-item {
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+    }
+    .access-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: var(--white);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      box-shadow: var(--shadow-sm);
+    }
+    .access-icon svg {
+      width: 20px;
+      height: 20px;
+      color: var(--gold);
+    }
+    .access-item-label {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--gold-dark);
+      margin-bottom: 2px;
+    }
+    .access-item-value {
+      font-size: 1rem;
+      color: var(--text);
+      font-weight: 400;
+      line-height: 1.8;
+    }
+    .access-map {
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      aspect-ratio: 1;
+      background:
+        linear-gradient(135deg, #E8D8C8 0%, #D4C4B4 50%, #C8B8A8 100%);
+      position: relative;
+      box-shadow: var(--shadow-md);
+    }
+    .access-map::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        repeating-linear-gradient(0deg, transparent 0px, transparent 30px, rgba(60,36,21,0.04) 30px, rgba(60,36,21,0.04) 31px),
+        repeating-linear-gradient(90deg, transparent 0px, transparent 30px, rgba(60,36,21,0.04) 30px, rgba(60,36,21,0.04) 31px);
+    }
+    .access-map::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 20px;
+      height: 20px;
+      background: var(--gold);
+      border-radius: 50%;
+      box-shadow: 0 0 0 6px rgba(200,149,108,0.3), 0 0 0 14px rgba(200,149,108,0.1);
+    }
+    .access-map-label {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(calc(-50% + 24px), calc(-50% - 30px));
+      background: var(--white);
+      padding: 8px 16px;
+      border-radius: var(--radius-sm);
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--brown);
+      box-shadow: var(--shadow-md);
+      white-space: nowrap;
+    }
+    .access-map-label::after {
+      content: '';
+      position: absolute;
+      bottom: -6px;
+      left: 20px;
+      width: 12px;
+      height: 12px;
+      background: var(--white);
+      transform: rotate(45deg);
+      box-shadow: 2px 2px 4px rgba(60,36,21,0.06);
+    }
+
+    /* ── Footer ── */
+    .footer {
+      background: var(--brown);
+      color: var(--beige);
+      padding: 60px 0 0;
+    }
+    .footer-inner {
+      display: grid;
+      grid-template-columns: 1.4fr 1fr 1fr;
+      gap: 48px;
+      padding-bottom: 48px;
+      border-bottom: 1px solid rgba(255,248,240,0.1);
+    }
+    .footer-brand .logo-icon {
+      height: 48px;
+      margin-bottom: 4px;
+    }
+    .footer-brand p {
+      font-size: 0.9rem;
+      color: rgba(245,230,211,0.8);
+      font-weight: 400;
+      line-height: 1.8;
+      margin-top: 12px;
+      max-width: 280px;
+    }
+    .footer-col h4 {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--gold-light);
+      margin-bottom: 20px;
+    }
+    .footer-col ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .footer-col a {
+      font-size: 0.9rem;
+      color: rgba(245,230,211,0.85);
+      text-decoration: none;
+      transition: color var(--transition);
+      font-weight: 400;
+    }
+    .footer-col a:hover { color: var(--cream); }
+    .footer-col li {
+      font-size: 0.9rem;
+      color: rgba(245,230,211,0.85);
+      font-weight: 400;
+    }
+    .footer-bottom {
+      text-align: center;
+      padding: 24px 0;
+      font-size: 0.8rem;
+      color: rgba(245,230,211,0.65);
+      font-family: 'DM Sans', sans-serif;
+      letter-spacing: 0.04em;
+    }
+
+    /* ── Language Toggle ── */
+    .lang-toggle {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      background: var(--beige);
+      border-radius: 100px;
+      padding: 3px;
+      margin-left: 16px;
+      border: none;
+      cursor: pointer;
+    }
+    .lang-btn {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      padding: 5px 12px;
+      border-radius: 100px;
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all var(--transition);
+    }
+    .lang-btn.active {
+      background: var(--white);
+      color: var(--brown);
+      box-shadow: var(--shadow-sm);
+    }
+
+    /* ── Horizontal Rule / Divider ── */
+    .divider {
+      border: none;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(200,149,108,0.3), transparent);
+      margin: 0;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 1024px) {
+      .menu-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 768px) {
+      section { padding: 72px 0; }
+
+      .nav-links {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(255,248,240,0.98);
+        backdrop-filter: blur(20px);
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 32px;
+        z-index: 999;
+      }
+      .nav-links.open { display: flex; }
+      .nav-links a {
+        font-size: 1.2rem;
+        letter-spacing: 0.08em;
+      }
+      .nav-toggle { display: flex; z-index: 1000; }
+
+      .hero { min-height: 90vh; padding: 100px 24px 60px; }
+      .hero h1 { font-size: clamp(1.5rem, 6vw, 2.2rem); }
+      .hero-scroll { display: none; }
+
+      .about-grid {
+        grid-template-columns: 1fr;
+        gap: 40px;
+      }
+      .about-image {
+        aspect-ratio: 16/9;
+        order: -1;
+      }
+      .about-features { grid-template-columns: 1fr; }
+
+      .menu-grid { grid-template-columns: 1fr 1fr; gap: 16px; }
+
+      .gallery-grid {
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: auto;
+      }
+      .gallery-item:nth-child(1) {
+        grid-column: 1 / -1;
+        grid-row: auto;
+      }
+      .gallery-item:nth-child(1)::before { padding-bottom: 56%; }
+
+      .access-grid {
+        grid-template-columns: 1fr;
+        gap: 40px;
+      }
+      .access-map { aspect-ratio: 16/9; }
+
+      .footer-inner {
+        grid-template-columns: 1fr;
+        gap: 32px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .container { padding: 0 16px; }
+      section { padding: 56px 0; }
+
+      .hero { padding: 80px 16px 48px; }
+      .hero-badge { font-size: 0.7rem; padding: 6px 14px; }
+      .hero-cta { padding: 14px 32px; font-size: 0.85rem; }
+
+      .menu-grid { grid-template-columns: 1fr; }
+
+      .gallery-grid { grid-template-columns: 1fr; }
+      .gallery-item:nth-child(1)::before { padding-bottom: 100%; }
+
+      .about-features { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Demo Banner -->
+  <div class="demo-banner">
+    This is a sample landing page created as a design &amp; development demo by
+    <a href="index.html">Sekimachi Design Studio</a>
+  </div>
+
+  <!-- Navigation -->
+  <nav class="nav" id="nav">
+    <div class="nav-inner">
+      <a href="#" class="nav-logo">
+        <svg class="logo-icon" width="146" height="36" viewBox="0 0 146 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M17 12C15 9 19 7 17 4" stroke="#C8956C" stroke-width="1.2" stroke-linecap="round" opacity="0.45"/>
+          <path d="M21 13C19 9 23 6 21 2" stroke="#C8956C" stroke-width="1.3" stroke-linecap="round"/>
+          <path d="M25 12C23 9 27 7 25 4" stroke="#C8956C" stroke-width="1.2" stroke-linecap="round" opacity="0.45"/>
+          <rect x="11" y="14" width="20" height="13" rx="2.5" stroke="currentColor" stroke-width="1.6"/>
+          <path d="M31 18C35 18 35 23 31 23" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+          <path d="M7 29L35 29" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+          <text x="44" y="20" font-family="'DM Sans',sans-serif" font-size="14.5" font-weight="700" fill="currentColor" letter-spacing="2">SORA</text>
+          <text x="44.5" y="30" font-family="'DM Sans',sans-serif" font-size="7" font-weight="500" fill="#C8956C" letter-spacing="4.5">COFFEE</text>
+        </svg>
+      </a>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="#about" onclick="closeMenu()">About</a></li>
+        <li><a href="#menu" onclick="closeMenu()">Menu</a></li>
+        <li><a href="#gallery" onclick="closeMenu()">Gallery</a></li>
+        <li><a href="#access" onclick="closeMenu()">Access</a></li>
+      </ul>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <div class="lang-toggle" id="langToggle">
+          <button class="lang-btn active" data-lang="en">EN</button>
+          <button class="lang-btn" data-lang="ja">JA</button>
+        </div>
+        <button class="nav-toggle" id="navToggle" aria-label="Menu">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero" id="hero">
+    <div class="hero-content">
+      <div class="hero-badge fade-in" data-i18n="hero_badge">Specialty Coffee Since 2019</div>
+      <h1 class="fade-in fade-in-delay-1" data-i18n="hero_title">A Special Moment Begins<br>with a Single Cup</h1>
+      <p class="hero-sub fade-in fade-in-delay-2" data-i18n="hero_sub">A carefully hand-dripped cup and a peaceful space.<br>Enjoy your own special time at our little cafe in Melbourne.</p>
+      <a href="#menu" class="hero-cta fade-in fade-in-delay-3" data-i18n="hero_cta">
+        View Menu
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+          <polyline points="12 5 19 12 12 19"></polyline>
+        </svg>
+      </a>
+    </div>
+    <div class="hero-scroll">
+      <span>Scroll</span>
+      <div class="hero-scroll-line"></div>
+    </div>
+  </section>
+
+  <!-- About -->
+  <section class="about" id="about">
+    <div class="container">
+      <div class="about-grid">
+        <div class="about-image fade-in"></div>
+        <div class="about-text">
+          <span class="section-label fade-in">Our Story</span>
+          <h2 class="section-title fade-in fade-in-delay-1" data-i18n="about_title">Take It Slow,<br>Like Gazing at the Sky</h2>
+          <p class="fade-in fade-in-delay-2" data-i18n="about_p1">SORA Coffee was born in 2019 in the heart of Melbourne, with the concept of offering a relaxed time — like gazing up at the sky.</p>
+          <p class="fade-in fade-in-delay-3" data-i18n="about_p2">We carefully hand-drip each cup using specialty coffee beans selected from around the world. Together with our homemade sweets, we offer a peaceful escape from everyday life.</p>
+          <div class="about-features fade-in fade-in-delay-4">
+            <div class="about-feature">
+              <div class="about-feature-icon">&#9752;</div>
+              <span data-i18n="about_f1">In-house Roasted Beans</span>
+            </div>
+            <div class="about-feature">
+              <div class="about-feature-icon">&#10029;</div>
+              <span data-i18n="about_f2">Hand Drip</span>
+            </div>
+            <div class="about-feature">
+              <div class="about-feature-icon">&#9827;</div>
+              <span data-i18n="about_f3">Homemade Sweets</span>
+            </div>
+            <div class="about-feature">
+              <div class="about-feature-icon">&#9733;</div>
+              <span>Free Wi-Fi</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- Menu -->
+  <section class="menu" id="menu">
+    <div class="container">
+      <div class="menu-header">
+        <span class="section-label fade-in">Menu</span>
+        <h2 class="section-title fade-in fade-in-delay-1" data-i18n="menu_title">Our Signature Menu</h2>
+        <p class="section-subtitle fade-in fade-in-delay-2" data-i18n="menu_sub">Unique flavors born from carefully selected ingredients and artisan craftsmanship.</p>
+      </div>
+      <div class="menu-grid">
+        <div class="menu-card fade-in">
+          <div class="menu-card-image"></div>
+          <div class="menu-card-body">
+            <div class="menu-card-category">Coffee</div>
+            <div class="menu-card-name" data-i18n="menu_name1">Specialty Latte</div>
+            <div class="menu-card-desc" data-i18n="menu_desc1">A luxurious cup made with Ethiopian single-origin and Hokkaido milk</div>
+            <div class="menu-card-price">&yen;580</div>
+          </div>
+        </div>
+        <div class="menu-card fade-in fade-in-delay-1">
+          <div class="menu-card-image"></div>
+          <div class="menu-card-body">
+            <div class="menu-card-category">Coffee</div>
+            <div class="menu-card-name" data-i18n="menu_name2">SORA Blend</div>
+            <div class="menu-card-desc" data-i18n="menu_desc2">Our signature blend with notes of nuts and chocolate</div>
+            <div class="menu-card-price">&yen;480</div>
+          </div>
+        </div>
+        <div class="menu-card fade-in fade-in-delay-2">
+          <div class="menu-card-image"></div>
+          <div class="menu-card-body">
+            <div class="menu-card-category">Tea</div>
+            <div class="menu-card-name" data-i18n="menu_name3">Seasonal Herbal Tea</div>
+            <div class="menu-card-desc" data-i18n="menu_desc3">A gentle blend tea made with seasonal herbs, kind to body and soul</div>
+            <div class="menu-card-price">&yen;520</div>
+          </div>
+        </div>
+        <div class="menu-card fade-in fade-in-delay-3">
+          <div class="menu-card-image"></div>
+          <div class="menu-card-body">
+            <div class="menu-card-category">Sweets</div>
+            <div class="menu-card-name" data-i18n="menu_name4">Homemade Scone</div>
+            <div class="menu-card-desc" data-i18n="menu_desc4">Made with rich Hokkaido butter, served with seasonal jam and clotted cream</div>
+            <div class="menu-card-price">&yen;420</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Gallery -->
+  <section class="gallery" id="gallery">
+    <div class="container">
+      <div class="gallery-header">
+        <span class="section-label fade-in">Gallery</span>
+        <h2 class="section-title fade-in fade-in-delay-1" data-i18n="gallery_title">Moments in Our Space</h2>
+        <p class="section-subtitle fade-in fade-in-delay-2" data-i18n="gallery_sub">A cozy space wrapped in the warmth of wood and soft natural light.</p>
+      </div>
+      <div class="gallery-grid">
+        <div class="gallery-item fade-in">
+          <span class="gallery-label">Interior</span>
+        </div>
+        <div class="gallery-item fade-in fade-in-delay-1">
+          <span class="gallery-label">Roasting</span>
+        </div>
+        <div class="gallery-item fade-in fade-in-delay-2">
+          <span class="gallery-label">Latte Art</span>
+        </div>
+        <div class="gallery-item fade-in fade-in-delay-3">
+          <span class="gallery-label">Sweets</span>
+        </div>
+        <div class="gallery-item fade-in fade-in-delay-4">
+          <span class="gallery-label">Beans</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- Access -->
+  <section class="access" id="access">
+    <div class="container">
+      <div class="access-grid">
+        <div class="access-info">
+          <span class="section-label fade-in">Access</span>
+          <h2 class="section-title fade-in fade-in-delay-1" data-i18n="access_title">Visit Us</h2>
+          <ul class="access-list">
+            <li class="access-item fade-in fade-in-delay-2">
+              <div class="access-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                  <circle cx="12" cy="10" r="3"></circle>
+                </svg>
+              </div>
+              <div>
+                <div class="access-item-label">Address</div>
+                <div class="access-item-value" data-i18n="access_address">125 Collins Street,<br>Melbourne VIC 3000,<br>Australia</div>
+              </div>
+            </li>
+            <li class="access-item fade-in fade-in-delay-3">
+              <div class="access-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <polyline points="12 6 12 12 16 14"></polyline>
+                </svg>
+              </div>
+              <div>
+                <div class="access-item-label">Hours</div>
+                <div class="access-item-value" data-i18n="access_hours">Weekdays 8:00 &ndash; 19:00<br>Weekends &amp; Holidays 9:00 &ndash; 18:00<br>Closed: Wednesdays</div>
+              </div>
+            </li>
+            <li class="access-item fade-in fade-in-delay-4">
+              <div class="access-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path>
+                </svg>
+              </div>
+              <div>
+                <div class="access-item-label">Follow</div>
+                <div class="access-item-value">
+                  @soracoffee_tokyo
+                </div>
+              </div>
+            </li>
+          </ul>
+        </div>
+        <div class="access-map fade-in">
+          <div class="access-map-label">SORA Coffee</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-inner">
+        <div class="footer-brand">
+          <svg class="logo-icon" width="146" height="36" viewBox="0 0 146 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M17 12C15 9 19 7 17 4" stroke="#D4A87C" stroke-width="1.2" stroke-linecap="round" opacity="0.45"/>
+            <path d="M21 13C19 9 23 6 21 2" stroke="#D4A87C" stroke-width="1.3" stroke-linecap="round"/>
+            <path d="M25 12C23 9 27 7 25 4" stroke="#D4A87C" stroke-width="1.2" stroke-linecap="round" opacity="0.45"/>
+            <rect x="11" y="14" width="20" height="13" rx="2.5" stroke="#FFF8F0" stroke-width="1.6"/>
+            <path d="M31 18C35 18 35 23 31 23" stroke="#FFF8F0" stroke-width="1.6" stroke-linecap="round"/>
+            <path d="M7 29L35 29" stroke="#FFF8F0" stroke-width="1.6" stroke-linecap="round"/>
+            <text x="44" y="20" font-family="'DM Sans',sans-serif" font-size="14.5" font-weight="700" fill="#FFF8F0" letter-spacing="2">SORA</text>
+            <text x="44.5" y="30" font-family="'DM Sans',sans-serif" font-size="7" font-weight="500" fill="#D4A87C" letter-spacing="4.5">COFFEE</text>
+          </svg>
+          <p data-i18n="footer_desc">A special moment begins with a single cup. A little cafe in Melbourne.</p>
+        </div>
+        <div class="footer-col">
+          <h4>Navigation</h4>
+          <ul>
+            <li><a href="#about">About</a></li>
+            <li><a href="#menu">Menu</a></li>
+            <li><a href="#gallery">Gallery</a></li>
+            <li><a href="#access">Access</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Hours</h4>
+          <ul>
+            <li data-i18n="footer_h1">Weekdays 8:00 &ndash; 19:00</li>
+            <li data-i18n="footer_h2">Weekends &amp; Holidays 9:00 &ndash; 18:00</li>
+            <li data-i18n="footer_h3">Closed: Wednesdays</li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        &copy; 2025 SORA Coffee. This is a fictional demo site by <a href="index.html" style="color:rgba(245,230,211,0.6);text-decoration:underline;text-underline-offset:2px;">Sekimachi Design Studio</a>.
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // ── i18n ──
+    const i18n = {
+      en: {
+        hero_badge: 'Specialty Coffee Since 2019',
+        hero_title: 'A Special Moment Begins<br>with a Single Cup',
+        hero_sub: 'A carefully hand-dripped cup and a peaceful space.<br>Enjoy your own special time at our little cafe in Melbourne.',
+        hero_cta: 'View Menu',
+        about_title: 'Take It Slow,<br>Like Gazing at the Sky',
+        about_p1: 'SORA Coffee was born in 2019 in the heart of Melbourne, with the concept of offering a relaxed time \u2014 like gazing up at the sky.',
+        about_p2: 'We carefully hand-drip each cup using specialty coffee beans selected from around the world. Together with our homemade sweets, we offer a peaceful escape from everyday life.',
+        about_f1: 'In-house Roasted Beans',
+        about_f2: 'Hand Drip',
+        about_f3: 'Homemade Sweets',
+        menu_title: 'Our Signature Menu',
+        menu_sub: 'Unique flavors born from carefully selected ingredients and artisan craftsmanship.',
+        menu_name1: 'Specialty Latte',
+        menu_desc1: 'A luxurious cup made with Ethiopian single-origin and Hokkaido milk',
+        menu_name2: 'SORA Blend',
+        menu_desc2: 'Our signature blend with notes of nuts and chocolate',
+        menu_name3: 'Seasonal Herbal Tea',
+        menu_desc3: 'A gentle blend tea made with seasonal herbs, kind to body and soul',
+        menu_name4: 'Homemade Scone',
+        menu_desc4: 'Made with rich Hokkaido butter, served with seasonal jam and clotted cream',
+        gallery_title: 'Moments in Our Space',
+        gallery_sub: 'A cozy space wrapped in the warmth of wood and soft natural light.',
+        access_title: 'Visit Us',
+        access_address: '125 Collins Street,<br>Melbourne VIC 3000,<br>Australia',
+        access_hours: 'Weekdays 8:00 \u2013 19:00<br>Weekends & Holidays 9:00 \u2013 18:00<br>Closed: Wednesdays',
+        footer_desc: 'A special moment begins with a single cup. A little cafe in Melbourne.',
+        footer_h1: 'Weekdays 8:00 \u2013 19:00',
+        footer_h2: 'Weekends & Holidays 9:00 \u2013 18:00',
+        footer_h3: 'Closed: Wednesdays'
+      },
+      ja: {
+        hero_badge: 'Specialty Coffee Since 2019',
+        hero_title: '一杯のコーヒーから始まる、<br>特別な時間',
+        hero_sub: '丁寧にハンドドリップした一杯と、穏やかな空間。<br>メルボルンの小さなカフェで、あなただけの時間をお過ごしください。',
+        hero_cta: 'メニューを見る',
+        about_title: '空を眺めるように、<br>ゆっくりと',
+        about_p1: 'SORA Coffeeは、「空を見上げるようなゆったりとした時間」をコンセプトに、2019年にメルボルンで生まれた小さなカフェです。',
+        about_p2: '世界各地から厳選したスペシャルティコーヒー豆を、一杯ずつ丁寧にハンドドリップ。自家製のスイーツとともに、日常から少し離れた穏やかなひとときをお届けします。',
+        about_f1: '自家焙煎の豆',
+        about_f2: 'ハンドドリップ',
+        about_f3: '自家製スイーツ',
+        menu_title: 'こだわりのメニュー',
+        menu_sub: '厳選された素材と丁寧な手仕事から生まれる、ここだけの味わい。',
+        menu_name1: 'スペシャルティラテ',
+        menu_desc1: 'エチオピア産シングルオリジンと北海道ミルクの贅沢な一杯',
+        menu_name2: 'SORAブレンド',
+        menu_desc2: 'ナッツとチョコレートの香り漂う、当店オリジナルブレンド',
+        menu_name3: '季節のハーブティー',
+        menu_desc3: '旬のハーブを使った、心と体に優しいブレンドティー',
+        menu_name4: '自家製スコーン',
+        menu_desc4: '北海道バターを贅沢に使用。季節のジャムとクロテッドクリーム添え',
+        gallery_title: '空間の記憶',
+        gallery_sub: '木の温もりとやわらかな光に包まれた、居心地のよい空間。',
+        access_title: 'お店のご案内',
+        access_address: '125 Collins Street,<br>Melbourne VIC 3000,<br>Australia',
+        access_hours: '平日 8:00 \u2013 19:00<br>土日祝 9:00 \u2013 18:00<br>定休日：水曜日',
+        footer_desc: '一杯のコーヒーから始まる、特別な時間。メルボルンの小さなカフェ。',
+        footer_h1: '平日 8:00 \u2013 19:00',
+        footer_h2: '土日祝 9:00 \u2013 18:00',
+        footer_h3: '定休日：水曜日'
+      }
+    };
+
+    let currentLang = localStorage.getItem('cafe-lang') || 'en';
+
+    function setLang(lang) {
+      currentLang = lang;
+      localStorage.setItem('cafe-lang', lang);
+      document.documentElement.lang = lang;
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (i18n[lang] && i18n[lang][key]) {
+          el.innerHTML = i18n[lang][key];
+        }
+      });
+      document.querySelectorAll('.lang-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.lang === lang);
+      });
+    }
+
+    document.getElementById('langToggle').addEventListener('click', (e) => {
+      if (e.target.classList.contains('lang-btn')) {
+        setLang(e.target.dataset.lang);
+      }
+    });
+
+    if (currentLang !== 'en') setLang(currentLang);
+
+    // Navigation scroll behavior
+    const nav = document.getElementById('nav');
+    let lastScroll = 0;
+
+    window.addEventListener('scroll', () => {
+      const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+      if (scrollTop > 80) {
+        nav.classList.add('nav-scrolled');
+      } else {
+        nav.classList.remove('nav-scrolled');
+      }
+      lastScroll = scrollTop;
+    });
+
+    // Mobile menu toggle
+    const navToggle = document.getElementById('navToggle');
+    const navLinks = document.getElementById('navLinks');
+
+    navToggle.addEventListener('click', () => {
+      navToggle.classList.toggle('active');
+      navLinks.classList.toggle('open');
+      document.body.style.overflow = navLinks.classList.contains('open') ? 'hidden' : '';
+    });
+
+    function closeMenu() {
+      navToggle.classList.remove('active');
+      navLinks.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    // Fade-in animations with IntersectionObserver
+    const fadeElements = document.querySelectorAll('.fade-in');
+
+    const fadeObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-visible');
+          fadeObserver.unobserve(entry.target);
+        }
+      });
+    }, {
+      threshold: 0.1,
+      rootMargin: '0px 0px -40px 0px'
+    });
+
+    fadeElements.forEach(el => fadeObserver.observe(el));
+
+    // Smooth scroll for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function(e) {
+        const targetId = this.getAttribute('href');
+        if (targetId === '#') return;
+        e.preventDefault();
+        const target = document.querySelector(targetId);
+        if (target) {
+          const offset = 80;
+          const top = target.getBoundingClientRect().top + window.pageYOffset - offset;
+          window.scrollTo({ top, behavior: 'smooth' });
+        }
+      });
+    });
+  </script>
+</body>
+</html>

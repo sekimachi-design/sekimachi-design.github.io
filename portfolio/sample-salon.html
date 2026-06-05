@@ -1,0 +1,1138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MAISON Hair Studio — Luxury Hair Salon</title>
+  <meta name="description" content="MAISON Hair Studio — Where art meets hair. A luxury salon experience with expert stylists, premium treatments, and timeless style.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300;1,9..40,400&display=swap" rel="stylesheet">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✂️</text></svg>">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* ── Design Tokens ── */
+    :root {
+      --charcoal: #2D2926;
+      --charcoal-light: #3D3936;
+      --blush: #F9F1EE;
+      --blush-dark: #F0E4DF;
+      --gold: #B8977E;
+      --gold-light: #C4A882;
+      --gold-dark: #A0836C;
+      --offwhite: #FDFBF9;
+      --rose: #E8D5CE;
+      --rose-muted: #D4BEB5;
+      --text: #2D2926;
+      --text-muted: #6B6360;
+      --text-light: #8A8482;
+      --white: #FFFFFF;
+      --border: rgba(45,41,38,0.08);
+      --shadow-sm: 0 1px 3px rgba(45,41,38,0.05);
+      --shadow-md: 0 4px 20px rgba(45,41,38,0.07);
+      --shadow-lg: 0 8px 40px rgba(45,41,38,0.10);
+      --radius: 4px;
+      --radius-md: 8px;
+      --radius-lg: 12px;
+      --radius-full: 9999px;
+      --transition: 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+      --font-serif: 'Cormorant Garamond', 'Georgia', serif;
+      --font-sans: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    html { scroll-behavior: smooth; font-size: 16px; }
+
+    body {
+      font-family: var(--font-sans);
+      background: var(--offwhite);
+      color: var(--text);
+      line-height: 1.7;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      overflow-x: hidden;
+    }
+
+    img { max-width: 100%; display: block; }
+    a { color: inherit; }
+
+    .container {
+      max-width: 1140px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* ── Animations ── */
+    .fade-in {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .fade-in.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .fd1 { transition-delay: 0.1s; }
+    .fd2 { transition-delay: 0.2s; }
+    .fd3 { transition-delay: 0.3s; }
+    .fd4 { transition-delay: 0.4s; }
+    .fd5 { transition-delay: 0.5s; }
+
+    /* ── Demo Banner ── */
+    .demo-banner {
+      background: var(--charcoal);
+      color: var(--rose);
+      text-align: center;
+      padding: 10px 20px;
+      font-size: 0.8rem;
+      letter-spacing: 0.02em;
+      line-height: 1.6;
+      position: relative;
+      z-index: 1001;
+    }
+    .demo-banner a {
+      color: var(--gold-light);
+      text-decoration: underline;
+      text-underline-offset: 2px;
+      transition: color var(--transition);
+    }
+    .demo-banner a:hover { color: var(--white); }
+
+    /* ── Typography ── */
+    h1, h2, h3, h4 {
+      font-family: var(--font-serif);
+      font-weight: 400;
+      line-height: 1.2;
+    }
+
+    .section-label {
+      font-family: var(--font-sans);
+      font-size: 0.7rem;
+      font-weight: 500;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 12px;
+      display: block;
+    }
+
+    .section-title {
+      font-size: clamp(1.8rem, 4vw, 2.8rem);
+      color: var(--charcoal);
+      letter-spacing: -0.01em;
+      margin-bottom: 16px;
+    }
+
+    .section-subtitle {
+      font-size: 1rem;
+      color: var(--text-muted);
+      max-width: 540px;
+      line-height: 1.7;
+    }
+
+    /* ── Navigation ── */
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(253,251,249,0.92);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      transition: box-shadow var(--transition);
+    }
+    .nav.scrolled {
+      box-shadow: 0 2px 20px rgba(45,41,38,0.06);
+    }
+    .nav-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 68px;
+      max-width: 1140px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+    .nav-logo {
+      font-family: var(--font-serif);
+      font-size: 1.5rem;
+      font-weight: 500;
+      letter-spacing: 0.3em;
+      color: var(--charcoal);
+      text-decoration: none;
+      text-transform: uppercase;
+    }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+      list-style: none;
+    }
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.82rem;
+      font-weight: 400;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      transition: color var(--transition);
+      position: relative;
+    }
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -4px;
+      left: 0;
+      width: 0;
+      height: 1px;
+      background: var(--gold);
+      transition: width var(--transition);
+    }
+    .nav-links a:hover { color: var(--charcoal); }
+    .nav-links a:hover::after { width: 100%; }
+    .nav-reserve {
+      display: inline-flex;
+      align-items: center;
+      padding: 9px 24px;
+      background: var(--gold);
+      color: var(--white);
+      text-decoration: none;
+      font-size: 0.78rem;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      border: none;
+      cursor: pointer;
+      transition: all var(--transition);
+    }
+    .nav-reserve:hover {
+      background: var(--gold-dark);
+      box-shadow: 0 4px 16px rgba(184,151,126,0.3);
+    }
+
+    /* Hamburger */
+    .nav-toggle {
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      gap: 5px;
+      width: 28px;
+      height: 28px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+      z-index: 1000;
+    }
+    .nav-toggle span {
+      display: block;
+      width: 22px;
+      height: 1.5px;
+      background: var(--charcoal);
+      transition: all var(--transition);
+      transform-origin: center;
+    }
+    .nav-toggle.active span:nth-child(1) {
+      transform: rotate(45deg) translate(4.5px, 4.5px);
+    }
+    .nav-toggle.active span:nth-child(2) { opacity: 0; }
+    .nav-toggle.active span:nth-child(3) {
+      transform: rotate(-45deg) translate(4.5px, -4.5px);
+    }
+
+    /* ── Hero ── */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      background: var(--charcoal);
+    }
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+    }
+    .hero-bg img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+    }
+    .hero-bg::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        180deg,
+        rgba(45,41,38,0.35) 0%,
+        rgba(45,41,38,0.25) 40%,
+        rgba(45,41,38,0.55) 100%
+      );
+    }
+    .hero .container { position: relative; z-index: 1; }
+    .hero-label {
+      font-family: var(--font-sans);
+      font-size: 0.72rem;
+      font-weight: 500;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 28px;
+    }
+    .hero h1 {
+      font-size: clamp(2.8rem, 7vw, 5rem);
+      font-weight: 300;
+      color: var(--white);
+      letter-spacing: -0.02em;
+      line-height: 1.1;
+      margin-bottom: 24px;
+      text-shadow: 0 2px 20px rgba(0,0,0,0.2);
+    }
+    .hero h1 em {
+      font-style: italic;
+      font-weight: 400;
+      color: var(--gold);
+    }
+    .hero-sub {
+      font-size: 1.05rem;
+      color: rgba(255,255,255,0.8);
+      max-width: 480px;
+      margin: 0 auto 44px;
+      line-height: 1.8;
+      text-shadow: 0 1px 8px rgba(0,0,0,0.15);
+    }
+    .hero-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 16px 40px;
+      background: rgba(255,255,255,0.95);
+      color: var(--charcoal);
+      text-decoration: none;
+      font-size: 0.82rem;
+      font-weight: 500;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      transition: all var(--transition);
+      backdrop-filter: blur(4px);
+    }
+    .hero-cta:hover {
+      background: var(--white);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+      transform: translateY(-2px);
+    }
+    .hero-cta svg {
+      width: 16px;
+      height: 16px;
+      transition: transform var(--transition);
+    }
+    .hero-cta:hover svg { transform: translateX(3px); }
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    /* ── Philosophy Strip ── */
+    .philosophy {
+      padding: 72px 0;
+      background: var(--blush);
+      text-align: center;
+      position: relative;
+    }
+    .philosophy-line {
+      width: 60px;
+      height: 1px;
+      background: var(--gold);
+      margin: 0 auto 32px;
+    }
+    .philosophy h2 {
+      font-size: clamp(1.4rem, 3vw, 2rem);
+      font-weight: 300;
+      font-style: italic;
+      color: var(--charcoal);
+      letter-spacing: 0.02em;
+      line-height: 1.6;
+    }
+    .philosophy-after {
+      width: 60px;
+      height: 1px;
+      background: var(--gold);
+      margin: 32px auto 0;
+    }
+
+    /* ── Services ── */
+    .services {
+      padding: 100px 0;
+      background: var(--offwhite);
+    }
+    .services-header {
+      text-align: center;
+      margin-bottom: 64px;
+    }
+    .services-header .section-subtitle {
+      margin: 0 auto;
+    }
+    .services-list {
+      max-width: 720px;
+      margin: 0 auto;
+    }
+    .service-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      padding: 32px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .service-item:first-child {
+      border-top: 1px solid var(--border);
+    }
+    .service-info { flex: 1; padding-right: 40px; }
+    .service-name {
+      font-family: var(--font-serif);
+      font-size: 1.35rem;
+      font-weight: 500;
+      color: var(--charcoal);
+      margin-bottom: 6px;
+      letter-spacing: 0.01em;
+    }
+    .service-desc {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+    .service-price {
+      font-family: var(--font-serif);
+      font-size: 1.1rem;
+      color: var(--gold);
+      font-weight: 500;
+      white-space: nowrap;
+      padding-top: 4px;
+    }
+
+    /* ── Gallery ── */
+    .gallery {
+      padding: 100px 0;
+      background: var(--blush);
+    }
+    .gallery-header {
+      text-align: center;
+      margin-bottom: 56px;
+    }
+    .gallery-header .section-subtitle {
+      margin: 0 auto;
+    }
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      max-width: 960px;
+      margin: 0 auto;
+    }
+    .gallery-item {
+      aspect-ratio: 4 / 5;
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform 0.5s ease, box-shadow 0.5s ease;
+      position: relative;
+    }
+    .gallery-item:hover {
+      transform: scale(1.03);
+      box-shadow: var(--shadow-lg);
+    }
+    .gallery-item::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: rgba(45,41,38,0);
+      transition: background var(--transition);
+    }
+    .gallery-item:hover::after {
+      background: rgba(45,41,38,0.05);
+    }
+    .gallery-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.6s ease;
+    }
+    .gallery-item:hover img { transform: scale(1.08); }
+
+    /* ── Stylists ── */
+    .stylists {
+      padding: 100px 0;
+      background: var(--offwhite);
+    }
+    .stylists-header {
+      text-align: center;
+      margin-bottom: 64px;
+    }
+    .stylists-header .section-subtitle {
+      margin: 0 auto;
+    }
+    .stylists-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 48px;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    .stylist-card { text-align: center; }
+    .stylist-avatar {
+      width: 160px;
+      height: 160px;
+      border-radius: 50%;
+      margin: 0 auto 24px;
+      position: relative;
+      overflow: hidden;
+      transition: transform var(--transition);
+    }
+    .stylist-card:hover .stylist-avatar {
+      transform: scale(1.05);
+    }
+    .stylist-avatar::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      border: 1px solid var(--rose-muted);
+    }
+    .stylist-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .stylist-name {
+      font-family: var(--font-serif);
+      font-size: 1.3rem;
+      font-weight: 500;
+      color: var(--charcoal);
+      margin-bottom: 4px;
+      letter-spacing: 0.02em;
+    }
+    .stylist-role {
+      font-size: 0.78rem;
+      font-weight: 500;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 12px;
+    }
+    .stylist-bio {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      line-height: 1.65;
+    }
+
+    /* ── Testimonials ── */
+    .testimonials {
+      padding: 100px 0;
+      background: var(--blush);
+    }
+    .testimonials-header {
+      text-align: center;
+      margin-bottom: 64px;
+    }
+    .testimonials-header .section-subtitle {
+      margin: 0 auto;
+    }
+    .testimonials-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 32px;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    .testimonial-card {
+      background: var(--white);
+      padding: 40px 32px;
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      transition: box-shadow var(--transition), transform var(--transition);
+    }
+    .testimonial-card:hover {
+      box-shadow: var(--shadow-md);
+      transform: translateY(-4px);
+    }
+    .testimonial-quote {
+      font-family: var(--font-serif);
+      font-size: 3rem;
+      color: var(--rose);
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+    .testimonial-text {
+      font-family: var(--font-serif);
+      font-size: 1.05rem;
+      font-style: italic;
+      color: var(--charcoal);
+      line-height: 1.7;
+      margin-bottom: 24px;
+    }
+    .testimonial-divider {
+      width: 32px;
+      height: 1px;
+      background: var(--gold);
+      margin-bottom: 16px;
+    }
+    .testimonial-author {
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--charcoal);
+    }
+    .testimonial-detail {
+      font-size: 0.78rem;
+      color: var(--text-light);
+      margin-top: 2px;
+    }
+
+    /* ── Booking CTA ── */
+    .booking {
+      padding: 100px 0;
+      background: var(--charcoal);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .booking::before {
+      content: '';
+      position: absolute;
+      top: -100px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 600px;
+      height: 600px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(184,151,126,0.1) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .booking .container { position: relative; z-index: 1; }
+    .booking .section-label { color: var(--gold-light); }
+    .booking h2 {
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      font-weight: 300;
+      color: var(--white);
+      margin-bottom: 20px;
+      letter-spacing: -0.01em;
+    }
+    .booking h2 em {
+      font-style: italic;
+      font-weight: 400;
+      color: var(--gold-light);
+    }
+    .booking-sub {
+      font-size: 1rem;
+      color: var(--rose-muted);
+      max-width: 460px;
+      margin: 0 auto 40px;
+      line-height: 1.7;
+    }
+    .booking-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 16px 44px;
+      background: var(--gold);
+      color: var(--white);
+      text-decoration: none;
+      font-size: 0.82rem;
+      font-weight: 500;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      border: none;
+      cursor: pointer;
+      transition: all var(--transition);
+    }
+    .booking-btn:hover {
+      background: var(--gold-light);
+      box-shadow: 0 8px 32px rgba(184,151,126,0.3);
+      transform: translateY(-2px);
+    }
+    .booking-info {
+      margin-top: 56px;
+      display: flex;
+      justify-content: center;
+      gap: 48px;
+      flex-wrap: wrap;
+    }
+    .booking-info-item {
+      text-align: center;
+    }
+    .booking-info-label {
+      font-size: 0.7rem;
+      font-weight: 500;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--gold-light);
+      margin-bottom: 6px;
+    }
+    .booking-info-value {
+      font-size: 0.88rem;
+      color: var(--rose);
+      line-height: 1.6;
+    }
+
+    /* ── Footer ── */
+    .footer {
+      padding: 56px 0 32px;
+      background: var(--charcoal);
+      border-top: 1px solid rgba(255,255,255,0.06);
+    }
+    .footer-inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      max-width: 1140px;
+      margin: 0 auto;
+      padding: 0 24px;
+      gap: 40px;
+    }
+    .footer-brand { flex: 1; }
+    .footer-logo {
+      font-family: var(--font-serif);
+      font-size: 1.3rem;
+      font-weight: 500;
+      letter-spacing: 0.3em;
+      color: var(--white);
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+    .footer-tagline {
+      font-size: 0.85rem;
+      color: var(--text-light);
+      line-height: 1.6;
+    }
+    .footer-links {
+      display: flex;
+      gap: 48px;
+    }
+    .footer-col h4 {
+      font-family: var(--font-sans);
+      font-size: 0.7rem;
+      font-weight: 500;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--gold-light);
+      margin-bottom: 16px;
+    }
+    .footer-col ul {
+      list-style: none;
+    }
+    .footer-col li {
+      margin-bottom: 8px;
+    }
+    .footer-col a {
+      font-size: 0.85rem;
+      color: var(--rose-muted);
+      text-decoration: none;
+      transition: color var(--transition);
+    }
+    .footer-col a:hover { color: var(--white); }
+    .footer-col p {
+      font-size: 0.85rem;
+      color: var(--rose-muted);
+      line-height: 1.6;
+    }
+    .footer-social {
+      display: flex;
+      gap: 16px;
+      margin-top: 8px;
+    }
+    .footer-social a {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: 1px solid rgba(255,255,255,0.1);
+      color: var(--rose-muted);
+      text-decoration: none;
+      transition: all var(--transition);
+    }
+    .footer-social a:hover {
+      border-color: var(--gold);
+      color: var(--gold-light);
+      background: rgba(184,151,126,0.08);
+    }
+    .footer-social svg {
+      width: 16px;
+      height: 16px;
+    }
+    .footer-bottom {
+      text-align: center;
+      padding-top: 40px;
+      margin-top: 40px;
+      border-top: 1px solid rgba(255,255,255,0.06);
+      font-size: 0.78rem;
+      color: var(--text-light);
+      max-width: 1140px;
+      margin-left: auto;
+      margin-right: auto;
+      padding-left: 24px;
+      padding-right: 24px;
+    }
+    .footer-bottom a {
+      color: rgba(212,190,181,0.6);
+      text-decoration: underline;
+      text-underline-offset: 2px;
+      transition: color var(--transition);
+    }
+    .footer-bottom a:hover { color: var(--rose); }
+
+    /* ── Responsive ── */
+    @media (max-width: 900px) {
+      .stylists-grid { gap: 32px; }
+      .testimonials-grid { grid-template-columns: 1fr; max-width: 480px; }
+      .footer-inner { flex-direction: column; gap: 32px; }
+      .footer-links { gap: 32px; }
+      .booking-info { gap: 32px; }
+    }
+
+    @media (max-width: 768px) {
+      .nav-toggle { display: flex; }
+      .nav-links {
+        position: fixed;
+        top: 0;
+        right: 0;
+        width: 100%;
+        height: 100vh;
+        background: var(--offwhite);
+        flex-direction: column;
+        justify-content: center;
+        gap: 28px;
+        transform: translateX(100%);
+        transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        z-index: 999;
+      }
+      .nav-links.open { transform: translateX(0); }
+      .nav-links a {
+        font-size: 1rem;
+        letter-spacing: 0.2em;
+      }
+      .nav-links a::after { display: none; }
+      .nav-reserve {
+        margin-top: 8px;
+        padding: 14px 36px;
+      }
+
+      .hero { min-height: 80vh; }
+      .hero h1 { font-size: clamp(2.2rem, 8vw, 3.2rem); }
+
+      .services { padding: 72px 0; }
+      .service-item { flex-direction: column; gap: 8px; }
+      .service-info { padding-right: 0; }
+
+      .gallery { padding: 72px 0; }
+      .gallery-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+
+      .stylists { padding: 72px 0; }
+      .stylists-grid {
+        grid-template-columns: 1fr;
+        max-width: 320px;
+        gap: 48px;
+      }
+
+      .testimonials { padding: 72px 0; }
+
+      .booking { padding: 72px 0; }
+      .booking-info { flex-direction: column; gap: 24px; }
+
+      .footer-links { flex-direction: column; gap: 24px; }
+    }
+
+    @media (max-width: 480px) {
+      .gallery-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Demo Banner -->
+  <div class="demo-banner">
+    This is a sample landing page created as a design &amp; development demo by
+    <a href="index.html">Sekimachi Design Studio</a>
+  </div>
+
+  <!-- Navigation -->
+  <nav class="nav" id="nav">
+    <div class="nav-inner">
+      <a href="#" class="nav-logo">Maison</a>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="#services">Services</a></li>
+        <li><a href="#gallery">Gallery</a></li>
+        <li><a href="#stylists">Stylists</a></li>
+        <li><a href="#booking">Book</a></li>
+        <li><a href="#booking" class="nav-reserve">Reserve</a></li>
+      </ul>
+      <button class="nav-toggle" id="navToggle" aria-label="Menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-bg">
+      <img src="images/salon/hero.jpg" alt="Luxury salon interior with modern design, round mirrors and ambient lighting">
+    </div>
+    <div class="container">
+      <p class="hero-label fade-in">Luxury Hair Studio</p>
+      <h1 class="fade-in fd1">Where <em>art</em> meets hair.</h1>
+      <p class="hero-sub fade-in fd2">An intimate studio where every visit is an experience. Expert stylists, premium products, and timeless elegance &mdash; all tailored to you.</p>
+      <a href="#booking" class="hero-cta fade-in fd3">
+        Book Your Visit
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" /></svg>
+      </a>
+    </div>
+  </section>
+
+  <!-- Philosophy Strip -->
+  <section class="philosophy">
+    <div class="container">
+      <div class="philosophy-line fade-in"></div>
+      <h2 class="fade-in fd1">Crafted with care. Styled with soul.</h2>
+      <div class="philosophy-after fade-in fd2"></div>
+    </div>
+  </section>
+
+  <!-- Services -->
+  <section class="services" id="services">
+    <div class="container">
+      <div class="services-header">
+        <span class="section-label fade-in">Our Services</span>
+        <h2 class="section-title fade-in fd1">Tailored to Perfection</h2>
+        <p class="section-subtitle fade-in fd2">Every service begins with a personal consultation, ensuring your vision comes to life with precision and artistry.</p>
+      </div>
+      <div class="services-list">
+        <div class="service-item fade-in">
+          <div class="service-info">
+            <h3 class="service-name">Cut &amp; Style</h3>
+            <p class="service-desc">Precision cutting and bespoke styling that enhances your natural features. Includes wash, consultation, and finishing.</p>
+          </div>
+          <span class="service-price">from $80</span>
+        </div>
+        <div class="service-item fade-in fd1">
+          <div class="service-info">
+            <h3 class="service-name">Color &amp; Highlights</h3>
+            <p class="service-desc">Rich, dimensional color using premium, low-ammonia formulas. From subtle balayage to bold transformation.</p>
+          </div>
+          <span class="service-price">from $150</span>
+        </div>
+        <div class="service-item fade-in fd2">
+          <div class="service-info">
+            <h3 class="service-name">Treatment &amp; Repair</h3>
+            <p class="service-desc">Deep conditioning and restorative treatments to rebuild strength, seal in moisture, and revive brilliance.</p>
+          </div>
+          <span class="service-price">from $60</span>
+        </div>
+        <div class="service-item fade-in fd3">
+          <div class="service-info">
+            <h3 class="service-name">Bridal &amp; Special Occasion</h3>
+            <p class="service-desc">Picture-perfect styling for your most memorable moments. Includes trial session and day-of styling.</p>
+          </div>
+          <span class="service-price">from $200</span>
+        </div>
+        <div class="service-item fade-in fd4">
+          <div class="service-info">
+            <h3 class="service-name">Head Spa</h3>
+            <p class="service-desc">A deeply relaxing scalp treatment combining aromatherapy massage with purifying and nourishing care.</p>
+          </div>
+          <span class="service-price">from $90</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Gallery -->
+  <section class="gallery" id="gallery">
+    <div class="container">
+      <div class="gallery-header">
+        <span class="section-label fade-in">Gallery</span>
+        <h2 class="section-title fade-in fd1">Our Work, Your Confidence</h2>
+        <p class="section-subtitle fade-in fd2">A curated selection of transformations crafted by our team. Every look tells a story.</p>
+      </div>
+      <div class="gallery-grid">
+        <div class="gallery-item fade-in"><img src="images/salon/gallery1.jpg" alt="Curling iron styling" loading="lazy"></div>
+        <div class="gallery-item fade-in fd1"><img src="images/salon/gallery2.jpg" alt="Lavender hair color" loading="lazy"></div>
+        <div class="gallery-item fade-in fd2"><img src="images/salon/gallery3.jpg" alt="Natural curls styling" loading="lazy"></div>
+        <div class="gallery-item fade-in fd3"><img src="images/salon/gallery4.jpg" alt="Blow dry styling" loading="lazy"></div>
+        <div class="gallery-item fade-in fd4"><img src="images/salon/gallery5.jpg" alt="Hair wash treatment" loading="lazy"></div>
+        <div class="gallery-item fade-in fd5"><img src="images/salon/gallery6.jpg" alt="Professional styling tools" loading="lazy"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Stylists -->
+  <section class="stylists" id="stylists">
+    <div class="container">
+      <div class="stylists-header">
+        <span class="section-label fade-in">Our Team</span>
+        <h2 class="section-title fade-in fd1">Meet the Artists</h2>
+        <p class="section-subtitle fade-in fd2">Passionate professionals who blend technique with creativity. Your hair is their canvas.</p>
+      </div>
+      <div class="stylists-grid">
+        <div class="stylist-card fade-in">
+          <div class="stylist-avatar"><img src="images/salon/stylist1.jpg" alt="Camille Laurent" loading="lazy"></div>
+          <h3 class="stylist-name">Camille Laurent</h3>
+          <p class="stylist-role">Creative Director</p>
+          <p class="stylist-bio">15+ years of experience. Specializing in editorial styling and precision cutting. Trained in Paris and New York.</p>
+        </div>
+        <div class="stylist-card fade-in fd1">
+          <div class="stylist-avatar"><img src="images/salon/stylist2.jpg" alt="Elise Nakamura" loading="lazy"></div>
+          <h3 class="stylist-name">Elise Nakamura</h3>
+          <p class="stylist-role">Color Specialist</p>
+          <p class="stylist-bio">12+ years of experience. Master colorist known for seamless balayage and natural-looking dimension.</p>
+        </div>
+        <div class="stylist-card fade-in fd2">
+          <div class="stylist-avatar"><img src="images/salon/stylist3.jpg" alt="Julian Moreau" loading="lazy"></div>
+          <h3 class="stylist-name">Julian Moreau</h3>
+          <p class="stylist-role">Senior Stylist</p>
+          <p class="stylist-bio">10+ years of experience. Expert in textured cuts and modern styling with a focus on effortless elegance.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Testimonials -->
+  <section class="testimonials">
+    <div class="container">
+      <div class="testimonials-header">
+        <span class="section-label fade-in">Testimonials</span>
+        <h2 class="section-title fade-in fd1">Words from Our Guests</h2>
+        <p class="section-subtitle fade-in fd2">The moments that make it all worthwhile &mdash; straight from the people who inspire us.</p>
+      </div>
+      <div class="testimonials-grid">
+        <div class="testimonial-card fade-in">
+          <div class="testimonial-quote">&ldquo;</div>
+          <p class="testimonial-text">Walking out of MAISON, I didn't just love my hair &mdash; I felt like the best version of myself. Camille understood exactly what I wanted before I even said it.</p>
+          <div class="testimonial-divider"></div>
+          <p class="testimonial-author">Sophia M.</p>
+          <p class="testimonial-detail">Regular client, 3 years</p>
+        </div>
+        <div class="testimonial-card fade-in fd1">
+          <div class="testimonial-quote">&ldquo;</div>
+          <p class="testimonial-text">The attention to detail is unmatched. From the complimentary espresso to the final finishing touch, every moment feels intentional and luxurious.</p>
+          <div class="testimonial-divider"></div>
+          <p class="testimonial-author">Rachel T.</p>
+          <p class="testimonial-detail">First visit convert</p>
+        </div>
+        <div class="testimonial-card fade-in fd2">
+          <div class="testimonial-quote">&ldquo;</div>
+          <p class="testimonial-text">I traveled two hours for my appointment and it was worth every minute. The head spa alone changed my life. This is self-care at its finest.</p>
+          <div class="testimonial-divider"></div>
+          <p class="testimonial-author">James K.</p>
+          <p class="testimonial-detail">Monthly head spa guest</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Booking CTA -->
+  <section class="booking" id="booking">
+    <div class="container">
+      <span class="section-label fade-in">Book Now</span>
+      <h2 class="fade-in fd1">Ready for a <em>transformation</em>?</h2>
+      <p class="booking-sub fade-in fd2">Your journey to effortless elegance starts with a single appointment. Let us take care of the rest.</p>
+      <a href="#" class="booking-btn fade-in fd3">
+        Book Your Appointment
+      </a>
+      <div class="booking-info fade-in fd4">
+        <div class="booking-info-item">
+          <p class="booking-info-label">Address</p>
+          <p class="booking-info-value">142 Collins Street<br>Melbourne, VIC 3000</p>
+        </div>
+        <div class="booking-info-item">
+          <p class="booking-info-label">Hours</p>
+          <p class="booking-info-value">Tue &ndash; Sat: 9:00 &ndash; 19:00<br>Sun: 10:00 &ndash; 17:00</p>
+        </div>
+        <div class="booking-info-item">
+          <p class="booking-info-label">Contact</p>
+          <p class="booking-info-value">hello@maisonhair.com<br>+61 3 9000 1234</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <div class="footer-logo">Maison</div>
+        <p class="footer-tagline">Where art meets hair.<br>A luxury studio in Melbourne.</p>
+        <div class="footer-social">
+          <a href="#" aria-label="Instagram">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><rect x="2" y="2" width="20" height="20" rx="5" /><circle cx="12" cy="12" r="5" /><circle cx="17.5" cy="6.5" r="1.2" fill="currentColor" stroke="none" /></svg>
+          </a>
+          <a href="#" aria-label="Facebook">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z" /></svg>
+          </a>
+          <a href="#" aria-label="Pinterest">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><circle cx="12" cy="12" r="10" /><path d="M8 12c0-2.2 1.8-4 4-4s4 1.8 4 4-1.8 4-4 4" /><path d="M9 22l3-10" /></svg>
+          </a>
+        </div>
+      </div>
+      <div class="footer-links">
+        <div class="footer-col">
+          <h4>Navigation</h4>
+          <ul>
+            <li><a href="#services">Services</a></li>
+            <li><a href="#gallery">Gallery</a></li>
+            <li><a href="#stylists">Stylists</a></li>
+            <li><a href="#booking">Book Now</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Studio</h4>
+          <p>142 Collins Street<br>Melbourne, VIC 3000</p>
+          <p style="margin-top: 8px;">Tue &ndash; Sat: 9:00 &ndash; 19:00<br>Sun: 10:00 &ndash; 17:00</p>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      &copy; 2025 MAISON Hair Studio. Fictional salon by <a href="index.html">Sekimachi Design Studio</a>.
+    </div>
+  </footer>
+
+  <script>
+    // Fade-in animations with IntersectionObserver
+    const fadeEls = document.querySelectorAll('.fade-in');
+    const fadeObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          fadeObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+    fadeEls.forEach(el => fadeObserver.observe(el));
+
+    // Nav scroll effect
+    const nav = document.getElementById('nav');
+    window.addEventListener('scroll', () => {
+      nav.classList.toggle('scrolled', window.scrollY > 20);
+    });
+
+    // Mobile menu toggle
+    const toggle = document.getElementById('navToggle');
+    const links = document.getElementById('navLinks');
+    toggle.addEventListener('click', () => {
+      toggle.classList.toggle('active');
+      links.classList.toggle('open');
+      document.body.style.overflow = links.classList.contains('open') ? 'hidden' : '';
+    });
+    links.querySelectorAll('a').forEach(a => {
+      a.addEventListener('click', () => {
+        toggle.classList.remove('active');
+        links.classList.remove('open');
+        document.body.style.overflow = '';
+      });
+    });
+  </script>
+
+</body>
+</html>

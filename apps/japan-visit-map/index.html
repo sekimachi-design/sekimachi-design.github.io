@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>都道府県訪問マップ</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        :root {
+            --visited: #34C759;
+            --not-visited: #B8C0CC;
+            --ocean: #D6EAF8;
+            --bg: #F2F2F7;
+            --card: #FFFFFF;
+            --text: #1C1C1E;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        header {
+            text-align: center;
+            padding: 32px 20px 16px;
+        }
+
+        h1 {
+            font-size: 26px;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+            color: #1C1C1E;
+        }
+
+        #counter {
+            margin-top: 16px;
+            display: flex;
+            align-items: baseline;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        #count-num {
+            font-size: 52px;
+            font-weight: 800;
+            color: var(--visited);
+            line-height: 1;
+        }
+
+        #count-label {
+            font-size: 18px;
+            color: #636366;
+        }
+
+        #progress-wrap {
+            width: 240px;
+            margin: 12px auto 0;
+        }
+
+        #progress-bar-bg {
+            height: 8px;
+            background: var(--not-visited);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        #progress-bar {
+            height: 100%;
+            background: var(--visited);
+            border-radius: 4px;
+            transition: width 0.4s ease;
+            width: 0%;
+        }
+
+        #progress-pct {
+            text-align: right;
+            font-size: 12px;
+            color: #8E8E93;
+            margin-top: 4px;
+        }
+
+        #legend {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            padding: 16px 8px 8px;
+            font-size: 14px;
+            color: #636366;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+        }
+
+        .legend-dot {
+            width: 13px;
+            height: 13px;
+            border-radius: 50%;
+        }
+
+        #map-container {
+            display: flex;
+            justify-content: center;
+            padding: 0 12px;
+        }
+
+        #japan-map {
+            max-width: 100%;
+            cursor: default;
+        }
+
+        .prefecture {
+            stroke: white;
+            stroke-width: 0.7;
+            cursor: pointer;
+            transition: filter 0.12s;
+        }
+
+        .prefecture:hover {
+            filter: brightness(1.12);
+        }
+
+        #tooltip {
+            position: fixed;
+            background: rgba(28, 28, 30, 0.88);
+            color: white;
+            padding: 7px 13px;
+            border-radius: 9px;
+            font-size: 13px;
+            font-weight: 600;
+            pointer-events: none;
+            display: none;
+            z-index: 999;
+            white-space: nowrap;
+            backdrop-filter: blur(4px);
+        }
+
+        #tooltip .status {
+            font-weight: 400;
+            opacity: 0.75;
+            margin-left: 6px;
+        }
+
+        #regions {
+            max-width: 880px;
+            margin: 24px auto 0;
+            padding: 0 20px;
+        }
+
+        .region {
+            margin-bottom: 18px;
+        }
+
+        .region-title {
+            font-size: 11px;
+            font-weight: 700;
+            color: #8E8E93;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            margin-bottom: 8px;
+        }
+
+        .chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 7px;
+        }
+
+        .chip {
+            padding: 5px 13px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            border: 1.5px solid #D1D1D6;
+            background: var(--card);
+            color: #636366;
+            transition: all 0.2s;
+            user-select: none;
+        }
+
+        .chip:hover {
+            border-color: #aaa;
+        }
+
+        .chip.visited {
+            background: var(--visited);
+            border-color: var(--visited);
+            color: white;
+        }
+
+        #footer {
+            text-align: center;
+            padding: 28px 20px 40px;
+        }
+
+        #reset-btn {
+            padding: 10px 26px;
+            background: transparent;
+            color: #FF3B30;
+            border: 1.5px solid #FF3B30;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.2s;
+        }
+
+        #reset-btn:hover {
+            background: #FF3B30;
+            color: white;
+        }
+
+        #error-msg {
+            display: none;
+            text-align: center;
+            color: #636366;
+            padding: 60px 20px;
+            font-size: 15px;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>🗾 都道府県訪問マップ</h1>
+    <div id="counter">
+        <span id="count-num">0</span>
+        <span id="count-label">/ 47 都道府県</span>
+    </div>
+    <div id="progress-wrap">
+        <div id="progress-bar-bg"><div id="progress-bar"></div></div>
+        <div id="progress-pct">0%</div>
+    </div>
+</header>
+
+<div id="legend">
+    <div class="legend-item">
+        <div class="legend-dot" style="background:var(--visited)"></div>
+        <span>行ったことがある</span>
+    </div>
+    <div class="legend-item">
+        <div class="legend-dot" style="background:var(--not-visited)"></div>
+        <span>まだ行っていない</span>
+    </div>
+</div>
+
+<div id="map-container">
+    <svg id="japan-map" width="720" height="820"></svg>
+    <p id="error-msg">地図データの読み込みに失敗しました。<br>インターネット接続を確認してください。</p>
+</div>
+
+<div id="tooltip"></div>
+
+<div id="regions"></div>
+
+<div id="footer">
+    <button id="reset-btn">リセット</button>
+</div>
+
+<script>
+const W = 720, H = 820;
+const VISITED_KEY = 'jp-visited-prefs-v1';
+
+const PREFS = [
+    { id:  1, name: "北海道",  region: "北海道・東北" },
+    { id:  2, name: "青森県",  region: "北海道・東北" },
+    { id:  3, name: "岩手県",  region: "北海道・東北" },
+    { id:  4, name: "宮城県",  region: "北海道・東北" },
+    { id:  5, name: "秋田県",  region: "北海道・東北" },
+    { id:  6, name: "山形県",  region: "北海道・東北" },
+    { id:  7, name: "福島県",  region: "北海道・東北" },
+    { id:  8, name: "茨城県",  region: "関東" },
+    { id:  9, name: "栃木県",  region: "関東" },
+    { id: 10, name: "群馬県",  region: "関東" },
+    { id: 11, name: "埼玉県",  region: "関東" },
+    { id: 12, name: "千葉県",  region: "関東" },
+    { id: 13, name: "東京都",  region: "関東" },
+    { id: 14, name: "神奈川県", region: "関東" },
+    { id: 15, name: "新潟県",  region: "中部" },
+    { id: 16, name: "富山県",  region: "中部" },
+    { id: 17, name: "石川県",  region: "中部" },
+    { id: 18, name: "福井県",  region: "中部" },
+    { id: 19, name: "山梨県",  region: "中部" },
+    { id: 20, name: "長野県",  region: "中部" },
+    { id: 21, name: "岐阜県",  region: "中部" },
+    { id: 22, name: "静岡県",  region: "中部" },
+    { id: 23, name: "愛知県",  region: "中部" },
+    { id: 24, name: "三重県",  region: "近畿" },
+    { id: 25, name: "滋賀県",  region: "近畿" },
+    { id: 26, name: "京都府",  region: "近畿" },
+    { id: 27, name: "大阪府",  region: "近畿" },
+    { id: 28, name: "兵庫県",  region: "近畿" },
+    { id: 29, name: "奈良県",  region: "近畿" },
+    { id: 30, name: "和歌山県", region: "近畿" },
+    { id: 31, name: "鳥取県",  region: "中国" },
+    { id: 32, name: "島根県",  region: "中国" },
+    { id: 33, name: "岡山県",  region: "中国" },
+    { id: 34, name: "広島県",  region: "中国" },
+    { id: 35, name: "山口県",  region: "中国" },
+    { id: 36, name: "徳島県",  region: "四国" },
+    { id: 37, name: "香川県",  region: "四国" },
+    { id: 38, name: "愛媛県",  region: "四国" },
+    { id: 39, name: "高知県",  region: "四国" },
+    { id: 40, name: "福岡県",  region: "九州・沖縄" },
+    { id: 41, name: "佐賀県",  region: "九州・沖縄" },
+    { id: 42, name: "長崎県",  region: "九州・沖縄" },
+    { id: 43, name: "熊本県",  region: "九州・沖縄" },
+    { id: 44, name: "大分県",  region: "九州・沖縄" },
+    { id: 45, name: "宮崎県",  region: "九州・沖縄" },
+    { id: 46, name: "鹿児島県", region: "九州・沖縄" },
+    { id: 47, name: "沖縄県",  region: "九州・沖縄" },
+];
+
+// English name → prefecture ID (for GeoJSON matching)
+const ENG_TO_ID = {
+    "Hokkaido":1,"Aomori":2,"Iwate":3,"Miyagi":4,"Akita":5,
+    "Yamagata":6,"Fukushima":7,"Ibaraki":8,"Tochigi":9,"Gunma":10,
+    "Saitama":11,"Chiba":12,"Tokyo":13,"Kanagawa":14,"Niigata":15,
+    "Toyama":16,"Ishikawa":17,"Fukui":18,"Yamanashi":19,"Nagano":20,
+    "Gifu":21,"Shizuoka":22,"Aichi":23,"Mie":24,"Shiga":25,
+    "Kyoto":26,"Osaka":27,"Hyogo":28,"Nara":29,"Wakayama":30,
+    "Tottori":31,"Shimane":32,"Okayama":33,"Hiroshima":34,"Yamaguchi":35,
+    "Tokushima":36,"Kagawa":37,"Ehime":38,"Kochi":39,"Fukuoka":40,
+    "Saga":41,"Nagasaki":42,"Kumamoto":43,"Oita":44,"Miyazaki":45,
+    "Kagoshima":46,"Okinawa":47
+};
+
+const JP_TO_ID = {};
+const ID_TO_NAME = {};
+PREFS.forEach(p => {
+    JP_TO_ID[p.name] = p.id;
+    ID_TO_NAME[p.id] = p.name;
+});
+
+// State
+let visited = new Set();
+try {
+    const saved = localStorage.getItem(VISITED_KEY);
+    if (saved) visited = new Set(JSON.parse(saved));
+} catch(e) {}
+
+function save() {
+    try { localStorage.setItem(VISITED_KEY, JSON.stringify([...visited])); } catch(e) {}
+}
+
+function toggle(id) {
+    if (!id) return;
+    if (visited.has(id)) visited.delete(id);
+    else visited.add(id);
+    save();
+    updateAll();
+}
+
+function getColor(id) {
+    return visited.has(id) ? '#34C759' : '#B8C0CC';
+}
+
+function getPrefId(d) {
+    const p = d.properties;
+    if (p.id && +p.id > 0 && +p.id <= 47) return +p.id;
+    if (p.code && +p.code > 0 && +p.code <= 47) return +p.code;
+    const eng = p.nam || p.name || '';
+    if (ENG_TO_ID[eng]) return ENG_TO_ID[eng];
+    const jp = p.nam_ja || p.name_ja || '';
+    if (JP_TO_ID[jp]) return JP_TO_ID[jp];
+    return null;
+}
+
+// SVG setup
+const svg = d3.select('#japan-map');
+
+svg.append('rect')
+    .attr('width', W).attr('height', H)
+    .attr('fill', '#D6EAF8').attr('rx', 12);
+
+const g = svg.append('g');
+
+// Tooltip
+const tooltipEl = document.getElementById('tooltip');
+
+// Load GeoJSON
+const GEO_URL = 'https://raw.githubusercontent.com/dataofjapan/land/master/japan.geojson';
+
+d3.json(GEO_URL).then(function(geojson) {
+    const projection = d3.geoMercator()
+        .fitExtent([[16, 16], [W - 16, H - 16]], geojson);
+    const path = d3.geoPath().projection(projection);
+
+    g.selectAll('path')
+        .data(geojson.features)
+        .enter()
+        .append('path')
+        .attr('class', 'prefecture')
+        .attr('d', path)
+        .attr('fill', d => getColor(getPrefId(d)))
+        .on('click', (event, d) => toggle(getPrefId(d)))
+        .on('mousemove', function(event, d) {
+            const id = getPrefId(d);
+            const name = ID_TO_NAME[id] || d.properties.nam_ja || d.properties.nam || '?';
+            const status = visited.has(id) ? '✓ 訪問済み' : '未訪問';
+            tooltipEl.innerHTML = `${name}<span class="status">${status}</span>`;
+            tooltipEl.style.display = 'block';
+            tooltipEl.style.left = (event.clientX + 14) + 'px';
+            tooltipEl.style.top  = (event.clientY - 34) + 'px';
+        })
+        .on('mouseleave', () => { tooltipEl.style.display = 'none'; });
+
+    updateAll();
+}).catch(function() {
+    document.getElementById('japan-map').style.display = 'none';
+    document.getElementById('error-msg').style.display = 'block';
+});
+
+function updateAll() {
+    // Map colors
+    g.selectAll('path.prefecture')
+        .attr('fill', d => getColor(getPrefId(d)));
+
+    // Chips
+    document.querySelectorAll('.chip').forEach(chip => {
+        chip.classList.toggle('visited', visited.has(+chip.dataset.id));
+    });
+
+    // Counter
+    const n = visited.size;
+    document.getElementById('count-num').textContent = n;
+    const pct = Math.round(n / 47 * 100);
+    document.getElementById('progress-bar').style.width = pct + '%';
+    document.getElementById('progress-pct').textContent = pct + '%';
+}
+
+// Build chip list by region
+const regionOrder = ["北海道・東北","関東","中部","近畿","中国","四国","九州・沖縄"];
+const regionMap = {};
+PREFS.forEach(p => {
+    if (!regionMap[p.region]) regionMap[p.region] = [];
+    regionMap[p.region].push(p);
+});
+
+const regionsEl = document.getElementById('regions');
+regionOrder.forEach(region => {
+    const prefs = regionMap[region];
+    if (!prefs) return;
+    const div = document.createElement('div');
+    div.className = 'region';
+    const title = document.createElement('div');
+    title.className = 'region-title';
+    title.textContent = region;
+    const chips = document.createElement('div');
+    chips.className = 'chips';
+    prefs.forEach(p => {
+        const chip = document.createElement('div');
+        chip.className = 'chip' + (visited.has(p.id) ? ' visited' : '');
+        chip.dataset.id = p.id;
+        chip.textContent = p.name;
+        chip.addEventListener('click', () => toggle(p.id));
+        chips.appendChild(chip);
+    });
+    div.appendChild(title);
+    div.appendChild(chips);
+    regionsEl.appendChild(div);
+});
+
+document.getElementById('reset-btn').addEventListener('click', function() {
+    if (confirm('訪問済みの記録をすべてリセットしますか？')) {
+        visited.clear();
+        save();
+        updateAll();
+    }
+});
+
+updateAll();
+</script>
+</body>
+</html>
