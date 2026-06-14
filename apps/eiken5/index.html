@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>英検モンスターズ 〜5級をめざせ！〜</title>
+<link rel="stylesheet" href="style.css?v=16">
+</head>
+<body>
+<div id="app">
+
+  <!-- 上部ステータスバー -->
+  <header class="statusbar" id="statusbar" style="display:none;">
+    <button type="button" class="status-brand" id="brand-home-btn" aria-label="タイトルへ戻る">
+      <img class="hero-avatar" src="img/hero_face.png" alt="" aria-hidden="true">
+      <span class="app-title-small">英検モンスターズ</span>
+    </button>
+    <div class="status-progress">
+      <div class="level-badge" id="level-badge">Lv.1</div>
+      <div class="xp-bar-wrap" role="progressbar" aria-label="経験値ゲージ" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="xp-bar-wrap">
+        <div class="xp-bar-fill" id="xp-bar-fill" style="width:0%"></div>
+      </div>
+    </div>
+    <div class="streak" id="streak-display">
+      <span aria-hidden="true">🔥</span>
+      <span id="streak-text">0日連続</span>
+    </div>
+    <button type="button" class="header-countdown" id="header-countdown" aria-live="polite" aria-label="試験についてのページを開く"></button>
+  </header>
+
+  <main id="main-content">
+
+    <!-- タイトル画面 -->
+    <section class="screen active" id="title-screen" aria-labelledby="title-heading">
+      <div class="title-layout">
+        <div class="title-main">
+          <img class="hero-img" src="img/hero.png" alt="主人公のキャラクター" aria-hidden="true">
+          <h1 id="title-heading">英検モンスターズ</h1>
+          <p class="sub">〜英検5級をめざせ！〜</p>
+          <div class="title-actions">
+            <button class="big-btn" id="start-btn">START</button>
+            <button class="big-btn secondary" id="study-btn">📖 LESSON</button>
+          </div>
+          <div class="title-stats" id="title-stats" aria-live="polite"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- マップ画面 -->
+    <section class="screen" id="map-screen" aria-label="ステージ選択">
+      <div class="map-progress" id="map-progress" aria-live="polite"></div>
+      <button type="button" class="study-link-banner" id="study-link-from-map">📖 文法レッスンで確認する</button>
+      <div class="section-label">獲得バッジ</div>
+      <div class="badge-row" id="badge-row" role="list" aria-label="獲得したバッジ"></div>
+      <div class="map-grid" id="map-path" role="list"></div>
+    </section>
+
+    <!-- 文法レッスン一覧画面 -->
+    <section class="screen" id="study-list-screen" aria-labelledby="study-list-heading">
+      <div class="battle-top">
+        <button class="back-link" id="back-from-study-list">← Home</button>
+      </div>
+      <h2 id="study-list-heading" class="study-page-heading">📖 文法レッスン</h2>
+      <p class="study-page-lead">英検5級によく出る文法を、単元ごとにやさしく解説しているよ。気になるところから読んでみよう！</p>
+      <div class="study-grid" id="study-grid" role="list"></div>
+    </section>
+
+    <!-- 文法レッスン詳細画面 -->
+    <section class="screen" id="study-detail-screen" aria-labelledby="study-detail-heading">
+      <div class="battle-top">
+        <button class="back-link" id="back-from-study-detail">← 一覧へ</button>
+        <div class="study-unit-counter" id="study-unit-counter"></div>
+      </div>
+      <div class="study-detail" id="study-detail">
+        <h2 id="study-detail-heading" class="study-detail-heading"></h2>
+        <p class="study-detail-summary" id="study-detail-summary"></p>
+        <div class="study-sections" id="study-sections"></div>
+      </div>
+      <div class="study-nav">
+        <button class="small-btn secondary" id="study-prev-btn">BACK</button>
+        <button class="small-btn" id="study-next-btn">NEXT</button>
+      </div>
+    </section>
+
+    <!-- 試験情報画面 -->
+    <section class="screen" id="info-screen" aria-labelledby="info-heading">
+      <button class="back-link" id="back-from-info">← Back</button>
+      <h2 id="info-heading">📅 試験について</h2>
+
+      <div class="info-grid">
+        <div class="info-card countdown-card">
+          <h3>⏳ 公式のつぎの試験まで</h3>
+          <p class="info-text">日本英語検定協会が発表している、本会場でいちばん近い一次試験の日だよ。</p>
+          <div class="countdown-display" id="official-countdown-display" aria-live="polite"></div>
+          <p class="info-text official-note">※準会場（学校など）は日程が異なる場合があるので、おうちの人や学校で確認してね。</p>
+        </div>
+
+        <div class="info-card countdown-card">
+          <h3>📌 じぶんの試験まで</h3>
+          <p class="info-text">じぶんが受ける試験の日を入力してみよう。おうちの人と確認してね。</p>
+          <div class="countdown-input-row">
+            <label for="exam-date-input">試験日</label>
+            <input type="date" id="exam-date-input">
+          </div>
+          <div class="countdown-display" id="countdown-display" aria-live="polite"></div>
+        </div>
+
+        <div class="info-card">
+          <h3>🗓️ 英検は年3回実施</h3>
+          <p class="info-text">英検は1年に3回（だいたい6月・10月・1月ごろ）実施されるよ。くわしい日程や会場は、学校や英検のウェブサイトでチェックしよう。</p>
+        </div>
+
+        <div class="info-card">
+          <h3>📝 試験の形式（5級）</h3>
+          <div class="exam-format-grid">
+            <div class="format-box">
+              <div class="format-title">📖 筆記テスト</div>
+              <ul>
+                <li>問題数：25問</li>
+                <li>時間：25分</li>
+                <li>内容：たんごをえらぶ・かいわ・ぶんを並べかえる問題</li>
+              </ul>
+            </div>
+            <div class="format-box">
+              <div class="format-title">🎧 リスニングテスト</div>
+              <ul>
+                <li>問題数：25問</li>
+                <li>時間：約20分（音声が流れる）</li>
+                <li>内容：おへんじをえらぶ・かいわを聞く・イラストをえらぶ</li>
+              </ul>
+            </div>
+          </div>
+          <p class="info-text">このゲームでたくさん英語にふれて、リスニングに慣れておこう！</p>
+        </div>
+
+        <div class="info-card">
+          <h3>🎯 合格ライン</h3>
+          <p class="info-text">正解が全体の約60%程度で合格できるよ。100点を取る必要はないので、落ち着いて解けるところからチャレンジしよう。このゲームで全9つの島を⭐3つでクリアできれば、もうばっちりの実力だよ！</p>
+        </div>
+
+        <div class="info-card">
+          <h3>🎒 持ち物・当日の流れ</h3>
+          <ul class="exam-checklist">
+            <li>✅ 受験票</li>
+            <li>✅ HBやBのえんぴつ（またはシャープペンシル）</li>
+            <li>✅ 消しゴム</li>
+            <li>✅ 腕時計（あれば）</li>
+          </ul>
+          <p class="info-text">当日は 受付 → 説明を聞く → 筆記テスト → リスニングテスト → 終了、という流れだよ。リスニングは放送が1回しか流れないので、静かに集中して聞こう。結果は試験後約1か月ほどでわかるよ。</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- バトル(クイズ)画面 -->
+    <section class="screen" id="battle-screen" aria-labelledby="battle-heading">
+      <div class="battle-top">
+        <button class="back-link" id="back-to-map">← Home</button>
+        <div class="hearts" id="hearts-display" role="status">
+          <img class="hero-avatar" src="img/hero_face.png" alt="" aria-hidden="true">
+          <span aria-hidden="true" id="hearts-emoji">❤️❤️❤️</span>
+          <span class="visually-hidden" id="hearts-text">残りライフ 3/3</span>
+        </div>
+      </div>
+
+      <div class="battle-layout">
+        <div class="monster-panel">
+          <div class="monster-area">
+            <div class="vs-fighter player-fighter">
+              <img class="fighter-img" src="img/hero_face.png" alt="きみ" aria-hidden="true">
+            </div>
+            <div class="vs-badge" aria-hidden="true">VS</div>
+            <div class="vs-fighter enemy-fighter">
+              <div class="monster-emoji" id="monster-emoji" aria-hidden="true">👾</div>
+            </div>
+          </div>
+          <div class="monster-hp-wrap" role="progressbar" aria-label="モンスターの残りHP" aria-valuemin="0" aria-valuemax="100" aria-valuenow="100" id="monster-hp-wrap">
+            <div class="monster-hp-fill" id="monster-hp-fill" style="width:100%"></div>
+          </div>
+          <h2 class="monster-name" id="monster-name-label">モンスター: モジャ</h2>
+        </div>
+
+        <div class="quiz-panel">
+          <h2 class="visually-hidden" id="battle-heading">クイズバトル</h2>
+          <div class="progress-label" id="progress-label">問題 1 / 8</div>
+          <div class="question-card" id="question-card"></div>
+          <div class="choices" id="choices" role="group" aria-label="選択肢"></div>
+          <div class="typing-area" id="typing-area" style="display:none;">
+            <div class="typing-input-row">
+              <label for="typing-input" class="visually-hidden">英語で入力してください</label>
+              <input type="text" id="typing-input" class="typing-input" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" lang="en" placeholder="英語で入力してね">
+              <button type="button" class="small-btn" id="typing-submit">SEND</button>
+            </div>
+            <div class="typing-hint-row">
+              <button type="button" class="typing-hint-btn" id="typing-hint-btn">💡 ヒントを見る</button>
+              <span id="typing-hint" class="typing-hint" aria-live="polite"></span>
+            </div>
+          </div>
+          <div class="feedback-banner" id="feedback-banner" aria-live="polite"></div>
+          <div class="next-btn-wrap" id="next-btn-wrap" style="display:none;">
+            <button class="small-btn" id="next-btn">NEXT</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- リザルト画面 -->
+    <section class="screen" id="result-screen" aria-labelledby="result-title">
+      <div class="result-card">
+        <img class="hero-img result-hero" src="img/hero.png" alt="主人公のキャラクター" aria-hidden="true">
+        <h2 id="result-title">クリア！</h2>
+        <div class="result-stars" id="result-stars" aria-hidden="true">⭐⭐⭐</div>
+        <div id="result-detail"></div>
+        <div class="levelup-banner" id="levelup-banner" role="status">🎉 レベルアップ！</div>
+        <div class="result-buttons">
+          <button class="small-btn secondary" id="retry-btn">もう一度</button>
+          <button class="small-btn" id="to-map-btn">Home</button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+<script src="questions.js?v=15"></script>
+<script src="study.js?v=15"></script>
+<script src="script.js?v=15"></script>
+</body>
+</html>
