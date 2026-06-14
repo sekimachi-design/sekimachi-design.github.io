@@ -546,10 +546,12 @@ function renderStudyList() {
   grid.innerHTML = STUDY_UNITS.map(unit => `
     <button type="button" class="study-card" data-unit-id="${unit.id}" role="listitem">
       <div class="study-card-emoji" aria-hidden="true">${unit.emoji}</div>
-      <div>
-        <p class="study-card-title">${unit.id}. ${unit.title}</p>
+      <div class="study-card-body">
+        <p class="study-card-unit">UNIT ${unit.id}</p>
+        <p class="study-card-title">${unit.title}</p>
         <p class="study-card-summary">${unit.summary}</p>
       </div>
+      <div class="study-card-arrow" aria-hidden="true">›</div>
     </button>
   `).join("");
 

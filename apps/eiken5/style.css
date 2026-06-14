@@ -1,11 +1,13 @@
 :root {
-  --p5-red: #e0142c;
-  --p5-red-dark: #9c0e1d;
-  --p5-black: #161616;
-  --p5-charcoal: #262626;
+  --p5-blue: #2f6fd1;
+  --p5-blue-dark: #1c4d96;
+  --p5-error: #e0142c;
+  --p5-error-dark: #9c0e1d;
+  --p5-black: #14213d;
+  --p5-charcoal: #1f3155;
   --p5-white: #ffffff;
-  --p5-offwhite: #f4f1ec;
-  --p5-gray: #545454;
+  --p5-offwhite: #f7f1e3;
+  --p5-gray: #6b7a99;
   --p5-gold: #ffd24a;
 }
 
@@ -43,7 +45,7 @@ html, body {
 }
 
 :focus-visible {
-  outline: 3px solid var(--p5-red);
+  outline: 3px solid var(--p5-blue);
   outline-offset: 2px;
   box-shadow: 0 0 0 5px rgba(255,255,255,0.9);
   border-radius: 4px;
@@ -74,7 +76,7 @@ html, body {
   position: sticky;
   top: 0;
   z-index: 10;
-  border-bottom: 4px solid var(--p5-red);
+  border-bottom: 4px solid var(--p5-blue);
 }
 
 .status-brand {
@@ -97,7 +99,7 @@ html, body {
 }
 
 .status-brand:focus-visible {
-  outline: 2px solid var(--p5-red);
+  outline: 2px solid var(--p5-blue);
   outline-offset: 4px;
 }
 
@@ -107,10 +109,10 @@ html, body {
   font-style: italic;
   font-family: inherit;
   white-space: nowrap;
-  background: var(--p5-red);
+  background: var(--p5-blue);
   color: #fff;
   border: none;
-  border-radius: 0;
+  border-radius: 10px;
   padding: 6px 14px 6px 10px;
   cursor: pointer;
   transition: filter 0.15s;
@@ -130,7 +132,7 @@ html, body {
   object-fit: cover;
   border-radius: 50%;
   background: #fff;
-  border: 2px solid var(--p5-red);
+  border: 2px solid var(--p5-blue);
   flex: none;
 }
 
@@ -152,9 +154,9 @@ html, body {
 }
 
 .statusbar .level-badge {
-  background: var(--p5-red);
+  background: var(--p5-blue);
   color: #fff;
-  border-radius: 0;
+  border-radius: 10px;
   padding: 6px 16px 6px 12px;
   font-size: 14px;
   font-weight: 900;
@@ -166,14 +168,14 @@ html, body {
   flex: 1;
   height: 12px;
   background: var(--p5-charcoal);
-  border-radius: 0;
+  border-radius: 10px;
   overflow: hidden;
   border: 1px solid rgba(255,255,255,0.2);
 }
 
 .xp-bar-fill {
   height: 100%;
-  background: linear-gradient(90deg, #ff4d6a, var(--p5-red));
+  background: linear-gradient(90deg, #ffe27a, var(--p5-gold));
   transition: width 0.5s ease;
 }
 
@@ -222,7 +224,7 @@ html, body {
   justify-content: flex-start;
   text-align: center;
   background-color: var(--p5-black);
-  background-image: repeating-linear-gradient(135deg, rgba(224,20,44,0.18) 0 22px, transparent 22px 64px);
+  background-image: repeating-linear-gradient(135deg, rgba(47,111,209,0.22) 0 22px, transparent 22px 64px);
   color: #fff;
   flex: 1;
   overflow-y: auto;
@@ -282,10 +284,10 @@ html, body {
 }
 
 .big-btn {
-  background: var(--p5-red);
+  background: var(--p5-blue);
   color: #fff;
   border: 3px solid #fff;
-  border-radius: 0;
+  border-radius: 10px;
   padding: 18px 48px;
   font-size: 20px;
   font-weight: 900;
@@ -298,7 +300,7 @@ html, body {
 
 .big-btn:hover {
   background: #fff;
-  color: var(--p5-red);
+  color: var(--p5-blue);
 }
 
 .big-btn:active {
@@ -332,8 +334,8 @@ html, body {
   max-width: 420px;
   font-size: 15px;
   background: var(--p5-charcoal);
-  border-left: 6px solid var(--p5-red);
-  border-radius: 0;
+  border-left: 6px solid var(--p5-blue);
+  border-radius: 10px;
   padding: 14px 20px;
   line-height: 1.9;
   text-align: left;
@@ -397,10 +399,10 @@ html, body {
   gap: 14px;
   padding: 18px;
   padding-left: 22px;
-  border-radius: 0;
+  border-radius: 10px;
   background: var(--p5-charcoal);
   border: 3px solid var(--p5-black);
-  border-left: 8px solid var(--p5-red);
+  border-left: 8px solid var(--p5-blue);
   cursor: pointer;
   transition: transform 0.12s, box-shadow 0.12s, border-color 0.12s;
   width: 100%;
@@ -411,7 +413,7 @@ html, body {
 
 .stage-node.unlocked:hover {
   transform: translateX(4px);
-  box-shadow: -6px 0 0 var(--p5-red);
+  box-shadow: -6px 0 0 var(--p5-blue);
 }
 
 .stage-node.unlocked:active {
@@ -507,8 +509,8 @@ html, body {
 .back-link {
   background: var(--p5-charcoal);
   color: #fff;
-  border: 2px solid var(--p5-red);
-  border-radius: 0;
+  border: 2px solid var(--p5-blue);
+  border-radius: 10px;
   padding: 10px 18px 10px 14px;
   font-size: 14px;
   font-weight: 900;
@@ -518,8 +520,8 @@ html, body {
 }
 
 .back-link:hover {
-  background: var(--p5-red);
-  border-color: var(--p5-red);
+  background: var(--p5-blue);
+  border-color: var(--p5-blue);
 }
 
 .hearts {
@@ -528,7 +530,7 @@ html, body {
   gap: 8px;
   font-size: 22px;
   background: rgba(0,0,0,0.55);
-  border: 2px solid var(--p5-red);
+  border: 2px solid var(--p5-blue);
   padding: 6px 14px;
 }
 
@@ -556,8 +558,8 @@ html, body {
   gap: 24px;
   text-align: center;
   background: var(--p5-charcoal);
-  border: 2px solid var(--p5-red);
-  border-radius: 0;
+  border: 2px solid var(--p5-blue);
+  border-radius: 10px;
   padding: 18px 24px;
 }
 
@@ -613,14 +615,14 @@ html, body {
   margin: 14px auto 0;
   height: 12px;
   background: rgba(0,0,0,0.4);
-  border-radius: 0;
+  border-radius: 10px;
   overflow: hidden;
   border: 2px solid #fff;
 }
 
 .monster-hp-fill {
   height: 100%;
-  background: linear-gradient(90deg, #ff7676, var(--p5-red));
+  background: linear-gradient(90deg, #ff7676, var(--p5-error));
   transition: width 0.4s ease;
 }
 
@@ -645,8 +647,8 @@ html, body {
   background: var(--p5-charcoal);
   color: #fff;
   border: 3px solid var(--p5-black);
-  border-top: 6px solid var(--p5-red);
-  border-radius: 0;
+  border-top: 6px solid var(--p5-blue);
+  border-radius: 10px;
   padding: 28px;
   box-shadow: 6px 6px 0 rgba(0,0,0,0.35);
   font-size: 20px;
@@ -668,7 +670,7 @@ html, body {
   color: var(--p5-black);
   border: 1px solid var(--p5-black);
   padding: 2px 6px;
-  border-radius: 0;
+  border-radius: 10px;
 }
 
 .choices {
@@ -680,7 +682,7 @@ html, body {
 .choice-btn {
   background: var(--p5-offwhite);
   border: 2px solid var(--p5-black);
-  border-radius: 0;
+  border-radius: 10px;
   padding: 18px 20px;
   font-size: 17px;
   font-weight: bold;
@@ -690,8 +692,8 @@ html, body {
 }
 
 .choice-btn:hover:not(.disabled) {
-  border-color: var(--p5-red);
-  box-shadow: 4px 4px 0 var(--p5-red);
+  border-color: var(--p5-blue);
+  box-shadow: 4px 4px 0 var(--p5-blue);
   transform: translate(-2px, -2px);
 }
 
@@ -706,7 +708,7 @@ html, body {
 
 .choice-btn.wrong {
   background: #ffd2d2;
-  border-color: var(--p5-red);
+  border-color: var(--p5-error);
 }
 
 .choice-btn.disabled,
@@ -733,13 +735,13 @@ html, body {
   font-size: 20px;
   padding: 14px 18px;
   border: 2px solid var(--p5-black);
-  border-radius: 0;
+  border-radius: 10px;
   font-family: "Courier New", ui-monospace, monospace;
   background: var(--p5-offwhite);
 }
 
 .typing-input:focus {
-  border-color: var(--p5-red);
+  border-color: var(--p5-blue);
 }
 
 .typing-input.correct {
@@ -749,7 +751,7 @@ html, body {
 
 .typing-input.wrong {
   background: #ffd2d2;
-  border-color: var(--p5-red);
+  border-color: var(--p5-error);
 }
 
 .typing-hint-row {
@@ -764,7 +766,7 @@ html, body {
   background: var(--p5-charcoal);
   border: 2px solid var(--p5-gold);
   color: var(--p5-gold);
-  border-radius: 0;
+  border-radius: 10px;
   padding: 8px 16px;
   font-size: 13px;
   font-weight: 900;
@@ -793,7 +795,7 @@ html, body {
   margin-top: 20px;
   min-height: 28px;
   padding: 14px;
-  border-radius: 0;
+  border-radius: 10px;
 }
 
 .feedback-banner.show.ok {
@@ -804,8 +806,8 @@ html, body {
 
 .feedback-banner.show.no {
   background: #ffe0e0;
-  color: var(--p5-red-dark);
-  border: 2px solid var(--p5-red);
+  color: var(--p5-error-dark);
+  border: 2px solid var(--p5-error);
 }
 
 .next-btn-wrap {
@@ -828,8 +830,8 @@ html, body {
 .result-card {
   background: var(--p5-charcoal);
   color: #fff;
-  border: 3px solid var(--p5-red);
-  border-radius: 0;
+  border: 3px solid var(--p5-blue);
+  border-radius: 10px;
   padding: 36px;
   box-shadow: 8px 8px 0 #000;
   width: 100%;
@@ -845,7 +847,7 @@ html, body {
   font-weight: 900;
   font-style: italic;
   display: inline-block;
-  background: var(--p5-red);
+  background: var(--p5-blue);
   color: #fff;
   padding: 4px 20px;
   transform: skewX(-8deg);
@@ -857,7 +859,7 @@ html, body {
   font-weight: 900;
   padding: 12px;
   border: 2px solid var(--p5-black);
-  border-radius: 0;
+  border-radius: 10px;
   margin: 14px 0;
   display: none;
   animation: pulse 1s infinite;
@@ -879,10 +881,10 @@ html, body {
 }
 
 .small-btn {
-  background: var(--p5-red);
+  background: var(--p5-blue);
   color: #fff;
   border: 2px solid #fff;
-  border-radius: 0;
+  border-radius: 10px;
   padding: 14px 26px;
   font-size: 16px;
   font-weight: 900;
@@ -903,7 +905,7 @@ html, body {
 
 .small-btn.secondary {
   background: var(--p5-black);
-  border-color: var(--p5-red);
+  border-color: var(--p5-blue);
 }
 
 /* ===== 試験情報画面 ===== */
@@ -913,7 +915,7 @@ html, body {
   display: inline-block;
   align-self: center;
   color: #fff;
-  background: var(--p5-red);
+  background: var(--p5-blue);
   font-size: 24px;
   font-weight: 900;
   font-style: italic;
@@ -934,7 +936,7 @@ html, body {
 .info-card {
   background: var(--p5-offwhite);
   border: 2px solid var(--p5-black);
-  border-radius: 0;
+  border-radius: 10px;
   padding: 20px 24px;
   box-shadow: 5px 5px 0 rgba(0,0,0,0.3);
 }
@@ -944,7 +946,7 @@ html, body {
   font-size: 17px;
   font-weight: 900;
   color: var(--p5-black);
-  border-left: 5px solid var(--p5-red);
+  border-left: 5px solid var(--p5-blue);
   padding-left: 10px;
 }
 
@@ -957,7 +959,7 @@ html, body {
 
 .countdown-card {
   background: var(--p5-black);
-  border-color: var(--p5-red);
+  border-color: var(--p5-blue);
   color: #fff;
   grid-column: 1 / -1;
 }
@@ -983,8 +985,8 @@ html, body {
 .countdown-input-row input[type="date"] {
   font-size: 16px;
   padding: 10px 14px;
-  border-radius: 0;
-  border: 2px solid var(--p5-red);
+  border-radius: 10px;
+  border: 2px solid var(--p5-blue);
   background: #fff;
   color: var(--p5-black);
 }
@@ -998,9 +1000,9 @@ html, body {
 .countdown-display {
   font-size: 22px;
   font-weight: 900;
-  background: rgba(224,20,44,0.25);
-  border: 1px solid var(--p5-red);
-  border-radius: 0;
+  background: rgba(47,111,209,0.25);
+  border: 1px solid var(--p5-blue);
+  border-radius: 10px;
   padding: 14px 20px;
   min-height: 1.4em;
 }
@@ -1015,7 +1017,7 @@ html, body {
 .format-box {
   background: #fff;
   border: 1px solid var(--p5-black);
-  border-radius: 0;
+  border-radius: 10px;
   padding: 14px 16px;
 }
 
@@ -1062,8 +1064,8 @@ html, body {
   align-items: center;
   justify-content: center;
   background: #fff;
-  border: 2px solid var(--p5-red);
-  color: var(--p5-red);
+  border: 2px solid var(--p5-blue);
+  color: var(--p5-blue);
   border-radius: 50%;
   font-size: 17px;
   line-height: 1;
@@ -1073,7 +1075,7 @@ html, body {
 }
 
 .speak-btn:hover {
-  background: var(--p5-red);
+  background: var(--p5-blue);
   color: #fff;
 }
 
@@ -1128,7 +1130,7 @@ html, body {
   background: var(--p5-charcoal);
   color: var(--p5-gold);
   border: 2px solid var(--p5-gold);
-  border-radius: 0;
+  border-radius: 10px;
   font-size: 14px;
   font-weight: 900;
   font-style: italic;
@@ -1149,7 +1151,7 @@ html, body {
   display: inline-block;
   align-self: center;
   color: #fff;
-  background: var(--p5-red);
+  background: var(--p5-blue);
   font-size: 24px;
   font-weight: 900;
   font-style: italic;
@@ -1169,29 +1171,28 @@ html, body {
 
 .study-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 18px;
+  grid-template-columns: 1fr;
+  gap: 14px;
   flex: 1;
   overflow-y: auto;
   padding-bottom: 16px;
   align-content: start;
   width: 100%;
-  max-width: 920px;
+  max-width: 720px;
   margin: 0 auto;
 }
 
 .study-card {
   display: flex;
-  align-items: flex-start;
-  gap: 14px;
-  padding: 18px;
-  padding-left: 22px;
-  border-radius: 0;
+  align-items: center;
+  gap: 20px;
+  padding: 20px 26px;
+  border-radius: 12px;
   background: var(--p5-charcoal);
-  border: 3px solid var(--p5-black);
-  border-left: 8px solid var(--p5-gold);
+  border: 2px solid rgba(255,255,255,0.06);
+  border-left: 5px solid var(--p5-gold);
   cursor: pointer;
-  transition: transform 0.12s, box-shadow 0.12s;
+  transition: transform 0.15s, box-shadow 0.15s, background 0.15s;
   width: 100%;
   font: inherit;
   color: #fff;
@@ -1199,19 +1200,20 @@ html, body {
 }
 
 .study-card:hover {
-  transform: translateX(4px);
-  box-shadow: -6px 0 0 var(--p5-gold);
+  transform: translateY(-2px);
+  background: #28406e;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.35);
 }
 
 .study-card:active {
-  transform: translateX(2px) scale(0.99);
+  transform: translateY(0) scale(0.99);
 }
 
 .study-card .study-card-emoji {
-  font-size: 32px;
+  font-size: 26px;
   flex-shrink: 0;
-  width: 48px;
-  height: 48px;
+  width: 52px;
+  height: 52px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1220,23 +1222,52 @@ html, body {
   border: 2px solid var(--p5-gold);
 }
 
+.study-card .study-card-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.study-card .study-card-unit {
+  margin: 0 0 4px;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  color: var(--p5-gold);
+  text-transform: uppercase;
+}
+
 .study-card .study-card-title {
   margin: 0 0 4px;
-  font-size: 16px;
-  font-weight: 900;
+  font-size: 17px;
+  font-weight: 800;
+  letter-spacing: 0.01em;
 }
 
 .study-card .study-card-summary {
   margin: 0;
   font-size: 13px;
-  color: #ccc;
+  color: #aab4cc;
   line-height: 1.6;
+}
+
+.study-card .study-card-arrow {
+  flex-shrink: 0;
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--p5-gold);
+  opacity: 0.6;
+  transition: opacity 0.15s, transform 0.15s;
+}
+
+.study-card:hover .study-card-arrow {
+  opacity: 1;
+  transform: translateX(3px);
 }
 
 /* ===== 文法レッスン: 詳細画面 ===== */
 .study-unit-counter {
   background: rgba(0,0,0,0.55);
-  border: 2px solid var(--p5-red);
+  border: 2px solid var(--p5-blue);
   color: #fff;
   font-size: 14px;
   font-weight: 700;
@@ -1257,7 +1288,7 @@ html, body {
   margin: 8px auto 8px;
   display: block;
   color: #fff;
-  background: var(--p5-red);
+  background: var(--p5-blue);
   font-size: 22px;
   font-weight: 900;
   font-style: italic;
@@ -1284,7 +1315,7 @@ html, body {
 .study-section {
   background: var(--p5-offwhite);
   border: 2px solid var(--p5-black);
-  border-radius: 0;
+  border-radius: 10px;
   padding: 20px 24px;
   box-shadow: 5px 5px 0 rgba(0,0,0,0.3);
   color: #2a2a2a;
@@ -1295,7 +1326,7 @@ html, body {
   font-size: 17px;
   font-weight: 900;
   color: var(--p5-black);
-  border-left: 5px solid var(--p5-red);
+  border-left: 5px solid var(--p5-blue);
   padding-left: 10px;
 }
 
@@ -1315,8 +1346,8 @@ html, body {
   font-size: 14px;
   line-height: 1.8;
   padding: 6px 12px;
-  background: rgba(224,20,44,0.08);
-  border-left: 4px solid var(--p5-red);
+  background: rgba(47,111,209,0.08);
+  border-left: 4px solid var(--p5-blue);
   margin-bottom: 6px;
 }
 
