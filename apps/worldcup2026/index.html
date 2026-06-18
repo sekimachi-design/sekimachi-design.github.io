@@ -1385,14 +1385,13 @@ img{display:block;max-width:100%;}
   <div class="sh"><div class="sh-bar" style="background:var(--blue-l)"></div><div class="sh-text">試合日程</div><div class="sh-sub">グループ F</div></div>
 
   <!-- ── 第1戦 ── -->
-  <div class="match-card live mc-expandable" onclick="toggleMatch(this)" role="button" tabindex="0" aria-expanded="false" onkeydown="if(event.key==='Enter'||event.key===' ')toggleMatch(this)">
-    <div class="match-label">
-      <svg width="8" height="8" viewBox="0 0 8 8"><circle cx="4" cy="4" r="4" fill="var(--gold)"/></svg>
-      次の試合 · 第1戦
+  <div class="match-card mc-expandable" onclick="toggleMatch(this)" role="button" tabindex="0" aria-expanded="false" onkeydown="if(event.key==='Enter'||event.key===' ')toggleMatch(this)">
+    <div class="match-label" style="color:var(--grey2)">
+      ✅ 終了 · 第1戦
     </div>
     <div class="match-body">
       <div class="match-team"><div class="team-flag">🇯🇵</div><div class="team-name">日本</div></div>
-      <div class="match-vs-col"><span class="vs-label">VS</span><div class="vs-score tbd">?－?</div></div>
+      <div class="match-vs-col"><span class="vs-label">VS</span><div class="vs-score" style="color:var(--gold-l)">2－2</div></div>
       <div class="match-team"><div class="team-flag">🇳🇱</div><div class="team-name">オランダ</div></div>
     </div>
     <div class="match-footer">
@@ -1489,8 +1488,8 @@ img{display:block;max-width:100%;}
         </div>
 
         <div class="mc-outlook">
-          <div class="mc-outlook-title">📊 展望</div>
-          <div class="mc-outlook-text">FIFAランク7位の強豪で未勝利の苦手相手。しかし2022年にドイツ・スペインを撃破した実績がある。Optaも「グループを覆しうるのは日本」と評価。奇跡は起こせる！</div>
+          <div class="mc-outlook-title">⚽ 得点</div>
+          <div class="mc-outlook-text">🇯🇵 中村敬斗（57'）、鎌田大地（89'）／🇳🇱 ファン・ダイク（50'）、サマービル（64'）<br>2度のビハインドを跳ね返す執念のドロー。鎌田が89分にコーナーから劇的同点弾！</div>
         </div>
 
       </div>
@@ -1498,14 +1497,18 @@ img{display:block;max-width:100%;}
   </div>
 
   <!-- ── 第2戦 ── -->
-  <div class="match-card mc-expandable" onclick="toggleMatch(this)" role="button" tabindex="0" aria-expanded="false" onkeydown="if(event.key==='Enter'||event.key===' ')toggleMatch(this)">
+  <div class="match-card live mc-expandable" onclick="toggleMatch(this)" role="button" tabindex="0" aria-expanded="false" onkeydown="if(event.key==='Enter'||event.key===' ')toggleMatch(this)">
+    <div class="match-label">
+      <svg width="8" height="8" viewBox="0 0 8 8"><circle cx="4" cy="4" r="4" fill="var(--gold)"/></svg>
+      次の試合 · 第2戦
+    </div>
     <div class="match-body">
       <div class="match-team"><div class="team-flag">🇹🇳</div><div class="team-name">チュニジア</div></div>
       <div class="match-vs-col"><span class="vs-label">VS</span><div class="vs-score tbd">?－?</div></div>
       <div class="match-team"><div class="team-flag">🇯🇵</div><div class="team-name">日本</div></div>
     </div>
     <div class="match-footer">
-      <span class="chip chip-muted">第2戦</span>
+      <span class="chip chip-gold">第2戦</span>
       <span class="chip chip-green">🕐 6/21（土）13:00 JST</span>
       <span class="chip chip-muted">📍 エスタディオBBVA・モンテレイ</span>
       <span class="mc-hint">詳細を見る <span class="mc-arrow">▼</span></span>
@@ -1700,16 +1703,16 @@ img{display:block;max-width:100%;}
     <div class="table-head" role="row">
       <div>#</div><div class="tc2">チーム</div><div>試</div><div>勝</div><div>分</div><div>負</div><div>ポイント</div>
     </div>
-    <div class="table-row" role="row"><div class="tr-pos">1</div><div class="tr-team"><span class="tr-flag">🇳🇱</span><span class="tr-name" style="cursor:pointer;text-decoration:underline dotted rgba(93,143,255,.4)" onclick="openTeamModal('NED')">オランダ</span></div><div>0</div><div>0</div><div>0</div><div>0</div><div class="tr-pts">0</div></div>
-    <div class="table-row jpn" role="row"><div class="tr-pos">2</div><div class="tr-team"><span class="tr-flag">🇯🇵</span><span class="tr-name" style="color:var(--gold-l)">日本 ★</span></div><div>0</div><div>0</div><div>0</div><div>0</div><div class="tr-pts">0</div></div>
-    <div class="table-row" role="row"><div class="tr-pos">3</div><div class="tr-team"><span class="tr-flag">🇸🇪</span><span class="tr-name" style="cursor:pointer;text-decoration:underline dotted rgba(93,143,255,.4)" onclick="openTeamModal('SWE')">スウェーデン</span></div><div>0</div><div>0</div><div>0</div><div>0</div><div class="tr-pts">0</div></div>
-    <div class="table-row" role="row"><div class="tr-pos">4</div><div class="tr-team"><span class="tr-flag">🇹🇳</span><span class="tr-name" style="cursor:pointer;text-decoration:underline dotted rgba(93,143,255,.4)" onclick="openTeamModal('TUN')">チュニジア</span></div><div>0</div><div>0</div><div>0</div><div>0</div><div class="tr-pts">0</div></div>
+    <div class="table-row" role="row"><div class="tr-pos">1</div><div class="tr-team"><span class="tr-flag">🇸🇪</span><span class="tr-name" style="cursor:pointer;text-decoration:underline dotted rgba(93,143,255,.4)" onclick="openTeamModal('SWE')">スウェーデン</span></div><div>1</div><div>1</div><div>0</div><div>0</div><div class="tr-pts">3</div></div>
+    <div class="table-row" role="row"><div class="tr-pos">2</div><div class="tr-team"><span class="tr-flag">🇳🇱</span><span class="tr-name" style="cursor:pointer;text-decoration:underline dotted rgba(93,143,255,.4)" onclick="openTeamModal('NED')">オランダ</span></div><div>1</div><div>0</div><div>1</div><div>0</div><div class="tr-pts">1</div></div>
+    <div class="table-row jpn" role="row"><div class="tr-pos">3</div><div class="tr-team"><span class="tr-flag">🇯🇵</span><span class="tr-name" style="color:var(--gold-l)">日本 ★</span></div><div>1</div><div>0</div><div>1</div><div>0</div><div class="tr-pts">1</div></div>
+    <div class="table-row" role="row"><div class="tr-pos">4</div><div class="tr-team"><span class="tr-flag">🇹🇳</span><span class="tr-name" style="cursor:pointer;text-decoration:underline dotted rgba(93,143,255,.4)" onclick="openTeamModal('TUN')">チュニジア</span></div><div>1</div><div>0</div><div>0</div><div>1</div><div class="tr-pts">0</div></div>
   </div>
   <div class="info-block" style="margin-top:8px;">🟢 <strong>自動突破</strong>：上位2チーム&emsp;🔵 <strong>3位通過も可</strong>：12グループ中3位上位8チームが出場</div>
   <div class="divider"></div>
   <div class="sh"><div class="sh-bar" style="background:var(--blue-l)"></div><div class="sh-text">突破シナリオ</div></div>
-  <div class="info-block green">🏆 <strong>理想：</strong>チュニジア戦勝利 → オランダかスウェーデンでさらに1勝 → <strong>グループ2位以内で確実突破！</strong></div>
-  <div class="info-block gold">⚡ <strong>夢：</strong>オランダを撃破してグループ首位！Optaも「グループを覆しうるのは日本」と高評価。<strong>ドーハの奇跡再来なるか！</strong></div>
+  <div class="info-block green">📊 <strong>現状：</strong>第1戦オランダと2-2ドロー（勝点1）。現在グループ3位。次のチュニジア戦（6/21）で勝てば決勝T進出が大きく前進！</div>
+  <div class="info-block gold">🏆 <strong>条件：</strong>チュニジア戦勝利 → 勝点4で最終節スウェーデン戦へ。1分でも突破圏内。<strong>89分まで諦めない！</strong></div>
 </div>
 </div>
 
