@@ -1,6 +1,6 @@
 (function(){
   var DISABLE_GATE_FOR_LOCAL_PREVIEW = false;
-  var PASS = "09180805";
+  var PASS = "kotaro0918juntaro0805";
   var gate = document.getElementById('gate');
   var main = document.querySelector('main');
   var form = document.getElementById('gate-form');
