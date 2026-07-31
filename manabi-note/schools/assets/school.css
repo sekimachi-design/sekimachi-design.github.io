@@ -1,0 +1,106 @@
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#F2F4F9;
+  --hero-bg:#0B1F4B;
+  --hover-bg:#E9EDF5;
+  --bg-card:#ffffff;
+  --ink:#1D2129;
+  --text-dim:#4E5969;
+  --text-muted:#5C6B7A;
+  --rose:#E8483A;
+  --rose-deep:#B3261E;
+  --sage:#1F9955;
+  --sage-deep:#12793A;
+  --dust-blue:#3D74E6;
+  --dust-blue-deep:#2A4FBF;
+  --lilac:#C3AED6;
+  --sand:#E7DCC9;
+  --amber-deep:#9C5300;
+  --border:rgba(29,33,41,0.12);
+  --radius:14px;
+  --shadow-sm:0 2px 14px rgba(29,33,41,0.08);
+  --shadow-md:0 10px 30px rgba(29,33,41,0.12);
+  --focus:2px solid var(--dust-blue-deep);
+  --rank-s:var(--amber-deep);
+  --rank-a:var(--dust-blue-deep);
+  --rank-b:var(--sage-deep);
+  --rank-c:var(--text-muted);
+  --rank-d:var(--text-dim,#4E5969);
+}
+html{scroll-behavior:smooth;font-size:19px}
+body{
+  font-family:'Noto Sans JP','Hiragino Kaku Gothic ProN','Hiragino Sans','Yu Gothic','Meiryo',sans-serif;
+  background:var(--bg);
+  color:var(--ink);
+  line-height:1.9;
+  font-weight:400;
+}
+h1,h2,h3{font-family:'Noto Sans JP','Hiragino Kaku Gothic ProN','Hiragino Sans','Yu Gothic','Meiryo',sans-serif;font-weight:700}
+a{color:inherit}
+.container{max-width:840px;margin:0 auto;padding:0 24px}
+@media (max-width:640px){.container{padding:0 18px}}
+button:focus-visible,a:focus-visible,input:focus-visible{outline:var(--focus);outline-offset:2px}
+
+/* ---------- ゲート ---------- */
+#gate{
+  position:fixed;inset:0;z-index:500;background:#fff;
+  display:flex;align-items:center;justify-content:center;flex-direction:column;gap:20px;padding:24px;text-align:center;
+}
+#gate h1{font-size:1.4rem}
+#gate p{color:var(--text-dim);font-size:0.9rem;max-width:360px}
+#gate form{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+#gate input{
+  font-size:1rem;padding:13px 16px;border-radius:30px;border:1px solid var(--border);
+  background:#fff;width:220px;min-height:44px;
+}
+#gate button{
+  font-size:0.9rem;padding:13px 24px;min-height:44px;border-radius:30px;border:1px solid var(--dust-blue-deep);
+  background:var(--dust-blue-deep);color:#fff;cursor:pointer;
+}
+#gate .err{color:var(--rose-deep);font-size:0.82rem;min-height:1.2em}
+main{display:none}
+
+/* ---------- 戻る導線 ---------- */
+.back-bar{position:sticky;top:0;z-index:100;background:rgba(255,255,255,0.94);backdrop-filter:blur(6px);border-bottom:1px solid var(--border);padding:14px 0}
+.back-link{display:inline-flex;align-items:center;gap:6px;font-size:0.85rem;font-weight:600;color:var(--dust-blue-deep);text-decoration:none;padding:10px 6px;min-height:44px}
+.back-link:hover{text-decoration:underline}
+
+/* ---------- ヒーロー ---------- */
+.school-hero{background:linear-gradient(120deg,#0B1F4B 0%,#16327E 45%,#2A4FBF 100%);padding:36px 0 30px;color:#fff}
+.school-hero .badges{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+.badge{display:inline-flex;align-items:center;font-size:0.72rem;font-weight:700;padding:4px 11px;border-radius:20px;background:rgba(255,255,255,0.16);color:#fff;letter-spacing:0.3px}
+.badge.rank-s{background:var(--rank-s)}
+.badge.rank-a{background:var(--rank-a)}
+.badge.rank-b{background:var(--rank-b)}
+.badge.rank-c{background:var(--rank-c)}
+.badge.rank-d{background:var(--rank-d)}
+.school-hero h1{font-size:1.7rem;line-height:1.35;margin-bottom:10px}
+.school-hero .meta-line{font-size:0.85rem;color:rgba(255,255,255,0.82);line-height:1.8}
+.school-hero .meta-line b{color:#fff;font-weight:700}
+.official-link{display:inline-flex;align-items:center;gap:6px;margin-top:16px;font-size:0.85rem;font-weight:700;color:#0B1F4B;background:#fff;padding:12px 20px;border-radius:24px;text-decoration:none;min-height:44px}
+.official-link:hover{background:#E9EDF5}
+
+/* ---------- 本文 ---------- */
+main .container{padding-top:32px;padding-bottom:56px}
+.info-section{margin-bottom:28px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:22px 24px;box-shadow:var(--shadow-sm)}
+.info-section h2{font-size:1.02rem;display:flex;align-items:center;gap:8px;margin-bottom:12px;color:var(--ink)}
+.info-section h2 .icon{font-size:1.1rem}
+.info-section p{font-size:0.86rem;color:var(--text-dim);line-height:1.85}
+.info-section p+p{margin-top:8px}
+.info-section ul{list-style:none;font-size:0.86rem;color:var(--text-dim);line-height:1.85}
+.info-section li{padding-left:1.1em;position:relative}
+.info-section li::before{content:'・';position:absolute;left:0;color:var(--dust-blue-deep)}
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media (max-width:560px){.info-grid{grid-template-columns:1fr}}
+.info-tile{background:var(--hover-bg);border-radius:10px;padding:14px 16px}
+.info-tile .tile-label{font-size:0.68rem;font-weight:700;color:var(--text-muted);margin-bottom:4px;letter-spacing:0.3px}
+.info-tile .tile-val{font-size:0.92rem;font-weight:700;color:var(--ink)}
+.sub-link{display:inline-flex;align-items:center;gap:5px;font-size:0.8rem;font-weight:600;color:var(--dust-blue-deep);text-decoration:none;margin-top:6px;padding:9px 4px;min-height:44px}
+.sub-link:hover{text-decoration:underline}
+.info-section.notice{border-color:rgba(156,83,0,0.35)}
+.notice-box{background:#FFF6EC;border:1px solid rgba(156,83,0,0.3);border-radius:10px;padding:14px 16px;font-size:0.8rem;color:var(--amber-deep);line-height:1.75}
+.notice-box b{font-weight:700}
+.photo-note{display:flex;align-items:flex-start;gap:10px;background:var(--hover-bg);border-radius:10px;padding:14px 16px;font-size:0.82rem;color:var(--text-dim);line-height:1.75}
+.photo-note .icon{font-size:1.2rem;flex-shrink:0}
+footer.school-footer{text-align:center;padding:24px 0 48px;font-size:0.74rem;color:var(--text-muted)}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}

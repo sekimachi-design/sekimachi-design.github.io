@@ -1,0 +1,1530 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>成績管理・成長管理・純太郎</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,500,1,0&display=swap" rel="stylesheet">
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --bg:#F2F4F9;
+    --hero-bg:#0B1F4B;
+    --hover-bg:#E9EDF5;
+    --bg-card:#ffffff;
+    --ink:#1D2129;
+    --text-dim:#4E5969;
+    --text-muted:#5C6B7A;
+    --rose:#E8483A;
+    --rose-deep:#B3261E;
+    --terracotta:#B87652;
+    --terracotta-deep:#96603F;
+    --sage:#1F9955;
+    --sage-deep:#12793A;
+    --dust-blue:#3D74E6;
+    --dust-blue-deep:#2A4FBF;
+    --dust-blue-deepest:#14245E;
+    --dust-blue-mid:#2F6FE8;
+    --dust-blue-pale:#CFE0FA;
+    --dust-blue-pale-text:#1E3A6B;
+    --lilac:#C3AED6;
+    --sand:#E7DCC9;
+    --amber-deep:#9C5300;
+    --chart-green:#16A34A;
+    --chart-blue:#3B82F6;
+    --chart-amber:#D97706;
+    --border:rgba(29,33,41,0.12);
+    --radius:14px;
+    --shadow-sm:0 2px 14px rgba(29,33,41,0.08);
+    --shadow-md:0 10px 30px rgba(29,33,41,0.12);
+    --focus:2px solid var(--dust-blue-deep);
+  }
+  html{scroll-behavior:smooth;font-size:19px}
+  body{
+    font-family:'Noto Sans JP','Hiragino Kaku Gothic ProN','Hiragino Sans','Yu Gothic','Meiryo',sans-serif;
+    background:var(--bg);
+    color:var(--ink);
+    line-height:2;
+    font-weight:400;
+  }
+  h1,h2,h3{font-family:'Noto Sans JP','Hiragino Kaku Gothic ProN','Hiragino Sans','Yu Gothic','Meiryo',sans-serif;font-weight:700;letter-spacing:normal}
+  a{color:inherit}
+  .container{max-width:1440px;margin:0 auto;padding:0 40px}
+  section{padding:40px 0;border-bottom:1px solid var(--border);scroll-margin-top:114px}
+  @media (max-width:640px){section{padding:56px 0}.container{padding:0 20px}}
+
+  /* ---------- ゲート ---------- */
+  #gate{
+    position:fixed;inset:0;z-index:500;background:#fff;
+    display:flex;align-items:center;justify-content:center;flex-direction:column;gap:20px;padding:24px;text-align:center;
+  }
+  #gate h1{font-size:1.4rem}
+  #gate p{color:var(--text-dim);font-size:0.9rem;max-width:360px}
+  #gate form{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+  #gate input{
+    font-size:1rem;padding:13px 16px;border-radius:30px;border:1px solid var(--border);
+    background:#fff;width:220px;min-height:44px;
+  }
+  #gate button{
+    font-size:0.9rem;padding:13px 24px;min-height:44px;border-radius:30px;border:1px solid var(--dust-blue-deep);
+    background:var(--dust-blue-deep);color:#fff;cursor:pointer;
+  }
+  #gate .err{color:var(--rose-deep);font-size:0.82rem;min-height:1.2em}
+  main{display:none}
+
+  /* ---------- タブ ---------- */
+  .tabbar{
+    position:sticky;top:0;z-index:100;background:rgba(255,255,255,0.92);backdrop-filter:blur(6px);
+    border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:16px;padding:11px 24px;
+  }
+  .tabbar .brand{font-size:0.92rem;font-weight:700;color:var(--ink);letter-spacing:0.2px;white-space:nowrap;text-decoration:none}
+  .tabbar .brand:hover{color:var(--dust-blue-deep)}
+  .print-btn{
+    display:inline-flex;align-items:center;gap:6px;font-family:'Noto Sans JP','Hiragino Kaku Gothic ProN','Hiragino Sans','Yu Gothic','Meiryo',sans-serif;
+    font-size:0.82rem;font-weight:600;color:var(--dust-blue-deep);background:#fff;border:1px solid var(--border);
+    border-radius:20px;padding:8px 16px;min-height:38px;cursor:pointer;white-space:nowrap;
+    transition:background .15s ease,box-shadow .15s ease;
+  }
+  .print-btn:hover{background:var(--hover-bg);box-shadow:var(--shadow-sm)}
+  .print-btn:focus-visible{outline:var(--focus);outline-offset:2px}
+  .print-btn .material-face{font-family:'Material Symbols Outlined';font-weight:normal;font-style:normal;font-size:18px;line-height:1;font-variation-settings:'FILL' 0,'wght' 500,'GRAD' 0,'opsz' 20}
+  .tab-switch{display:inline-flex;background:#E7EBF2;border-radius:30px;padding:4px;gap:2px}
+  .tab-btn{
+    font-family:'Noto Sans JP','Hiragino Kaku Gothic ProN','Hiragino Sans','Yu Gothic','Meiryo',sans-serif;font-size:0.85rem;font-weight:600;padding:9px 20px;
+    min-height:38px;border-radius:24px;border:none;background:transparent;color:var(--text-dim);
+    cursor:pointer;transition:background .18s,color .18s;
+    display:inline-flex;align-items:center;justify-content:center;text-decoration:none;
+  }
+  .tab-btn:hover:not(.active){color:var(--ink)}
+  .tab-btn.active{background:#fff;color:var(--dust-blue-deep);box-shadow:var(--shadow-sm)}
+  button:focus-visible,input:focus-visible,.tab-btn:focus-visible{outline:var(--focus);outline-offset:2px}
+  .tabbar-actions{display:flex;align-items:center;gap:12px}
+  .panel{display:none}
+  .panel.active{display:block}
+
+  /* ---------- 準備中プレースホルダー ---------- */
+  .empty-hero{padding:140px 0;text-align:center;border-bottom:1px solid var(--border)}
+  .empty-hero .empty-box{border:1px dashed var(--border);border-radius:var(--radius);padding:56px 40px;max-width:480px;margin:0 auto}
+  .empty-hero h1{font-size:2rem;margin-bottom:18px}
+  .empty-hero p{color:var(--text-dim);margin:0 auto}
+
+  /* ---------- ヒーロー ---------- */
+  .hero{
+    background:linear-gradient(120deg,#0B1F4B 0%,#16327E 45%,#2A4FBF 100%);
+    padding:48px 0 36px;position:relative;overflow:hidden;border-bottom:none;
+  }
+  .hero::after{
+    content:'';position:absolute;right:-100px;top:-120px;width:340px;height:340px;border-radius:50%;
+    background:radial-gradient(circle,rgba(255,255,255,0.14),transparent 70%);pointer-events:none;
+  }
+  .hero::before{
+    content:'';position:absolute;left:20%;bottom:-160px;width:260px;height:260px;border-radius:50%;
+    background:radial-gradient(circle,rgba(255,255,255,0.08),transparent 70%);pointer-events:none;
+  }
+  .hero .container{position:relative;z-index:1}
+  .eyebrow{font-size:0.8rem;letter-spacing:2px;color:var(--sage-deep);font-weight:600;margin-bottom:14px}
+  .hero .eyebrow{color:rgba(255,255,255,0.92)}
+  .hero h1{font-size:1.55rem;line-height:1.4;margin-bottom:12px;color:#fff}
+  .hero p{color:rgba(255,255,255,0.88)}
+  .updated{margin-top:28px;font-size:0.8rem;color:var(--text-dim)}
+  .hero .updated{color:rgba(255,255,255,0.8)}
+
+  /* ---------- 共通 ---------- */
+  .section-head{margin-bottom:22px}
+  .section-head .eyebrow{margin-bottom:8px}
+  .section-head h2{font-size:1.25rem}
+  .section-head p{color:var(--text-dim);margin-top:8px}
+  .highlight-box{background:#FFF9E6;border:1px solid rgba(217,119,6,0.28);border-radius:var(--radius);padding:14px 18px;color:var(--text-dim);margin-top:8px}
+
+  /* ---------- タイムライン(1〜5年) ---------- */
+  .timeline{position:relative;padding-left:28px;border-left:2px solid var(--border)}
+  .tl-item{position:relative;padding-bottom:36px}
+  .tl-item:last-child{padding-bottom:0}
+  .tl-item::before{
+    content:'';position:absolute;left:-34px;top:4px;width:11px;height:11px;border-radius:50%;
+    background:var(--sage);border:2px solid #fff;box-shadow:0 0 0 2px var(--sage);
+  }
+  .tl-grade{font-size:0.8rem;font-weight:600;color:var(--sage-deep);letter-spacing:1px;margin-bottom:6px}
+  .tl-grade a{color:inherit;text-decoration:none;border-bottom:1px dashed var(--sage-deep);padding-bottom:1px}
+  .tl-grade a:hover{border-bottom-style:solid}
+  .tl-grade a:focus-visible{outline:var(--focus);outline-offset:2px;border-radius:2px}
+  .tl-grade .hint{font-weight:400;color:var(--text-dim);margin-left:6px;font-size:0.76rem;letter-spacing:normal}
+  .tl-body{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:20px 24px;box-shadow:var(--shadow-sm)}
+  .tl-body p{font-size:0.92rem;color:var(--ink)}
+  .tl-body p + p{margin-top:10px}
+  .tl-tag{display:inline-block;font-size:0.8rem;color:var(--dust-blue-deep);background:rgba(42,79,191,0.12);padding:3px 10px;border-radius:20px;margin-bottom:8px}
+
+  /* ---------- 教科カード ---------- */
+  .subject-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:20px}
+  @media (max-width:900px){.subject-grid{grid-template-columns:1fr}}
+  .subject-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:24px;box-shadow:var(--shadow-sm)}
+  .subject-card h3{font-size:1.05rem;margin-bottom:4px}
+  .subject-card .subject-note{font-size:0.8rem;color:var(--text-dim);margin-bottom:16px}
+  .subject-card.has-folder{cursor:pointer;transition:box-shadow .15s ease,transform .15s ease}
+  .subject-card.has-folder:hover{box-shadow:var(--shadow-md);transform:translateY(-2px)}
+  .subject-card.has-folder:hover .folder-hint{color:var(--dust-blue-deep)}
+  .card-head{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+  .card-head h3{margin-bottom:4px}
+  .folder-hint{display:inline-flex;align-items:center;gap:3px;font-size:0.72rem;color:var(--text-muted);white-space:nowrap}
+  .folder-hint .folder-face{font-family:'Material Symbols Outlined';font-weight:normal;font-style:normal;font-size:14px;line-height:1;font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 20}
+
+  /* ---------- テスト原本ライトボックス ---------- */
+  .test-lightbox{position:fixed;inset:0;z-index:2000;display:none}
+  .test-lightbox.open{display:block}
+  .lb-backdrop{position:absolute;inset:0;background:rgba(10,14,24,0.92)}
+  .lb-content{position:relative;z-index:1;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:70px 90px;box-sizing:border-box}
+  .lb-img{max-width:100%;max-height:74vh;border-radius:8px;box-shadow:0 20px 60px rgba(0,0,0,0.5);background:#fff;display:block}
+  .lb-caption{color:#fff;font-size:0.92rem;margin-top:16px;text-align:center;max-width:600px}
+  .lb-counter{color:rgba(255,255,255,0.55);font-size:0.78rem;margin-top:6px}
+  .lb-close,.lb-prev,.lb-next{background:rgba(255,255,255,0.12);border:none;color:#fff;cursor:pointer;padding:10px;border-radius:50%;display:flex;transition:background .15s ease;min-width:44px;min-height:44px;align-items:center;justify-content:center}
+  .lb-close:hover,.lb-prev:hover,.lb-next:hover{background:rgba(255,255,255,0.25)}
+  .lb-close{position:fixed;top:16px;right:16px;z-index:2}
+  .lb-prev{position:fixed;left:16px;top:50%;transform:translateY(-50%);z-index:2}
+  .lb-next{position:fixed;right:16px;top:50%;transform:translateY(-50%);z-index:2}
+  .lb-close .material-face,.lb-prev .material-face,.lb-next .material-face{font-family:'Material Symbols Outlined';font-weight:normal;font-style:normal;font-size:26px;line-height:1;font-variation-settings:'FILL' 0,'wght' 500,'GRAD' 0,'opsz' 24}
+  @media (max-width:700px){.lb-content{padding:70px 50px 40px}.lb-prev{left:6px}.lb-next{right:6px}}
+  .unit-row{margin-bottom:14px}
+  .unit-row:last-child{margin-bottom:0}
+  .unit-group{margin-bottom:18px}
+  .unit-group:last-child{margin-bottom:0}
+  .unit-topic{font-weight:700;font-size:0.85rem;color:var(--ink);margin-bottom:9px}
+  .unit-group .unit-row{margin-bottom:10px}
+  .unit-group .unit-row:last-child{margin-bottom:0}
+  .unit-label{display:flex;justify-content:space-between;font-size:0.82rem;margin-bottom:5px}
+  .unit-label .name{color:var(--text-dim)}
+  .unit-label .score{font-weight:600}
+  .unit-label .unit-score-group{display:inline-flex;align-items:center;gap:5px}
+  .test-link{display:inline-flex;color:var(--text-muted);text-decoration:none;line-height:1}
+  .test-link:hover{color:var(--dust-blue-deep)}
+  .test-link:focus-visible{outline:var(--focus);outline-offset:2px;border-radius:3px}
+  .test-link .test-link-face{font-family:'Material Symbols Outlined';font-weight:normal;font-style:normal;font-size:15px;line-height:1;font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 20}
+  .bar-track{height:9px;border-radius:6px;background:#E7EBF2;overflow:hidden}
+  .bar-fill{height:100%;border-radius:6px}
+  .bar-fill.chi{background:var(--dust-blue-deep)}
+  .bar-fill.shi{background:var(--terracotta)}
+  .bar-legend{display:flex;gap:16px;margin-top:14px;font-size:0.8rem;color:var(--text-muted)}
+  .dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px;vertical-align:middle}
+  .dot.chi{background:var(--dust-blue-deep)}
+  .dot.shi{background:var(--terracotta)}
+  .subject-card.plain .unit-row{display:flex;justify-content:space-between;align-items:baseline;font-size:0.88rem}
+  .subject-card.plain .unit-row .name{color:var(--text-dim)}
+  .subject-card.plain .unit-row .score{font-weight:600}
+
+  /* ---------- 傾向コールアウト ---------- */
+  .insight{background:var(--bg-card);border:1px solid var(--border);border-left:4px solid var(--sage);border-radius:var(--radius);padding:24px 28px;margin-bottom:18px;box-shadow:var(--shadow-sm)}
+  .insight.warn{border-left-color:var(--rose)}
+  .insight h3{font-size:1rem;margin-bottom:8px}
+  .insight p{font-size:0.9rem;color:var(--text-dim)}
+
+  /* ---------- ロードマップ ---------- */
+  .roadmap{display:flex;flex-direction:column;gap:0}
+  .rm-row{display:grid;grid-template-columns:120px 1fr;gap:20px;border-top:1px solid var(--border);padding:22px 0}
+  .rm-row:first-child{border-top:none}
+  .rm-when{font-size:0.85rem;font-weight:600;color:var(--sage-deep);padding-top:2px}
+  .rm-what h4{font-size:0.95rem;margin-bottom:6px;font-weight:600}
+  .rm-what p{font-size:0.86rem;color:var(--text-dim)}
+  @media (max-width:640px){.rm-row{grid-template-columns:1fr;gap:6px}}
+
+  .school-targets{display:flex;gap:14px;flex-wrap:wrap;margin-top:24px}
+  .school-chip{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:16px 20px;min-width:150px;box-shadow:var(--shadow-sm)}
+  .school-chip .lv{font-size:0.8rem;color:var(--text-dim);margin-bottom:4px}
+  .school-chip .name{font-weight:600;font-size:0.95rem}
+  .school-chip .val{font-size:0.8rem;color:var(--text-dim);margin-top:4px}
+  .school-chip.star{border-color:var(--rose)}
+
+  /* ---------- 偏差値チャート（公立・私立の2列） ---------- */
+  .hensachi-cols{display:flex;flex-direction:column;gap:32px;margin-top:24px}
+  .hensachi-col-head{font-size:0.95rem;font-weight:700;color:var(--ink);margin-bottom:14px}
+  .pv-list-wrap{display:flex;gap:10px;align-items:flex-start}
+  .pv-list-wrap .rank-strip-layer{margin-top:7px}
+  .private-list{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:6px 24px;box-shadow:var(--shadow-sm);flex:1;min-width:0;position:relative}
+  .pv-item{padding:14px 0;border-bottom:1px solid var(--border)}
+  .pv-item:last-child{border-bottom:none}
+  .pv-head{display:flex;flex-direction:column;gap:4px;margin-bottom:5px}
+  .pv-head-row{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+  .pv-meta{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+  .pv-name{font-size:0.86rem;font-weight:700;color:var(--ink)}
+  .pv-area{display:inline-block;font-size:0.66rem;font-weight:600;color:var(--text-muted);background:var(--hover-bg);padding:2px 7px;border-radius:10px;white-space:nowrap}
+  .pv-bike{display:inline-block;font-size:0.66rem;font-weight:600;color:var(--text-muted);white-space:nowrap}
+  .pv-val{font-size:0.85rem;font-weight:700;color:var(--dust-blue-deep);white-space:nowrap}
+  .pv-desc{font-size:0.8rem;color:var(--text-dim);line-height:1.7}
+  .pv-item.now{
+    background:linear-gradient(90deg,rgba(31,153,85,0.14),rgba(31,153,85,0.04));
+    border:2px solid var(--sage-deep);border-bottom:2px solid var(--sage-deep);
+    border-radius:12px;padding:14px 16px;margin:10px 0;
+    box-shadow:0 6px 18px rgba(31,153,85,0.22);
+    animation:now-glow 2.4s ease-in-out infinite;
+  }
+  .pv-item.now .pv-name{color:var(--sage-deep);font-weight:800}
+  .pv-item.now .pv-val{color:var(--sage-deep);font-weight:800}
+
+  .hensachi-chart{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:26px 28px;box-shadow:var(--shadow-sm);overflow-x:auto}
+  .hc-axis,.hc-row{min-width:1000px}
+  .hc-axis{display:grid;grid-template-columns:200px 1fr 0.85fr 92px 120px 0.95fr;gap:14px;margin-bottom:10px;margin-left:62px;align-items:end}
+  .hc-axis .hc-feature-head{font-size:0.78rem;font-weight:700;color:var(--text-dim)}
+  .hc-axis .hc-ticks{position:relative;height:16px;font-size:0.85rem;color:var(--text-muted)}
+  .hc-axis .hc-ticks span{position:absolute;transform:translateX(-50%)}
+  .hc-axis .hc-univ-head{font-size:0.78rem;font-weight:700;color:var(--text-dim)}
+  .hc-axis .hc-cost-head{font-size:0.78rem;font-weight:700;color:var(--text-dim)}
+  .hc-row{display:grid;grid-template-columns:200px 1fr 0.85fr 92px 120px 0.95fr;align-items:center;gap:14px;padding:9px 0}
+  .hc-row:not(:last-child){border-bottom:1px solid var(--border)}
+  .hc-name{font-size:0.85rem;font-weight:600;line-height:1.3}
+  .hc-name .school-link{white-space:nowrap}
+  .school-link{color:inherit;text-decoration:none;border-bottom:1px solid var(--dust-blue);padding-bottom:1px}
+  .school-link:hover{color:var(--dust-blue-deep);border-bottom-color:var(--dust-blue-deep)}
+  .school-link:focus-visible{outline:var(--focus);outline-offset:2px;border-radius:2px}
+  .hc-name .tag-star{display:block;font-size:0.85rem;font-weight:700;color:var(--rose-deep);margin-top:2px}
+  .hc-name .tag-out{display:block;font-size:0.85rem;font-weight:600;color:var(--text-muted);margin-top:2px}
+  .hc-name .hc-area{display:block;font-size:0.72rem;font-weight:500;color:var(--text-muted);margin-top:2px}
+  .hc-name .hc-bike{display:block;font-size:0.72rem;font-weight:500;color:var(--text-muted);margin-top:2px}
+  .hc-feature{font-size:0.76rem;font-weight:400;color:var(--ink);line-height:1.5}
+  .hc-univ{font-size:0.76rem;font-weight:400;color:var(--text-dim);line-height:1.5;padding-left:14px;border-left:1px solid var(--border)}
+  .hc-cost{font-size:0.76rem;line-height:1.4;text-align:center;white-space:nowrap}
+  .hc-cost .cost-net{display:block;font-weight:700;color:var(--ink)}
+  .hc-cost .cost-gross{display:block;font-size:0.68rem;color:var(--text-muted);margin-top:2px}
+  .cost-est{color:var(--text-muted)}
+  .pv-cost{display:inline-block;font-size:0.66rem;font-weight:600;color:var(--text-muted);white-space:nowrap}
+  .rank-badge{display:block;margin-top:4px;font-size:0.66rem;font-weight:800;color:#fff;padding:2px 6px;border-radius:5px;text-align:center;letter-spacing:0.5px;white-space:nowrap}
+  .rank-badge.rank-s{background:var(--amber-deep)}
+  .rank-badge.rank-a{background:var(--dust-blue-deep)}
+  .rank-badge.rank-b{background:var(--sage-deep)}
+  .rank-badge.rank-c{background:var(--text-muted)}
+  .rank-badge.rank-d{background:var(--text-dim)}
+  .pv-rank{display:block;width:fit-content;font-size:0.66rem;margin-bottom:6px}
+  .hc-track{position:relative}
+
+  /* ---------- 都立ラダー：左端のランク帯（縦軸） ---------- */
+  .hc-list-wrap{display:flex;gap:10px;align-items:flex-start;min-width:620px}
+  .rank-strip-layer{position:relative;width:52px;flex-shrink:0}
+  .hc-rows{position:relative;flex:1;min-width:0}
+  .rank-strip{position:absolute;left:0;width:52px;border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;box-sizing:border-box;padding:4px 2px}
+  .rank-strip .r-letter{font-size:1.05rem;font-weight:800;line-height:1.2}
+  .rank-strip .r-range{font-size:0.6rem;font-weight:600;opacity:0.92;margin-top:3px;text-align:center;line-height:1.3;white-space:nowrap}
+  .rank-strip.rank-s{background:var(--amber-deep)}
+  .rank-strip.rank-a{background:var(--dust-blue-deep)}
+  .rank-strip.rank-b{background:var(--sage-deep)}
+  .rank-strip.rank-c{background:var(--text-muted)}
+  .rank-strip.rank-d{background:var(--text-dim)}
+  .hc-row.now{
+    background:linear-gradient(90deg,rgba(31,153,85,0.14),rgba(31,153,85,0.04));
+    border:2px solid var(--sage-deep);
+    border-radius:12px;padding:30px 12px 14px 12px;margin:14px 0 8px 0;
+    box-shadow:0 6px 18px rgba(31,153,85,0.22);
+    animation:now-glow 2.4s ease-in-out infinite;
+  }
+  @keyframes now-glow{
+    0%,100%{box-shadow:0 6px 18px rgba(31,153,85,0.22)}
+    50%{box-shadow:0 6px 24px rgba(31,153,85,0.4)}
+  }
+  .hc-row.now .hc-name{font-weight:800;color:var(--sage-deep);font-size:0.95rem}
+  .hc-row.now .hc-val{font-weight:800;color:var(--sage-deep);font-size:1.1rem}
+  .tag-now{display:inline-block;font-size:0.72rem;font-weight:700;color:#fff;background:var(--sage-deep);padding:3px 10px;border-radius:10px;margin-top:5px}
+  .now-univ{color:var(--sage-deep)!important;font-weight:700!important}
+  .hc-track-wrap{position:relative}
+  .now-label{position:absolute;top:-21px;left:56.25%;transform:translateX(-50%);font-size:0.72rem;font-weight:800;color:var(--sage-deep);white-space:nowrap}
+  .now-label::after{content:'';position:absolute;left:50%;top:100%;transform:translateX(-50%);border:4px solid transparent;border-top-color:var(--sage-deep)}
+  .hc-fill.now{position:absolute;top:0;height:100%;background:repeating-linear-gradient(45deg,var(--sage-deep) 0 6px,var(--sage) 6px 12px);box-shadow:0 0 0 2px #fff,0 0 0 3px var(--sage-deep)}
+  .hc-track{height:14px;border-radius:8px;background:#E7EBF2;overflow:hidden}
+  .hc-fill{height:100%;border-radius:8px;background:var(--dust-blue)}
+  .hc-fill.target{background:var(--rose)}
+  .hc-fill.out{background:var(--sand)}
+  .hc-val{font-size:0.85rem;font-weight:600;text-align:right;color:var(--ink);white-space:nowrap}
+  .hc-note{font-size:0.8rem;color:var(--text-muted);margin-top:16px}
+
+  /* ---------- 教科別評価テーブル ---------- */
+  .grade-table-wrap{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:22px 24px;box-shadow:var(--shadow-sm);overflow-x:auto}
+  table.grade-table{width:100%;border-collapse:collapse;min-width:840px}
+  .spark-col{width:150px}
+  td.spark-col{padding:6px 10px}
+  .spark-svg{width:130px;height:auto;display:block;margin:0 auto}
+  .trend-line{fill:none;stroke:var(--dust-blue-deep);stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+  .trend-dot{fill:var(--dust-blue-deep)}
+  .spark-ticks{display:flex;justify-content:space-between;font-size:0.62rem;font-weight:600;color:var(--text-muted);margin-top:2px;padding:0 5px;width:130px;margin-left:auto;margin-right:auto}
+  .hc-note-outside{margin-top:14px;padding:0 2px}
+  .grade-table th{font-size:0.8rem;font-weight:700;color:var(--text-dim);padding:8px 10px;text-align:center;border-bottom:2px solid var(--border);white-space:nowrap}
+  .grade-table th.subj-col,.grade-table th.trend-col{text-align:left}
+  .grade-table td{padding:8px 10px;text-align:center;border-bottom:1px solid var(--border);font-size:0.85rem}
+  .grade-table td.subj-col{text-align:left;font-weight:700;color:var(--ink);white-space:nowrap}
+  .grade-table td.trend-col{text-align:left;color:var(--text-dim);font-size:0.8rem}
+  .grade-table td.trend-col.watch{color:var(--rose-deep);font-weight:600}
+  .grade-table td.trend-col.good{color:var(--sage-deep);font-weight:600}
+  .gcell{display:inline-flex;align-items:center;justify-content:center;gap:5px;min-width:48px;padding:4px 8px;border-radius:8px;font-weight:700;font-size:0.78rem;color:#fff;white-space:nowrap}
+  .gcell-face,.trend-face{font-family:'Material Symbols Outlined';font-weight:normal;font-style:normal;line-height:1;display:inline-block;white-space:nowrap;letter-spacing:normal;text-transform:none;-webkit-font-smoothing:antialiased;vertical-align:middle}
+  .gcell-face{font-size:20px;font-variation-settings:'FILL' 1,'wght' 600,'GRAD' 0,'opsz' 20}
+  .trend-face{font-size:18px;font-variation-settings:'FILL' 0,'wght' 600,'GRAD' 0,'opsz' 20}
+  .gcell.t-high{background:var(--dust-blue-deepest)}
+  .gcell.t-mid{background:var(--dust-blue-mid)}
+  .gcell.t-low{background:var(--dust-blue-pale);color:var(--dust-blue-pale-text)}
+  .gcell.t-low .pt-badge{background:rgba(30,58,107,0.14)}
+  .gcell.dash{background:none;color:var(--text-muted);min-width:auto;font-weight:400}
+  .up-arrow{display:inline-block;margin-left:5px;color:var(--sage-deep);font-weight:800;font-size:0.8rem}
+  .score-wrap{display:inline-flex;align-items:center;justify-content:center;white-space:nowrap}
+  .crit-trend{display:inline-flex;align-items:center;justify-content:center;margin-left:10px;vertical-align:middle;flex-shrink:0;width:36px;height:36px;border-radius:50%}
+  .crit-trend .trend-face{font-size:30px;font-variation-settings:'FILL' 0,'wght' 700,'GRAD' 0,'opsz' 24}
+  .crit-trend.up{color:var(--sage-deep);background:rgba(18,121,58,0.13)}
+  .crit-trend.flat{color:var(--dust-blue-deep);background:rgba(42,79,191,0.10)}
+  .crit-trend.down{color:var(--rose-deep);background:rgba(179,38,30,0.13)}
+  .compare-table tbody tr.row-up{background:rgba(31,153,85,0.07)}
+  .compare-table tbody tr.row-up td.subj-col{color:var(--sage-deep)}
+  .compare-table tbody tr.row-watch{background:rgba(179,38,30,0.07)}
+  .compare-table tbody tr.row-watch td.subj-col{color:var(--rose-deep)}
+  .compare-table .trend-tag.good{background:var(--bg-card);color:var(--sage-deep);border-color:var(--sage-deep)}
+  .compare-table td.trend-col{vertical-align:top;padding-top:11px;padding-left:28px;border-left:1px solid var(--border)}
+  .compare-table th.trend-col{padding-left:28px}
+  .trend-total{display:block;font-weight:700;color:var(--ink);font-size:0.82rem;margin:5px 0}
+  .pt-badge{display:inline-block;margin-left:4px;padding:1px 5px;border-radius:5px;background:rgba(255,255,255,0.28);font-size:0.68rem;font-weight:800}
+  .subj-total-row td{background:rgba(159,179,200,0.14);font-weight:700;border-top:1px dashed var(--border)}
+  .subj-total-row td.crit-col{color:var(--ink)}
+  .subj-total-row td.total-num{font-size:1.05rem;font-weight:800;color:var(--ink)}
+  tfoot .grand-total-row td{background:rgba(31,153,85,0.12);font-weight:800;border-top:2px solid var(--sage-deep);border-bottom:none;font-size:0.9rem}
+  tfoot .grand-total-row td.trend-col{font-size:0.85rem;vertical-align:middle;padding-top:8px}
+  tfoot .grand-total-row td.total-num{font-size:1.2rem;color:var(--sage-deep);white-space:nowrap}
+  .compare-table td .gcell{width:150px;flex-shrink:0}
+  .compare-table .gcell{justify-content:space-between;text-align:left}
+  .compare-table .pt-badge{margin-left:0}
+
+  /* ---------- 通知表 原本の並び比較 ---------- */
+  .report-compare{display:grid;grid-template-columns:1fr auto 1fr;gap:16px;align-items:center;margin-top:20px}
+  @media (max-width:640px){.report-compare{grid-template-columns:1fr}}
+  .report-compare.single{grid-template-columns:1fr;max-width:380px;margin-left:auto;margin-right:auto}
+  .rc-arrow{font-size:1.8rem;font-weight:300;color:var(--text-muted);line-height:1}
+  @media (max-width:640px){.rc-arrow{transform:rotate(90deg);margin:4px auto}}
+  .rc-col{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:16px;box-shadow:var(--shadow-sm)}
+  .rc-label{font-size:0.85rem;font-weight:700;color:var(--text-dim);margin-bottom:10px;text-align:center}
+  .rc-label.now{color:var(--sage-deep)}
+  .rc-col a{display:block}
+  .rc-col img{display:block;width:100%;height:auto;border-radius:10px;border:1px solid var(--border)}
+  .grade-table td.crit-col{text-align:left;color:var(--text-dim);font-size:0.82rem;white-space:nowrap}
+  .grade-table tr.crit-first td{border-top:2px solid var(--border)}
+  .grade-table td.subj-col{vertical-align:middle}
+
+  /* ---------- 上昇バナー ---------- */
+  .up-banner{display:flex;align-items:center;gap:22px;background:#FFF9E6;border:1px solid rgba(217,119,6,0.28);border-radius:var(--radius);padding:20px 28px;margin-bottom:18px}
+  .up-banner-num{font-size:2.8rem;font-weight:800;color:var(--sage-deep);line-height:1;white-space:nowrap;text-align:center}
+  .up-banner-num .of{font-size:1.3rem;font-weight:600;color:var(--text-dim)}
+  .up-banner-eyebrow{font-size:0.72rem;font-weight:700;color:var(--text-dim);text-align:center;margin-bottom:2px;white-space:nowrap}
+  .up-banner-label{font-size:1rem;font-weight:700;color:var(--ink);line-height:1.6}
+  .up-banner-label .sub{display:block;font-size:0.82rem;font-weight:400;color:var(--text-dim);margin-top:2px}
+
+  /* ---------- ひと目でわかるダッシュボード ---------- */
+  .glance-grid{display:grid;grid-template-columns:1fr 1.3fr 1fr;gap:20px;align-items:stretch}
+  @media (max-width:900px){.glance-grid{grid-template-columns:1fr}}
+  .glance-stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-bottom:20px}
+  @media (max-width:820px){.glance-stats-row{grid-template-columns:1fr}}
+  .glance-charts{display:grid;grid-template-columns:1.5fr 1fr;gap:20px}
+  @media (max-width:820px){.glance-charts{grid-template-columns:1fr}}
+  .glance-stats{display:flex;flex-direction:column;gap:20px;height:100%}
+  .stat-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:22px 24px;box-shadow:var(--shadow-sm);flex:1;display:flex;flex-direction:column;justify-content:center}
+  .stat-label{font-size:0.8rem;color:var(--text-dim);margin-bottom:8px;font-weight:600}
+  .stat-value{font-size:1.9rem;font-weight:700;color:var(--ink);line-height:1.3}
+  .stat-value .unit{font-size:1rem;font-weight:500;color:var(--text-dim)}
+  .stat-delta{font-size:0.8rem;color:var(--text-dim);margin-top:8px}
+  .stat-delta.up{color:var(--sage-deep);font-weight:600}
+  .stat-delta.watch{color:var(--rose-deep);font-weight:600}
+
+  .chart-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:22px 24px;box-shadow:var(--shadow-sm);display:flex;flex-direction:column;align-items:center}
+  .card-label{font-size:0.95rem;font-weight:700;color:var(--ink);margin-bottom:16px;align-self:flex-start}
+  .radar-wrap{width:100%;display:flex;justify-content:center}
+  .radar-wrap svg{width:100%;height:auto;max-width:460px}
+  .radar-grid-line{fill:none;stroke:var(--border);stroke-width:1}
+  .radar-axis-line{stroke:var(--border);stroke-width:1}
+  .radar-shape{fill:rgba(42,79,191,0.28);stroke:var(--dust-blue-deep);stroke-width:2.5}
+  .radar-dot{fill:var(--dust-blue-deep)}
+  .radar-shape.prev{fill:rgba(92,107,122,0.08);stroke:var(--text-muted);stroke-width:2;stroke-dasharray:6 5}
+  .radar-dot.prev{fill:var(--text-muted)}
+  .radar-label{font-size:15px;fill:var(--ink);font-weight:700}
+  .radar-arrow{font-family:'Material Symbols Outlined';font-weight:normal;font-style:normal;font-size:16px;font-variation-settings:'FILL' 0,'wght' 700,'GRAD' 0,'opsz' 20;letter-spacing:normal;text-transform:none;-webkit-font-smoothing:antialiased}
+  .radar-arrow.up{fill:var(--sage-deep);color:var(--sage-deep)}
+  .radar-arrow.flat{fill:var(--text-muted);color:var(--text-muted)}
+  .radar-arrow.down{fill:var(--rose-deep);color:var(--rose-deep)}
+  .radar-legend{display:flex;flex-wrap:wrap;gap:10px 18px;justify-content:center;margin-top:14px;font-size:0.8rem;color:var(--text-dim)}
+  .radar-legend .rl-item{display:inline-flex;align-items:center;gap:6px}
+  .radar-legend .rl-swatch{display:inline-block;width:20px;height:0;border-top:3px solid var(--dust-blue-deep)}
+  .radar-legend .rl-swatch.prev{border-top:2px dashed var(--text-muted)}
+  .radar-legend .rl-sep{color:var(--border)}
+  .radar-legend .radar-arrow{font-size:18px;vertical-align:middle}
+
+  .donut-wrap{position:relative;width:100%;max-width:330px;margin:6px auto 20px}
+  .donut-wrap svg{width:100%;height:auto;display:block}
+  .donut-label{font-size:13px;font-weight:700;fill:var(--ink)}
+  .donut-tick{stroke-width:1.5}
+  .legend-row{display:flex;flex-direction:column;gap:10px;width:100%}
+  .legend-item{display:flex;align-items:center;justify-content:space-between;font-size:0.85rem;color:var(--text-dim)}
+  .legend-item .lg-name{display:flex;align-items:center;gap:8px}
+  .legend-item .lg-dot{width:11px;height:11px;border-radius:50%;flex-shrink:0}
+  .legend-item .lg-val{font-weight:700;color:var(--ink)}
+
+  /* ---------- クイックナビ ---------- */
+  .quicknav{position:sticky;top:60px;z-index:90;display:flex;gap:2px;overflow-x:auto;padding:0 24px;justify-content:center;border-bottom:1px solid var(--border);background:rgba(255,255,255,0.96);backdrop-filter:blur(6px);scrollbar-width:none}
+  .quicknav::-webkit-scrollbar{display:none}
+  .quicknav a{font-size:0.82rem;font-weight:600;color:var(--text-dim);text-decoration:none;padding:0 16px;min-height:46px;display:flex;align-items:center;white-space:nowrap;border-bottom:2px solid transparent;transition:color .15s,border-color .15s}
+  .quicknav a:hover{color:var(--ink)}
+  .quicknav a.active{color:var(--dust-blue-deep);border-bottom-color:var(--dust-blue-deep)}
+  .quicknav a:focus-visible{outline:var(--focus);outline-offset:-2px}
+  .quicknav a.quicknav-end{margin-left:auto;padding-left:20px;border-left:1px solid var(--border);color:var(--dust-blue-deep)}
+
+  /* ---------- 傾向タグ（ポイントのピルとは別の見た目にする） ---------- */
+  .trend-tag{display:inline-flex;align-items:center;gap:6px;font-size:0.74rem;font-weight:700;padding:3px 10px 3px 8px;border-radius:8px;margin-right:8px;margin-bottom:4px;white-space:nowrap;background:var(--bg-card);border:1px solid currentColor}
+  .trend-tag::before{content:'';width:7px;height:7px;border-radius:50%;background:currentColor;flex-shrink:0}
+  .trend-tag.good{color:var(--sage-deep)}
+  .trend-tag.watch{color:var(--rose-deep)}
+  .trend-tag.flat{color:var(--dust-blue-deep)}
+  .compare-table .trend-tag::before{content:none}
+  #history .trend-tag::before,#history-j .trend-tag::before{content:none}
+
+  /* ---------- 行動の記録リスト（単学期版） ---------- */
+  .beh-list{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:6px 24px;box-shadow:var(--shadow-sm);max-width:640px}
+  .beh-row{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:14px 0;border-bottom:1px solid var(--border)}
+  .beh-row:last-child{border-bottom:none}
+  .beh-row .label{font-size:0.9rem;color:var(--ink)}
+
+
+  /* ---------- 内申点の説明 ---------- */
+  .naishin-explain{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:26px 28px;box-shadow:var(--shadow-sm);margin-top:24px}
+  .naishin-explain h3{font-size:1rem;margin-bottom:14px}
+  .naishin-steps{display:flex;flex-direction:column;gap:14px}
+  .naishin-step{display:flex;gap:14px;align-items:flex-start}
+  .naishin-step .n{
+    flex-shrink:0;width:30px;height:30px;border-radius:50%;background:var(--sage-deep);color:#fff;
+    display:flex;align-items:center;justify-content:center;font-size:0.85rem;font-weight:700;
+  }
+  .naishin-step p{font-size:0.9rem;color:var(--ink)}
+  .naishin-step p b{color:var(--sage-deep)}
+
+  /* ---------- 塾 ---------- */
+  .juku-split{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+  @media (max-width:640px){.juku-split{grid-template-columns:1fr}}
+  .juku-card{border-radius:var(--radius);padding:24px;border:1px solid var(--border)}
+  .juku-card.on{background:rgba(31,153,85,0.12)}
+  .juku-card.off{background:rgba(232,72,58,0.12)}
+  .juku-card h3{font-size:0.95rem;margin-bottom:10px}
+  .juku-card ul{padding-left:1.1em;font-size:0.86rem;color:var(--text-dim)}
+  .juku-card li{margin-bottom:4px}
+
+  /* ---------- メッセージ ---------- */
+  .message{background:#EAF2FD;border:1px solid rgba(61,116,230,0.25);box-shadow:var(--shadow-md);border-radius:20px;padding:48px 40px;text-align:center}
+  .message h2{font-size:1.3rem;margin-bottom:18px}
+  .message p{color:var(--text-dim);max-width:560px;margin:0 auto}
+  .message p + p{margin-top:14px}
+
+  footer{padding:40px 0;text-align:center;font-size:0.8rem;color:var(--text-dim)}
+
+  @media print{
+    @page{ size:A4 portrait; margin:12mm 14mm; }
+
+    *{ -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
+
+    html{ font-size:11px; scroll-behavior:auto; }
+    body{ line-height:1.6; }
+
+    /* 印刷しない要素 */
+    #gate,
+    .tabbar,
+    .quicknav,
+    .print-btn,
+    .test-lightbox,
+    .folder-hint,
+    .test-link,
+    footer{ display:none !important; }
+
+    main{ display:block !important; }
+
+    /* 画面用の最大幅・余白をリセットして紙幅いっぱいに使う */
+    .container{ max-width:100% !important; padding:0 !important; }
+    section{ padding:10px 0 !important; border-bottom:1px solid #ccc; scroll-margin-top:0; }
+    section:first-of-type{ padding-top:0 !important; }
+
+    h1,h2,h3{ break-after:avoid; }
+    .section-head{ margin-bottom:10px; }
+    .section-head h2{ font-size:1.3rem; }
+
+    /* カード・表・バナー類は途中で改ページしない */
+    .stat-card,.chart-card,.insight,.up-banner,.subject-card,.tl-item,
+    .juku-card,.school-chip,.hc-row,.pv-item,.message,.rc-col,
+    .naishin-explain,.report-compare{
+      break-inside:avoid; box-shadow:none !important;
+    }
+    .grade-table-wrap thead{ display:table-header-group; }
+
+    .glance-stats-row,.glance-charts,.subject-grid,.juku-split{ gap:10px !important; }
+    .stat-card,.chart-card{ padding:12px 14px !important; }
+
+    /* 通知表原本の写真：印刷では高さ固定をやめて自然な比率で収める */
+    .report-compare{ margin-top:10px !important; }
+    .report-compare .rc-col{ height:auto !important; }
+    .report-compare .rc-col > div,.report-compare .rc-col > a{ height:auto !important; display:block !important; }
+    .report-compare img{ height:auto !important; max-height:320px; width:auto; max-width:100%; margin:0 auto; }
+
+    /* 比較テーブル：横スクロール前提の最小幅をやめて紙幅に収める */
+    .grade-table-wrap{ overflow:visible !important; padding:10px !important; }
+    table.grade-table{ min-width:0 !important; width:100% !important; font-size:8.5px; table-layout:auto; }
+    .grade-table th,.grade-table td{ padding:3px 4px !important; }
+    .spark-col{ width:70px !important; }
+    .spark-svg{ width:64px !important; }
+    .compare-table td .gcell{ width:auto !important; min-width:0 !important; }
+    .compare-table td.trend-col,.compare-table th.trend-col{ padding-left:8px !important; }
+    tr,td,th{ break-inside:avoid; }
+
+    .chart-card .radar-wrap svg,.chart-card .donut-wrap svg{ max-width:280px !important; }
+
+    a{ color:inherit; text-decoration:none; }
+    .up-banner{ padding:10px 14px !important; }
+    .message{ padding:20px !important; box-shadow:none !important; }
+  }
+</style>
+</head>
+<body>
+
+<div id="gate">
+  <h1>成績管理・成長管理</h1>
+  <p>家族だけのページです。合言葉を入力してください。</p>
+  <form id="gate-form" autocomplete="off">
+    <input type="password" id="gate-pass" placeholder="合言葉" autofocus>
+    <button type="submit">開く</button>
+  </form>
+  <div class="err" id="gate-err"></div>
+</div>
+
+<main id="main">
+
+  <nav class="tabbar">
+    <a href="../index.html" class="brand">純太郎の成績管理</a>
+    <div class="tabbar-actions">
+      <div class="tab-switch" role="tablist" aria-label="お子さま切り替え">
+        <a href="../kotaro/index.html" class="tab-btn">孝太郎</a>
+        <a href="../juntaro/index.html" class="tab-btn active" aria-current="page">純太郎</a>
+      </div>
+      <button type="button" class="print-btn" id="print-btn" aria-label="このページを印刷またはPDFで保存"><span class="material-face" aria-hidden="true">print</span>印刷 / PDF保存</button>
+    </div>
+  </nav>
+
+
+  <nav class="quicknav" aria-label="純太郎のページ内ナビゲーション">
+    <a href="../index.html">HOME</a>
+    <a href="#glance-j">サマリー</a>
+    <a href="#report-eval-j">通知表</a>
+    <a href="#scores-j">テスト結果</a>
+    <a href="#insights-j">傾向</a>
+    <a href="#history-j">学年別推移</a>
+    <a href="#timeline-j">歩み</a>
+    <a href="#message-j">アドバイス</a>
+    <a href="seicho.html" class="quicknav-end">成長記録を見る →</a>
+  </nav>
+
+  <section id="glance-j">
+    <div class="container">
+      <div class="section-head">
+        <div class="eyebrow">サマリー</div>
+        <h2>ひと目でわかる、今の純太郎</h2>
+        <p class="highlight-box">4年生になって最初の通知表です。理科・音楽・体育は3観点すべて「できる」で、新しい学年でもさっそく安定した力を見せてくれました。4年生になってからは今回が1学期分だけなので、このページのグラフは前回比較ではなく学期時点のスナップショットとして見てください。3年3学期との比較は下の「学年別推移」セクションにまとめています。</p>
+      </div>
+
+      <div class="glance-stats-row">
+        <div class="stat-card">
+          <div class="stat-label">平均評価（7教科平均）</div>
+          <div class="stat-value">5.0<span class="unit"> / 9点</span></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">安定して「できる」の教科</div>
+          <div class="stat-value" style="font-size:1.25rem;line-height:1.6">理科・音楽・体育</div>
+          <div class="stat-delta up">3観点すべて「できる」で安定！</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">伸びしろ、いちばんのチャンス</div>
+          <div class="stat-value" style="font-size:1.25rem;line-height:1.6">国語・社会・算数</div>
+          <div class="stat-delta watch">「取り組む姿勢」はどれも「できる」だから、あとは知識と表現がついてくれば伸びるところ</div>
+        </div>
+      </div>
+
+      <div class="glance-charts">
+        <div class="chart-card">
+          <div class="card-label">教科別評価（4年1学期 vs 前回3年3学期）</div>
+          <div class="radar-wrap">
+            <svg viewBox="-25 -25 370 370" role="img" aria-label="4年1学期（実線）と3年3学期（点線）の比較。国語4点(前回6点相当)、算数4点(前回7.5点相当)、音楽6点(前回9点相当)、図画工作5点(前回9点相当)、体育6点(前回9点相当)。社会・理科は4年生からの新設科目のため前回データなし。国語・音楽・体育は評価のパターンが変わっていないので実質横ばい、算数・図画工作は知識・技能が下がっています。">
+              <polygon class="radar-grid-line" points="160.0,116.7 193.9,133.0 202.2,169.6 178.8,199.0 141.2,199.0 117.8,169.6 126.1,133.0"></polygon>
+              <polygon class="radar-grid-line" points="160.0,73.3 227.8,106.0 244.5,179.3 197.6,238.1 122.4,238.1 75.5,179.3 92.2,106.0"></polygon>
+              <polygon class="radar-grid-line" points="160.0,30.0 261.6,78.9 286.7,188.9 216.4,277.1 103.6,277.1 33.3,188.9 58.4,78.9"></polygon>
+              <line class="radar-axis-line" x1="160" y1="160" x2="160.0" y2="30.0"/>
+              <line class="radar-axis-line" x1="160" y1="160" x2="261.6" y2="78.9"/>
+              <line class="radar-axis-line" x1="160" y1="160" x2="286.7" y2="188.9"/>
+              <line class="radar-axis-line" x1="160" y1="160" x2="216.4" y2="277.1"/>
+              <line class="radar-axis-line" x1="160" y1="160" x2="103.6" y2="277.1"/>
+              <line class="radar-axis-line" x1="160" y1="160" x2="33.3" y2="188.9"/>
+              <line class="radar-axis-line" x1="160" y1="160" x2="58.4" y2="78.9"/>
+              <polygon class="radar-shape prev" points="160.0,73.3 160.0,160.0 265.5,184.0 160.0,160.0 103.6,277.2 33.2,189.0 58.3,79.0"></polygon>
+              <circle class="radar-dot prev" cx="160.0" cy="73.3" r="3"/>
+              <circle class="radar-dot prev" cx="265.5" cy="184.0" r="3"/>
+              <circle class="radar-dot prev" cx="103.6" cy="277.2" r="3"/>
+              <circle class="radar-dot prev" cx="33.2" cy="189.0" r="3"/>
+              <circle class="radar-dot prev" cx="58.3" cy="79.0" r="3"/>
+              <polygon class="radar-shape" points="160.0,102.2 205.2,124.0 216.3,172.8 197.6,238.1 122.4,238.1 89.6,176.1 92.2,106.0"></polygon>
+              <circle class="radar-dot" cx="160.0" cy="102.2" r="4"/>
+              <circle class="radar-dot" cx="205.2" cy="124.0" r="4"/>
+              <circle class="radar-dot" cx="216.3" cy="172.8" r="4"/>
+              <circle class="radar-dot" cx="197.6" cy="238.1" r="4"/>
+              <circle class="radar-dot" cx="122.4" cy="238.1" r="4"/>
+              <circle class="radar-dot" cx="89.6" cy="176.1" r="4"/>
+              <circle class="radar-dot" cx="92.2" cy="106.0" r="4"/>
+              <text class="radar-label" x="160.0" y="6.0" text-anchor="middle">国語 4<tspan class="radar-arrow flat" dx="3">trending_flat</tspan></text>
+              <text class="radar-label" x="280.4" y="64.0" text-anchor="middle">社会 4<tspan class="radar-arrow flat" dx="3">fiber_new</tspan></text>
+              <text class="radar-label" x="310.1" y="194.3" text-anchor="middle">算数 4<tspan class="radar-arrow down" dx="3">trending_down</tspan></text>
+              <text class="radar-label" x="226.8" y="298.7" text-anchor="middle">理科 6<tspan class="radar-arrow flat" dx="3">fiber_new</tspan></text>
+              <text class="radar-label" x="93.2" y="298.7" text-anchor="middle">音楽 6<tspan class="radar-arrow flat" dx="3">trending_flat</tspan></text>
+              <text class="radar-label" x="9.9" y="194.3" text-anchor="middle">図工 5<tspan class="radar-arrow down" dx="3">trending_down</tspan></text>
+              <text class="radar-label" x="39.6" y="64.0" text-anchor="middle">体育 6<tspan class="radar-arrow flat" dx="3">trending_flat</tspan></text>
+            </svg>
+          </div>
+          <div class="radar-legend">
+            <span class="rl-item"><span class="rl-swatch now"></span>4年1学期（今回・実線）</span>
+            <span class="rl-item"><span class="rl-swatch prev"></span>3年3学期（前回・点線。社会・理科は新設科目のため中心＝データなし）</span>
+            <span class="rl-item"><span class="radar-arrow flat">trending_flat</span>パターン変化なし 3教科<span class="rl-sep">　</span><span class="radar-arrow down">trending_down</span>知識・技能が低下 2教科<span class="rl-sep">　</span>新設科目 2教科</span>
+          </div>
+          <p class="hc-note" style="margin-top:10px">※ 3年生は6点満点、4年生は9点満点のため、前回の点は「9点満点に換算した場合の相当値」で重ねています（点線が短くても、実際の評価は「できる」以上だった教科もあります）。詳しい観点別の内訳は下の「通知表」セクションの比較表をご覧ください。</p>
+        </div>
+
+        <div class="chart-card">
+          <div class="card-label">評価の内訳（7教科×3観点＝21項目）</div>
+          <div class="donut-wrap">
+            <svg viewBox="-48 -35 296 250" role="img" aria-label="評価の内訳の割合：よくできる0%(0件)、できる67%(14件)、もうすこし33%(7件)、合計21項目">
+              <path d="M 100,100 L 100,20 A 80,80 0 1,1 30.72,140 Z" fill="var(--dust-blue-mid)"/>
+              <path d="M 100,100 L 30.72,140 A 80,80 0 0,1 100,20 Z" fill="var(--dust-blue-pale)"/>
+              <line class="donut-tick" x1="169.28" y1="140.0" x2="182.27" y2="147.5" stroke="var(--dust-blue-mid)"/>
+              <line class="donut-tick" x1="30.72" y1="60.0" x2="17.73" y2="52.5" stroke="var(--dust-blue-pale-text)"/>
+              <text class="donut-label" x="190.93" y="152.5" text-anchor="middle">できる 67%</text>
+              <text class="donut-label" x="9.07" y="47.5" text-anchor="middle">もうすこし 33%</text>
+            </svg>
+          </div>
+          <div class="legend-row">
+            <div class="legend-item"><span class="lg-name"><span class="lg-dot" style="background:var(--dust-blue-deepest)"></span>よくできる</span><span class="lg-val">0%（0件）</span></div>
+            <div class="legend-item"><span class="lg-name"><span class="lg-dot" style="background:var(--dust-blue-mid)"></span>できる</span><span class="lg-val">67%（14件）</span></div>
+            <div class="legend-item"><span class="lg-name"><span class="lg-dot" style="background:var(--dust-blue-pale)"></span>もうすこし</span><span class="lg-val">33%（7件）</span></div>
+          </div>
+        </div>
+
+        <div class="chart-card">
+          <div class="card-label">行動の記録（4年1学期 vs 前回3年3学期）</div>
+          <div class="radar-wrap">
+            <svg viewBox="-70 -5 455 335" role="img" aria-label="4年1学期（実線）と3年3学期（点線）の比較。話をしっかり聞く・整理整頓・忘れ物をしないの3項目はもうすこしのまま変化なし。あいさつ・役割と仕事・思いやりの3項目はできるのまま変化なし。きまりや約束を守るはできるからもうすこしへ下降。">
+                <polygon class="radar-grid-line" points="170.0,105.0 220.8,129.5 233.4,184.5 198.2,228.6 141.8,228.6 106.6,184.5 119.2,129.5"></polygon>
+                <polygon class="radar-grid-line" points="170.0,40.0 271.6,88.9 296.7,198.9 226.4,287.1 113.6,287.1 43.3,198.9 68.4,88.9"></polygon>
+                <line class="radar-axis-line" x1="170" y1="170" x2="170.0" y2="40.0"/>
+                <line class="radar-axis-line" x1="170" y1="170" x2="271.6" y2="88.9"/>
+                <line class="radar-axis-line" x1="170" y1="170" x2="296.7" y2="198.9"/>
+                <line class="radar-axis-line" x1="170" y1="170" x2="226.4" y2="287.1"/>
+                <line class="radar-axis-line" x1="170" y1="170" x2="113.6" y2="287.1"/>
+                <line class="radar-axis-line" x1="170" y1="170" x2="43.3" y2="198.9"/>
+                <line class="radar-axis-line" x1="170" y1="170" x2="68.4" y2="88.9"/>
+                <polygon class="radar-shape prev" points="170.0,105.0 271.6,88.9 233.4,184.5 198.2,228.6 113.6,287.1 43.3,198.9 68.4,88.9"></polygon>
+                <circle class="radar-dot prev" cx="170.0" cy="105.0" r="3"/>
+                <circle class="radar-dot prev" cx="271.6" cy="88.9" r="3"/>
+                <circle class="radar-dot prev" cx="233.4" cy="184.5" r="3"/>
+                <circle class="radar-dot prev" cx="198.2" cy="228.6" r="3"/>
+                <circle class="radar-dot prev" cx="113.6" cy="287.1" r="3"/>
+                <circle class="radar-dot prev" cx="43.3" cy="198.9" r="3"/>
+                <circle class="radar-dot prev" cx="68.4" cy="88.9" r="3"/>
+                <polygon class="radar-shape" points="170.0,105.0 271.6,88.9 233.4,184.5 198.2,228.6 113.6,287.1 43.3,198.9 119.2,129.5"></polygon>
+                <circle class="radar-dot" cx="170.0" cy="105.0" r="4"/>
+                <circle class="radar-dot" cx="271.6" cy="88.9" r="4"/>
+                <circle class="radar-dot" cx="233.4" cy="184.5" r="4"/>
+                <circle class="radar-dot" cx="198.2" cy="228.6" r="4"/>
+                <circle class="radar-dot" cx="113.6" cy="287.1" r="4"/>
+                <circle class="radar-dot" cx="43.3" cy="198.9" r="4"/>
+                <circle class="radar-dot" cx="119.2" cy="129.5" r="4"/>
+                <text class="radar-label" x="170.0" y="20.0" text-anchor="middle">話をしっかり聞く<tspan class="radar-arrow flat" dx="3">trending_flat</tspan></text>
+                <text class="radar-label" x="287.3" y="76.5" text-anchor="start">あいさつ<tspan class="radar-arrow flat" dx="3">trending_flat</tspan></text>
+                <text class="radar-label" x="316.2" y="203.4" text-anchor="start">整理整頓<tspan class="radar-arrow flat" dx="3">trending_flat</tspan></text>
+                <text class="radar-label" x="235.1" y="305.1" text-anchor="start">忘れ物なし<tspan class="radar-arrow flat" dx="3">trending_flat</tspan></text>
+                <text class="radar-label" x="104.9" y="305.1" text-anchor="end">役割・仕事<tspan class="radar-arrow flat" dx="3">trending_flat</tspan></text>
+                <text class="radar-label" x="23.8" y="203.4" text-anchor="end">思いやり<tspan class="radar-arrow flat" dx="3">trending_flat</tspan></text>
+                <text class="radar-label" x="52.7" y="76.5" text-anchor="end">きまり・約束<tspan class="radar-arrow down" dx="3">trending_down</tspan></text>
+            </svg>
+          </div>
+          <div class="radar-legend">
+            <span class="rl-item"><span class="rl-swatch now"></span>4年1学期（今回・実線）</span>
+            <span class="rl-item"><span class="rl-swatch prev"></span>3年3学期（前回・点線）</span>
+            <span class="rl-item"><span class="radar-arrow flat">trending_flat</span>変化なし 6項目<span class="rl-sep">　</span><span class="radar-arrow down">trending_down</span>下降 1項目</span>
+          </div>
+        </div>
+
+        <div class="insight" style="margin-bottom:0;border-left:none">
+          <h3>生活面は、土台の6項目がしっかり安定しています</h3>
+          <p>7項目中6項目が「もうすこし」または「できる」のまま変化なく、特に「あいさつや返事をする」「役割を自覚し、最後までしっかり仕事をする」「思いやりをもって、だれとでも協力し合う」は3年3学期から引き続き「できる」を維持しています。人との関わり方の土台はしっかりできているので安心してよいところです。唯一「きまりや約束を守る」だけが「もうすこし」に下がりましたが、これは4年生になったばかりの時期にはよくある変化。次の学期に向けて、少しずつ意識していけば十分挽回できる範囲です。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="report-eval-j">
+    <div class="container">
+      <div class="section-head">
+        <div class="eyebrow">通知表の評価から</div>
+        <h2>教科別評価の推移（各学年1学期時点）</h2>
+        <p>通知表の「学習の記録」は、1年生と4年生以降は3段階（よくできる＝3点／できる＝2点／もうすこし＝1点）、2・3年生は2段階（できる／もうすこし）で評価されています。表の数字は「知識・技能／思考・判断・表現／主体的に学習に取り組む態度」の3観点を点数化して足した「何点中、何点」です。学年をまたいだ推移は下の「学年をまたいで見ると」セクションにまとめています。道徳と所見は3学期に記載予定のため、まだ反映していません。</p>
+      </div>
+
+      <div class="section-head" style="margin-top:48px">
+        <div class="eyebrow">通知表 原本の比較</div>
+        <h3 style="font-size:1.15rem">前回（3年3学期）→ 今回（4年1学期）</h3>
+        <p>通知表の原本そのものを並べています。3年生までは「できる／もうすこし」の2段階評価、4年生から「よくできる／できる／もうすこし」の3段階評価に変わっている点にご注意ください。</p>
+      </div>
+      <div class="report-compare">
+        <div class="rc-col" style="display:flex;flex-direction:column;height:560px">
+          <div class="rc-label">前回：3年3学期</div>
+          <div style="flex:1;display:flex;align-items:flex-start;justify-content:center;overflow:hidden;background:#fff;border-radius:10px">
+            <img src="../report-cards/juntaro/juntaro_grade3-4_gakushu.png" alt="純太郎3年3学期の通知表（学習の記録）" loading="lazy" style="width:auto;height:100%;max-width:100%;object-fit:contain;border:1px solid var(--border)">
+          </div>
+        </div>
+        <div class="rc-arrow" aria-hidden="true">→</div>
+        <div class="rc-col" style="display:flex;flex-direction:column;height:560px">
+          <div class="rc-label now">今回：4年1学期</div>
+          <a href="../report-cards/juntaro-grade4-term1.html" aria-label="4年1学期の通知表を大きく見る" style="flex:1;display:flex;align-items:flex-start;justify-content:center;overflow:hidden;background:#fff;border-radius:10px">
+            <img src="../report-cards/juntaro/juntaro_grade4-term1-1_gakushu.jpg" alt="純太郎4年1学期の通知表（学習の記録）" loading="lazy" style="width:auto;height:100%;max-width:100%;object-fit:contain;border:1px solid var(--border)">
+          </a>
+        </div>
+      </div>
+      <p class="hc-note hc-note-outside">※ 見やすさのため「学習の記録」欄のみをトリミングして並べています。3年3学期は今回Chromeで原本を直接開いて転記したもの、4年1学期の原本全体は画像をクリックすると見られます。表の縦横比が学期によって異なるため、高さを揃えて表示しています。</p>
+
+      <div class="section-head" style="margin-top:48px">
+        <div class="eyebrow">前回との比較</div>
+        <h3 style="font-size:1.15rem">3年3学期 → 4年1学期</h3>
+        <p>3年3学期と共通する5教科（国語・算数・音楽・図画工作・体育）を比べています。社会・理科は4年生からの新設科目のため比較対象に含めていません。3年生は2段階（もうすこし＝1点／できる＝2点、6点満点）、4年生は3段階（もうすこし＝1点／できる＝2点／よくできる＝3点、9点満点）で点数化しているため、満点自体が違う点にご留意ください。</p>
+      </div>
+
+      <div class="up-banner">
+        <div class="up-banner-label">5教科中3教科が前回と変化なし<span class="sub">算数・図画工作の2教科は「知識・技能」が「できる」から「もうすこし」に下がりました。上がった教科はありません。</span></div>
+      </div>
+
+      <div class="grade-table-wrap">
+        <table class="grade-table compare-table">
+          <thead>
+            <tr>
+              <th class="subj-col">教科</th>
+              <th>観点</th>
+              <th>3年3学期</th>
+              <th>4年1学期</th>
+              <th class="trend-col">何が変わったか</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="crit-first"><td class="subj-col" rowspan="4">国語</td><td class="crit-col">知識・技能</td><td><span class="gcell t-low">もうすこし<span class="pt-badge">1点</span></span></td><td><span class="score-wrap"><span class="gcell t-low">もうすこし<span class="pt-badge">1点</span></span><span class="crit-trend flat"><span class="trend-face" aria-hidden="true">trending_flat</span></span></span></td><td class="trend-col" rowspan="4"><span class="trend-tag flat"><span class="trend-face" aria-hidden="true">trending_flat</span>変化なし</span><span class="trend-total">教科合計 4点(6点満点)→4点(9点満点)</span>3観点とも同じパターンのまま（もうすこし・もうすこし・できる）</td></tr>
+            <tr><td class="crit-col">思考・判断・表現</td><td><span class="gcell t-low">もうすこし<span class="pt-badge">1点</span></span></td><td><span class="score-wrap"><span class="gcell t-low">もうすこし<span class="pt-badge">1点</span></span><span class="crit-trend flat"><span class="trend-face" aria-hidden="true">trending_flat</span></span></span></td></tr>
+            <tr><td class="crit-col">態度</td><td><span class="gcell t-mid">できる<span class="pt-badge">2点</span></span></td><td><span class="score-wrap"><span class="gcell t-mid">できる<span class="pt-badge">2点</span></span><span class="crit-trend flat"><span class="trend-face" aria-hidden="true">trending_flat</span></span></span></td></tr>
+            <tr class="subj-total-row"><td class="crit-col">教科合計</td><td class="total-num">4（6点満点）</td><td class="total-num">4（9点満点）</td></tr>
+
+            <tr class="row-watch crit-first"><td class="subj-col" rowspan="4">算数</td><td class="crit-col">知識・技能</td><td><span class="gcell t-mid">できる<span class="pt-badge">2点</span></span></td><td><span class="score-wrap"><span class="gcell t-low">もうすこし<span class="pt-badge">1点</span></span><span class="crit-trend down"><span class="trend-face" aria-hidden="true">trending_down</span></span></span></td><td class="trend-col" rowspan="4"><span class="trend-tag watch"><span class="trend-face" aria-hidden="true">trending_down</span>要フォロー</span><span class="trend-total">教科合計 5点(6点満点)→4点(9点満点)</span>「知識・技能」ができる→もうすこしに。「思考・判断・表現」はどちらの学期ももうすこしで継続</td></tr>
+            <tr class="row-watch"><td class="crit-col">思考・判断・表現</td><td><span class="gcell t-low">もうすこし<span class="pt-badge">1点</span></span></td><td><span class="score-wrap"><span class="gcell t-low">もうすこし<span class="pt-badge">1点</span></span><span class="crit-trend flat"><span class="trend-face" aria-hidden="true">trending_flat</span></span></span></td></tr>
+            <tr class="row-watch"><td class="crit-col">態度</td><td><span class="gcell t-mid">できる<span class="pt-badge">2点</span></span></td><td><span class="score-wrap"><span class="gcell t-mid">できる<span class="pt-badge">2点</span></span><span class="crit-trend flat"><span class="trend-face" aria-hidden="true">trending_flat</span></span></span></td></tr>
+            <tr class="row-watch subj-total-row"><td class="crit-col">教科合計</td><td class="total-num">5（6点満点）</td><td class="total-num">4（9点満点）</td></tr>
+
+            <tr class="crit-first"><td class="subj-col" rowspan="4">音楽</td><td class="crit-col">知識・技能</td><td><span class="gcell t-mid">できる<span class="pt-badge">2点</span></span></td><td><span class="score-wrap"><span class="gcell t-mid">できる<span class="pt-badge">2点</span></span><span class="crit-trend flat"><span class="trend-face" aria-hidden="true">trending_flat</span></span></span></td><td class="trend-col" rowspan="4"><span class="trend-tag flat"><span class="trend-face" aria-hidden="true">trending_flat</span>変化なし</span><span class="trend-total">教科合計 6点(6点満点)→6点(9点満点)</span>3観点とも「できる」を維持</td></tr>
+            <tr><td class="crit-col">思考・判断・表現</td><td><span class="gcell t-mid">できる<span class="pt-badge">2点</span></span></td><td><span class="score-wrap"><span class="gcell t-mid">できる<span class="pt-badge">2点</span></span><span class="crit-trend flat"><span class="trend-face" aria-hidden="true">trending_flat</span></span></span></td></tr>
+            <tr><td class="crit-col">態度</td><td><span class="gcell t-mid">できる<span class="pt-badge">2点</span></span></td><td><span class="score-wrap"><span class="gcell t-mid">できる<span class="pt-badge">2点</span></span><span class="crit-trend flat"><span class="trend-face" aria-hidden="true">trending_flat</span></span></span></td></tr>
+            <tr class="subj-total-row"><td class="crit-col">教科合計</td><td class="total-num">6（6点満点）</td><td class="total-num">6（9点満点）</td></tr>
+
+            <tr class="row-watch crit-first"><td class="subj-col" rowspan="4">図画工作</td><td class="crit-col">知識・技能</td><td><span class="gcell t-mid">できる<span class="pt-badge">2点</span></span></td><td><span class="score-wrap"><span class="gcell t-low">もうすこし<span class="pt-badge">1点</span></span><span class="crit-trend down"><span class="trend-face" aria-hidden="true">trending_down</span></span></span></td><td class="trend-col" rowspan="4"><span class="trend-tag watch"><span class="trend-face" aria-hidden="true">trending_down</span>やや注意</span><span class="trend-total">教科合計 6点(6点満点)→5点(9点満点)</span>「知識・技能」ができる→もうすこしに。他の2観点はできるを維持</td></tr>
+            <tr class="row-watch"><td class="crit-col">思考・判断・表現</td><td><span class="gcell t-mid">できる<span class="pt-badge">2点</span></span></td><td><span class="score-wrap"><span class="gcell t-mid">できる<span class="pt-badge">2点</span></span><span class="crit-trend flat"><span class="trend-face" aria-hidden="true">trending_flat</span></span></span></td></tr>
+            <tr class="row-watch"><td class="crit-col">態度</td><td><span class="gcell t-mid">できる<span class="pt-badge">2点</span></span></td><td><span class="score-wrap"><span class="gcell t-mid">できる<span class="pt-badge">2点</span></span><span class="crit-trend flat"><span class="trend-face" aria-hidden="true">trending_flat</span></span></span></td></tr>
+            <tr class="row-watch subj-total-row"><td class="crit-col">教科合計</td><td class="total-num">6（6点満点）</td><td class="total-num">5（9点満点）</td></tr>
+
+            <tr class="crit-first"><td class="subj-col" rowspan="4">体育</td><td class="crit-col">知識・技能</td><td><span class="gcell t-mid">できる<span class="pt-badge">2点</span></span></td><td><span class="score-wrap"><span class="gcell t-mid">できる<span class="pt-badge">2点</span></span><span class="crit-trend flat"><span class="trend-face" aria-hidden="true">trending_flat</span></span></span></td><td class="trend-col" rowspan="4"><span class="trend-tag flat"><span class="trend-face" aria-hidden="true">trending_flat</span>変化なし</span><span class="trend-total">教科合計 6点(6点満点)→6点(9点満点)</span>3観点とも「できる」を維持</td></tr>
+            <tr><td class="crit-col">思考・判断・表現</td><td><span class="gcell t-mid">できる<span class="pt-badge">2点</span></span></td><td><span class="score-wrap"><span class="gcell t-mid">できる<span class="pt-badge">2点</span></span><span class="crit-trend flat"><span class="trend-face" aria-hidden="true">trending_flat</span></span></span></td></tr>
+            <tr><td class="crit-col">態度</td><td><span class="gcell t-mid">できる<span class="pt-badge">2点</span></span></td><td><span class="score-wrap"><span class="gcell t-mid">できる<span class="pt-badge">2点</span></span><span class="crit-trend flat"><span class="trend-face" aria-hidden="true">trending_flat</span></span></span></td></tr>
+            <tr class="subj-total-row"><td class="crit-col">教科合計</td><td class="total-num">6（6点満点）</td><td class="total-num">6（9点満点）</td></tr>
+          </tbody>
+          <tfoot>
+            <tr class="grand-total-row">
+              <td colspan="2">5教科合計</td>
+              <td class="total-num">27（30点満点）</td>
+              <td class="total-num">25（45点満点）</td>
+              <td class="trend-col"><span class="trend-tag watch"><span class="trend-face" aria-hidden="true">trending_flat</span>要注意</span><span class="trend-total">達成率 90%→56%</span>満点自体が違うため単純な点数比較はできませんが、達成率で見ても算数・図画工作の「知識・技能」低下がそのまま全体に効いています</td>
+            </tr>
+          </tfoot>
+        </table>
+        <p class="hc-note hc-note-outside">※ 3年生は6点満点（もうすこし＝1点／できる＝2点）、4年生は9点満点（もうすこし＝1点／できる＝2点／よくできる＝3点）で点数化しています。満点自体が違うため、5教科合計の「27→25」は点数としては小さな差に見えても、達成率では90%→56%と大きく下がって見えます。ただし実際に「もうすこし」に変わったのは算数・図画工作の「知識・技能」の2項目だけで、国語・音楽・体育は3観点のパターンがそのまま維持されています。</p>
+      </div>
+
+    </div>
+  </section>
+
+  <section id="scores-j">
+    <div class="container">
+      <div class="section-head">
+        <div class="eyebrow">4年生 1学期</div>
+        <h2>教科別のテスト結果</h2>
+        <p>ドライブに入っていたスキャンを1枚ずつ確認し、単元ごとの点数を読み取りました。カードをクリックすると、その教科のテスト原本のキャプチャを見られます。青が「知識・技能（基礎）」、ピンクが「思考・判断・表現（応用）」の得点率です。</p>
+      </div>
+
+      <div class="subject-grid">
+
+        <div class="subject-card sansu has-folder" data-gallery="sansu">
+          <div class="card-head"><h3>算数</h3><span class="folder-hint"><span class="folder-face" aria-hidden="true">photo_library</span>テストを見る</span></div>
+          <div class="subject-note">単元によって基礎点の差が大きい。「わり算の筆算」は両方満点、「角の大きさ」は基礎で苦戦</div>
+          <div class="unit-group">
+            <div class="unit-topic">大きい数のしくみ</div>
+            <div class="unit-row">
+              <div class="unit-label"><span class="name">知識・技能</span><span class="unit-score-group"><span class="score">100/100</span><a class="test-link" href="https://drive.google.com/file/d/1SXI802PQwSd27GeoTXMVSbV5TGaz8qfz/view#page=1" target="_blank" rel="noopener" aria-label="大きい数のしくみ（知識・技能）原本PDFを見る"><span class="test-link-face" aria-hidden="true">description</span></a></span></div>
+              <div class="bar-track"><div class="bar-fill chi" style="width:100%"></div></div>
+            </div>
+            <div class="unit-row">
+              <div class="unit-label"><span class="name">思考・判断・表現</span><span class="unit-score-group"><span class="score">30/50</span><a class="test-link" href="https://drive.google.com/file/d/1SXI802PQwSd27GeoTXMVSbV5TGaz8qfz/view#page=2" target="_blank" rel="noopener" aria-label="大きい数のしくみ（思考・判断・表現）原本PDFを見る"><span class="test-link-face" aria-hidden="true">description</span></a></span></div>
+              <div class="bar-track"><div class="bar-fill shi" style="width:60%"></div></div>
+            </div>
+          </div>
+          <div class="unit-group">
+            <div class="unit-topic">折れ線グラフと表</div>
+            <div class="unit-row">
+              <div class="unit-label"><span class="name">知識・技能</span><span class="unit-score-group"><span class="score">42/100</span><a class="test-link" href="https://drive.google.com/file/d/1SXI802PQwSd27GeoTXMVSbV5TGaz8qfz/view#page=3" target="_blank" rel="noopener" aria-label="折れ線グラフと表（知識・技能）原本PDFを見る"><span class="test-link-face" aria-hidden="true">description</span></a></span></div>
+              <div class="bar-track"><div class="bar-fill chi" style="width:42%"></div></div>
+            </div>
+            <div class="unit-row">
+              <div class="unit-label"><span class="name">思考・判断・表現</span><span class="unit-score-group"><span class="score">採点欄が未記入</span><a class="test-link" href="https://drive.google.com/file/d/1SXI802PQwSd27GeoTXMVSbV5TGaz8qfz/view#page=4" target="_blank" rel="noopener" aria-label="折れ線グラフと表（思考・判断・表現）原本PDFを見る"><span class="test-link-face" aria-hidden="true">description</span></a></span></div>
+            </div>
+          </div>
+          <div class="unit-group">
+            <div class="unit-topic">わり算の筆算（1）</div>
+            <div class="unit-row">
+              <div class="unit-label"><span class="name">知識・技能</span><span class="unit-score-group"><span class="score">100/100</span><a class="test-link" href="https://drive.google.com/file/d/1SXI802PQwSd27GeoTXMVSbV5TGaz8qfz/view#page=5" target="_blank" rel="noopener" aria-label="わり算の筆算（1）（知識・技能）原本PDFを見る"><span class="test-link-face" aria-hidden="true">description</span></a></span></div>
+              <div class="bar-track"><div class="bar-fill chi" style="width:100%"></div></div>
+            </div>
+            <div class="unit-row">
+              <div class="unit-label"><span class="name">思考・判断・表現</span><span class="unit-score-group"><span class="score">50/50</span><a class="test-link" href="https://drive.google.com/file/d/1SXI802PQwSd27GeoTXMVSbV5TGaz8qfz/view#page=6" target="_blank" rel="noopener" aria-label="わり算の筆算（1）（思考・判断・表現）原本PDFを見る"><span class="test-link-face" aria-hidden="true">description</span></a></span></div>
+              <div class="bar-track"><div class="bar-fill shi" style="width:100%"></div></div>
+            </div>
+          </div>
+          <div class="unit-group">
+            <div class="unit-topic">角の大きさ</div>
+            <div class="unit-row">
+              <div class="unit-label"><span class="name">知識・技能</span><span class="unit-score-group"><span class="score">25/100</span><a class="test-link" href="https://drive.google.com/file/d/1SXI802PQwSd27GeoTXMVSbV5TGaz8qfz/view#page=8" target="_blank" rel="noopener" aria-label="角の大きさ（知識・技能）原本PDFを見る"><span class="test-link-face" aria-hidden="true">description</span></a></span></div>
+              <div class="bar-track"><div class="bar-fill chi" style="width:25%"></div></div>
+            </div>
+            <div class="unit-row">
+              <div class="unit-label"><span class="name">思考・判断・表現</span><span class="unit-score-group"><span class="score">45/50</span><a class="test-link" href="https://drive.google.com/file/d/1SXI802PQwSd27GeoTXMVSbV5TGaz8qfz/view#page=7" target="_blank" rel="noopener" aria-label="角の大きさ（思考・判断・表現）原本PDFを見る"><span class="test-link-face" aria-hidden="true">description</span></a></span></div>
+              <div class="bar-track"><div class="bar-fill shi" style="width:90%"></div></div>
+            </div>
+          </div>
+          <div class="unit-group">
+            <div class="unit-topic">小数のしくみ</div>
+            <div class="unit-row">
+              <div class="unit-label"><span class="name">知識・技能</span><span class="unit-score-group"><span class="score">65/100</span><a class="test-link" href="https://drive.google.com/file/d/1SXI802PQwSd27GeoTXMVSbV5TGaz8qfz/view#page=9" target="_blank" rel="noopener" aria-label="小数のしくみ（知識・技能）原本PDFを見る"><span class="test-link-face" aria-hidden="true">description</span></a></span></div>
+              <div class="bar-track"><div class="bar-fill chi" style="width:65%"></div></div>
+            </div>
+            <div class="unit-row">
+              <div class="unit-label"><span class="name">思考・判断・表現</span><span class="unit-score-group"><span class="score">50/50</span><a class="test-link" href="https://drive.google.com/file/d/1SXI802PQwSd27GeoTXMVSbV5TGaz8qfz/view#page=10" target="_blank" rel="noopener" aria-label="小数のしくみ（思考・判断・表現）原本PDFを見る"><span class="test-link-face" aria-hidden="true">description</span></a></span></div>
+              <div class="bar-track"><div class="bar-fill shi" style="width:100%"></div></div>
+            </div>
+          </div>
+          <div class="bar-legend"><span><span class="dot chi"></span>知識・技能</span><span><span class="dot shi"></span>思考・判断・表現</span></div>
+        </div>
+
+        <div class="subject-card rika has-folder" data-gallery="rika">
+          <div class="card-head"><h3>理科</h3><span class="folder-hint"><span class="folder-face" aria-hidden="true">photo_library</span>テストを見る</span></div>
+          <div class="subject-note">基礎（知識・技能）はどの単元も70点以上で安定。応用（思考・判断・表現）は軒並み低めで、特に「自然のなかの水のすがた」は基礎90点→応用20点と差が大きい</div>
+          <div class="unit-group">
+            <div class="unit-topic">1. あたたかくなると</div>
+            <div class="unit-row">
+              <div class="unit-label"><span class="name">知識・技能</span><span class="unit-score-group"><span class="score">70/100</span><a class="test-link" href="https://drive.google.com/file/d/1SXI802PQwSd27GeoTXMVSbV5TGaz8qfz/view#page=11" target="_blank" rel="noopener" aria-label="あたたかくなると（知識・技能）原本PDFを見る"><span class="test-link-face" aria-hidden="true">description</span></a></span></div>
+              <div class="bar-track"><div class="bar-fill chi" style="width:70%"></div></div>
+            </div>
+            <div class="unit-row">
+              <div class="unit-label"><span class="name">思考・判断・表現</span><span class="unit-score-group"><span class="score">30/50</span><a class="test-link" href="https://drive.google.com/file/d/1SXI802PQwSd27GeoTXMVSbV5TGaz8qfz/view#page=12" target="_blank" rel="noopener" aria-label="あたたかくなると（思考・判断・表現）原本PDFを見る"><span class="test-link-face" aria-hidden="true">description</span></a></span></div>
+              <div class="bar-track"><div class="bar-fill shi" style="width:60%"></div></div>
+            </div>
+          </div>
+          <div class="unit-group">
+            <div class="unit-topic">2. 動物のからだのつくりと運動</div>
+            <div class="unit-row">
+              <div class="unit-label"><span class="name">知識・技能</span><span class="unit-score-group"><span class="score">85/100</span><a class="test-link" href="https://drive.google.com/file/d/1SXI802PQwSd27GeoTXMVSbV5TGaz8qfz/view#page=13" target="_blank" rel="noopener" aria-label="動物のからだのつくりと運動（知識・技能）原本PDFを見る"><span class="test-link-face" aria-hidden="true">description</span></a></span></div>
+              <div class="bar-track"><div class="bar-fill chi" style="width:85%"></div></div>
+            </div>
+            <div class="unit-row">
+              <div class="unit-label"><span class="name">思考・判断・表現</span><span class="unit-score-group"><span class="score">40/50</span><a class="test-link" href="https://drive.google.com/file/d/1SXI802PQwSd27GeoTXMVSbV5TGaz8qfz/view#page=14" target="_blank" rel="noopener" aria-label="動物のからだのつくりと運動（思考・判断・表現）原本PDFを見る"><span class="test-link-face" aria-hidden="true">description</span></a></span></div>
+              <div class="bar-track"><div class="bar-fill shi" style="width:80%"></div></div>
+            </div>
+          </div>
+          <div class="unit-row">
+            <div class="unit-label"><span class="name">3. 天気と気温（知識・技能）</span><span class="unit-score-group"><span class="score">70/100</span><a class="test-link" href="https://drive.google.com/file/d/1SXI802PQwSd27GeoTXMVSbV5TGaz8qfz/view#page=15" target="_blank" rel="noopener" aria-label="天気と気温 原本PDFを見る"><span class="test-link-face" aria-hidden="true">description</span></a></span></div>
+            <div class="bar-track"><div class="bar-fill chi" style="width:70%"></div></div>
+          </div>
+          <div class="unit-group">
+            <div class="unit-topic">5. 雨水のゆくえと地面のようす</div>
+            <div class="unit-row">
+              <div class="unit-label"><span class="name">知識・技能</span><span class="unit-score-group"><span class="score">70/100</span><a class="test-link" href="https://drive.google.com/file/d/1SXI802PQwSd27GeoTXMVSbV5TGaz8qfz/view#page=16" target="_blank" rel="noopener" aria-label="雨水のゆくえと地面のようす（知識・技能）原本PDFを見る"><span class="test-link-face" aria-hidden="true">description</span></a></span></div>
+              <div class="bar-track"><div class="bar-fill chi" style="width:70%"></div></div>
+            </div>
+            <div class="unit-row">
+              <div class="unit-label"><span class="name">思考・判断・表現</span><span class="unit-score-group"><span class="score">30/50</span><a class="test-link" href="https://drive.google.com/file/d/1SXI802PQwSd27GeoTXMVSbV5TGaz8qfz/view#page=17" target="_blank" rel="noopener" aria-label="雨水のゆくえと地面のようす（思考・判断・表現）原本PDFを見る"><span class="test-link-face" aria-hidden="true">description</span></a></span></div>
+              <div class="bar-track"><div class="bar-fill shi" style="width:60%"></div></div>
+            </div>
+          </div>
+          <div class="unit-group">
+            <div class="unit-topic">7. 自然のなかの水のすがた</div>
+            <div class="unit-row">
+              <div class="unit-label"><span class="name">知識・技能</span><span class="unit-score-group"><span class="score">90/100</span><a class="test-link" href="https://drive.google.com/file/d/1SXI802PQwSd27GeoTXMVSbV5TGaz8qfz/view#page=18" target="_blank" rel="noopener" aria-label="自然のなかの水のすがた（知識・技能）原本PDFを見る"><span class="test-link-face" aria-hidden="true">description</span></a></span></div>
+              <div class="bar-track"><div class="bar-fill chi" style="width:90%"></div></div>
+            </div>
+            <div class="unit-row">
+              <div class="unit-label"><span class="name">思考・判断・表現</span><span class="unit-score-group"><span class="score">20/50</span><a class="test-link" href="https://drive.google.com/file/d/1SXI802PQwSd27GeoTXMVSbV5TGaz8qfz/view#page=19" target="_blank" rel="noopener" aria-label="自然のなかの水のすがた（思考・判断・表現）原本PDFを見る"><span class="test-link-face" aria-hidden="true">description</span></a></span></div>
+              <div class="bar-track"><div class="bar-fill shi" style="width:40%"></div></div>
+            </div>
+          </div>
+          <div class="bar-legend"><span><span class="dot chi"></span>知識・技能</span><span><span class="dot shi"></span>思考・判断・表現</span></div>
+        </div>
+
+        <div class="subject-card shakai has-folder" data-gallery="shakai">
+          <div class="card-head"><h3>社会</h3><span class="folder-hint"><span class="folder-face" aria-hidden="true">photo_library</span>テストを見る</span></div>
+          <div class="subject-note">知識・技能・思考・判断・表現とも安定して高得点。4教科の中でいちばん崩れがない</div>
+          <div class="unit-group">
+            <div class="unit-topic">わたしたちのくらしと水</div>
+            <div class="unit-row">
+              <div class="unit-label"><span class="name">知識・技能</span><span class="unit-score-group"><span class="score">100/100</span><a class="test-link" href="https://drive.google.com/file/d/1zh2yPYZxkE1Rj5PzcD9RX25KLI0iR8TG/view#page=1" target="_blank" rel="noopener" aria-label="わたしたちのくらしと水（知識・技能）原本PDFを見る"><span class="test-link-face" aria-hidden="true">description</span></a></span></div>
+              <div class="bar-track"><div class="bar-fill chi" style="width:100%"></div></div>
+            </div>
+            <div class="unit-row">
+              <div class="unit-label"><span class="name">思考・判断・表現</span><span class="unit-score-group"><span class="score">40/50</span><a class="test-link" href="https://drive.google.com/file/d/1zh2yPYZxkE1Rj5PzcD9RX25KLI0iR8TG/view#page=2" target="_blank" rel="noopener" aria-label="わたしたちのくらしと水（思考・判断・表現）原本PDFを見る"><span class="test-link-face" aria-hidden="true">description</span></a></span></div>
+              <div class="bar-track"><div class="bar-fill shi" style="width:80%"></div></div>
+            </div>
+          </div>
+          <div class="unit-group">
+            <div class="unit-topic">ごみの処理と再利用</div>
+            <div class="unit-row">
+              <div class="unit-label"><span class="name">知識・技能</span><span class="unit-score-group"><span class="score">85/100</span><a class="test-link" href="https://drive.google.com/file/d/1zh2yPYZxkE1Rj5PzcD9RX25KLI0iR8TG/view#page=3" target="_blank" rel="noopener" aria-label="ごみの処理と再利用（知識・技能）原本PDFを見る"><span class="test-link-face" aria-hidden="true">description</span></a></span></div>
+              <div class="bar-track"><div class="bar-fill chi" style="width:85%"></div></div>
+            </div>
+            <div class="unit-row">
+              <div class="unit-label"><span class="name">思考・判断・表現</span><span class="unit-score-group"><span class="score">40/50</span><a class="test-link" href="https://drive.google.com/file/d/1zh2yPYZxkE1Rj5PzcD9RX25KLI0iR8TG/view#page=4" target="_blank" rel="noopener" aria-label="ごみの処理と再利用（思考・判断・表現）原本PDFを見る"><span class="test-link-face" aria-hidden="true">description</span></a></span></div>
+              <div class="bar-track"><div class="bar-fill shi" style="width:80%"></div></div>
+            </div>
+          </div>
+          <div class="bar-legend"><span><span class="dot chi"></span>知識・技能</span><span><span class="dot shi"></span>思考・判断・表現</span></div>
+        </div>
+
+        <div class="subject-card kokugo has-folder" data-gallery="kokugo">
+          <div class="card-head"><h3>国語</h3><span class="folder-hint"><span class="folder-face" aria-hidden="true">photo_library</span>ノートを見る</span></div>
+          <div class="subject-note">今学期の国語は光文書院のような単元テストではなく、自主学習ノート形式での提出でした。単元まとめの点数ではなく、ドリルごとの小さな点数（例：45/50・20/50など）が記録されています</div>
+          <p style="font-size:0.88rem;color:var(--text-dim);line-height:1.9">学習した単元：白いぼうし／アップとルーズで伝える／一つの花／漢字辞典を使おう　※ノートは9ページ分。まとまった単元テストの点数が出たら、算数・理科と同じ形式に更新します。</p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <section id="behavior-j">
+    <div class="container">
+      <div class="section-head">
+        <div class="eyebrow">行動の記録から</div>
+        <h2>前回との比較（3年3学期 → 4年1学期）</h2>
+        <p>「行動の記録」は全学年共通で2段階（できる／もうすこし）評価です。7項目すべてを、直前の学期（3年3学期）と比べました。</p>
+      </div>
+
+      <div class="report-compare">
+        <div class="rc-col" style="display:flex;flex-direction:column;height:420px">
+          <div class="rc-label">前回：3年3学期</div>
+          <div style="flex:1;display:flex;align-items:flex-start;justify-content:center;overflow:hidden;background:#fff;border-radius:10px">
+            <img src="../report-cards/juntaro/juntaro_grade3-4_kodo.png" alt="純太郎3年3学期の通知表（行動の記録）" loading="lazy" style="width:auto;height:100%;max-width:100%;object-fit:contain;border:1px solid var(--border)">
+          </div>
+        </div>
+        <div class="rc-arrow" aria-hidden="true">→</div>
+        <div class="rc-col" style="display:flex;flex-direction:column;height:420px">
+          <div class="rc-label now">今回：4年1学期</div>
+          <a href="../report-cards/juntaro-grade4-term1.html" aria-label="4年1学期の通知表を大きく見る" style="flex:1;display:flex;align-items:flex-start;justify-content:center;overflow:hidden;background:#fff;border-radius:10px">
+            <img src="../report-cards/juntaro/juntaro_grade4-term1-1_kodo.jpg" alt="純太郎4年1学期の通知表（行動の記録）" loading="lazy" style="width:auto;height:100%;max-width:100%;object-fit:contain;border:1px solid var(--border)">
+          </a>
+        </div>
+      </div>
+      <p class="hc-note hc-note-outside">※ 見やすさのため「行動の記録」欄のみをトリミングして並べています。</p>
+
+      <div class="up-banner">
+        <div class="up-banner-label">7項目中6項目が変化なし<span class="sub">1項目（きまりや約束を守る）が「できる」から「もうすこし」に下降しました。上昇した項目はありません。</span></div>
+      </div>
+      <div class="grade-table-wrap">
+        <table class="grade-table compare-table">
+          <thead>
+            <tr>
+              <th class="subj-col">項目</th>
+              <th>3年3学期</th>
+              <th>4年1学期</th>
+              <th class="trend-col">何が変わったか</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="subj-col">話をしっかり聞く</td>
+              <td><span class="gcell t-low">もうすこし</span></td>
+              <td><span class="score-wrap"><span class="gcell t-low">もうすこし</span><span class="crit-trend flat"><span class="trend-face" aria-hidden="true">trending_flat</span></span></span></td>
+              <td class="trend-col"><span class="trend-tag flat"><span class="trend-face" aria-hidden="true">trending_flat</span>変化なし</span>3年3学期・4年1学期ともに「もうすこし」が続いています。</td>
+            </tr>
+            <tr>
+              <td class="subj-col">あいさつや返事をする</td>
+              <td><span class="gcell t-mid">できる</span></td>
+              <td><span class="score-wrap"><span class="gcell t-mid">できる</span><span class="crit-trend flat"><span class="trend-face" aria-hidden="true">trending_flat</span></span></span></td>
+              <td class="trend-col"><span class="trend-tag flat"><span class="trend-face" aria-hidden="true">trending_flat</span>変化なし</span>3年3学期・4年1学期ともに「できる」を維持しています。</td>
+            </tr>
+            <tr>
+              <td class="subj-col">身のまわりの整理整頓をする</td>
+              <td><span class="gcell t-low">もうすこし</span></td>
+              <td><span class="score-wrap"><span class="gcell t-low">もうすこし</span><span class="crit-trend flat"><span class="trend-face" aria-hidden="true">trending_flat</span></span></span></td>
+              <td class="trend-col"><span class="trend-tag flat"><span class="trend-face" aria-hidden="true">trending_flat</span>変化なし</span>3年3学期・4年1学期ともに「もうすこし」が続いています。</td>
+            </tr>
+            <tr>
+              <td class="subj-col">忘れ物をしない</td>
+              <td><span class="gcell t-low">もうすこし</span></td>
+              <td><span class="score-wrap"><span class="gcell t-low">もうすこし</span><span class="crit-trend flat"><span class="trend-face" aria-hidden="true">trending_flat</span></span></span></td>
+              <td class="trend-col"><span class="trend-tag flat"><span class="trend-face" aria-hidden="true">trending_flat</span>変化なし</span>3年3学期・4年1学期ともに「もうすこし」が続いています。</td>
+            </tr>
+            <tr>
+              <td class="subj-col">役割を自覚し、最後までしっかり仕事をする</td>
+              <td><span class="gcell t-mid">できる</span></td>
+              <td><span class="score-wrap"><span class="gcell t-mid">できる</span><span class="crit-trend flat"><span class="trend-face" aria-hidden="true">trending_flat</span></span></span></td>
+              <td class="trend-col"><span class="trend-tag flat"><span class="trend-face" aria-hidden="true">trending_flat</span>変化なし</span>3年3学期は「係・当番などを最後までしっかりする」という項目名でしたが、内容は同じで「できる」を維持しています。</td>
+            </tr>
+            <tr>
+              <td class="subj-col">思いやりをもって、だれとでも協力し合う</td>
+              <td><span class="gcell t-mid">できる</span></td>
+              <td><span class="score-wrap"><span class="gcell t-mid">できる</span><span class="crit-trend flat"><span class="trend-face" aria-hidden="true">trending_flat</span></span></span></td>
+              <td class="trend-col"><span class="trend-tag flat"><span class="trend-face" aria-hidden="true">trending_flat</span>変化なし</span>3年3学期は「友達と仲よくする」という項目名でしたが、内容は同じで「できる」を維持しています。</td>
+            </tr>
+            <tr class="row-watch">
+              <td class="subj-col">きまりや約束を守る</td>
+              <td><span class="gcell t-mid">できる</span></td>
+              <td><span class="score-wrap"><span class="gcell t-low">もうすこし</span><span class="crit-trend down"><span class="trend-face" aria-hidden="true">trending_down</span></span></span></td>
+              <td class="trend-col"><span class="trend-tag watch"><span class="trend-face" aria-hidden="true">trending_down</span>下降</span>4年1学期で新しく「もうすこし」に。他の6項目は変化していないので、この1点に絞って様子を見たいポイントです。</td>
+            </tr>
+          </tbody>
+        </table>
+        <p class="hc-note hc-note-outside">※ 「行動の記録」は「できる／もうすこし」の2段階評価のため、教科別評価のような点数の内訳はありません。「きまりや約束を守る」だけが3年3学期の「できる」から4年1学期に「もうすこし」に変わりましたが、それ以外の6項目はすべて変化なしです。</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="insights-j">
+    <div class="container">
+      <div class="section-head">
+        <div class="eyebrow">見えてきた傾向</div>
+        <h2>今のところ分かったこと</h2>
+      </div>
+
+      <div class="insight">
+        <h3>理科・音楽・体育がいちばん安定している</h3>
+        <p>通知表の3観点（知識・技能／思考・判断・表現／主体的に学習に取り組む態度）がすべて「できる」なのは理科・音楽・体育です。国語・社会・算数は「知識・技能」「思考・判断・表現」が「もうすこし」で、「主体的に学習に取り組む態度」だけ「できる」という共通パターンなので、この3教科が今のところ伸びしろのある教科と言えそうです。</p>
+      </div>
+
+      <div class="insight">
+        <h3>社会は「表と裏の差」より「テストと通知表の差」が目立つ</h3>
+        <p>社会のテストは知識・技能が100点・85点、思考・判断・表現も2回とも40/50と、点数だけ見れば悪くありません。孝太郎の6年生データで見られたような「応用問題でガクッと落ちる」パターンは、今のところ純太郎の社会には出ていません。それなのに通知表の評価は「知識・技能」「思考・判断・表現」が「もうすこし」。テスト以外の授業態度やノート、提出物なども含めた総合評価で見られている可能性があるので、次の学期はそのあたりも意識してみるとよさそうです。</p>
+      </div>
+
+      <div class="insight warn">
+        <h3>算数は単元ごとの落差が大きい</h3>
+        <p>「わり算の筆算（1）」は知識・技能100点・思考・判断・表現50点と両方満点だった一方、「角の大きさ」は知識・技能が25点とこの学期でいちばん低い点数でした。ただし同じ「角の大きさ」の思考・判断・表現は45/50と高く、基礎の定着と応用力が逆転しているのが目を引きます。角度の単純な計測・作図（知識・技能）を重点的に復習すると点数が上がりやすそうです。「折れ線グラフと表」も知識・技能42点とふるわず、グラフの読み取り自体に苦手が出ている可能性があります。</p>
+      </div>
+
+      <div class="insight warn">
+        <h3>理科は基礎が強い分、応用でどこまで書けるかが課題</h3>
+        <p>理科の知識・技能はどの単元も70〜90点と安定して高得点です。一方で思考・判断・表現は20〜40点にとどまり、特に「自然のなかの水のすがた」は知識・技能90点に対して思考・判断・表現20点と、この学期でいちばん差が大きい結果でした。知識は身についているので、実験結果から理由を考えて文章で説明する練習を積むと伸びしろが大きいところです。</p>
+      </div>
+
+      <div class="insight warn">
+        <h3>行動面は生活習慣・注意力に伸びしろ</h3>
+        <p>あいさつ・役割・思いやりは「できる」なのに対し、話を聞く・整理整頓・忘れ物・きまりを守るは「もうすこし」。人との関わり方はできているので、あとは身の回りの管理と集中の持続がポイントになりそうです。</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="history-j">
+    <div class="container">
+      <div class="section-head">
+        <div class="eyebrow">学年をまたいで見ると</div>
+        <h2>1年生から4年生までの成績推移</h2>
+        <p>各学年の1学期時点の評価を並べたものです。1年生と4年生以降は3段階評価（よくできる／できる／もうすこし、9点満点）、2・3年生は2段階評価（できる／もうすこし、6点満点）と、学年によって評価の段階数が変わる点にご留意ください。1〜4年生すべて、1学期の通知表原本を実際に確認して転記しています。</p>
+      </div>
+
+      <div class="grade-table-wrap">
+        <table class="grade-table">
+          <thead>
+            <tr>
+              <th class="subj-col">教科</th>
+              <th>1年</th><th>2年</th><th>3年</th><th>4年</th>
+              <th class="spark-col">推移（3〜4年）</th>
+              <th class="trend-col">傾向</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="subj-col">国語</td>
+              <td><span class="gcell t-low"><span class="gcell-face" aria-hidden="true">sentiment_dissatisfied</span>4/9</span></td>
+              <td><span class="gcell t-mid"><span class="gcell-face" aria-hidden="true">sentiment_neutral</span>4/6</span></td>
+              <td><span class="gcell t-mid"><span class="gcell-face" aria-hidden="true">sentiment_neutral</span>4/6</span></td>
+              <td><span class="gcell t-low"><span class="gcell-face" aria-hidden="true">sentiment_dissatisfied</span>4/9</span></td>
+              <td class="spark-col">
+                <svg class="spark-svg" viewBox="0 0 240 65" role="img" aria-label="国語：3年67%から4年44%へ（評価基準が変わったための見た目の低下、パターンは同じ）">
+                  <polyline class="trend-line" points="154.6,40.4 223.9,65.9"/>
+                  <circle class="trend-dot" cx="154.6" cy="40.4" r="4"/><circle class="trend-dot" cx="223.9" cy="65.9" r="4"/>
+                </svg><div class="spark-ticks"><span>3年</span><span>4年</span></div>
+              </td>
+              <td class="trend-col"><span class="trend-tag flat"><span class="trend-face" aria-hidden="true">trending_flat</span>安定</span>「知識・技能」「思考・判断・表現」がもうすこし、「態度」ができる、というパターンが1〜4年生の1学期すべてで完全に一致。4年間変わらない、いちばん安定した教科</td>
+            </tr>
+            <tr>
+              <td class="subj-col">算数</td>
+              <td><span class="gcell t-low"><span class="gcell-face" aria-hidden="true">sentiment_dissatisfied</span>4/9</span></td>
+              <td><span class="gcell t-mid"><span class="gcell-face" aria-hidden="true">sentiment_neutral</span>4/6</span></td>
+              <td><span class="gcell t-high"><span class="gcell-face" aria-hidden="true">sentiment_satisfied</span>6/6</span></td>
+              <td><span class="gcell t-low"><span class="gcell-face" aria-hidden="true">sentiment_dissatisfied</span>4/9</span></td>
+              <td class="spark-col">
+                <svg class="spark-svg" viewBox="0 0 240 65" role="img" aria-label="算数：3年100%から4年44%へ、評価基準の変化を差し引いても低下">
+                  <polyline class="trend-line" points="154.6,2.2 223.9,65.9"/>
+                  <circle class="trend-dot" cx="154.6" cy="2.2" r="4"/><circle class="trend-dot" cx="223.9" cy="65.9" r="4"/>
+                </svg><div class="spark-ticks"><span>3年</span><span>4年</span></div>
+              </td>
+              <td class="trend-col"><span class="trend-tag watch"><span class="trend-face" aria-hidden="true">trending_down</span>要フォロー</span>1・2年生は「もうすこし・もうすこし・できる」、3年生だけ全項目「できる」に上がったが、4年生は1・2年生と同じパターンに戻った。3年生が例外的な好調期だった可能性</td>
+            </tr>
+            <tr>
+              <td class="subj-col">社会</td>
+              <td><span class="gcell t-low"><span class="gcell-face" aria-hidden="true">sentiment_dissatisfied</span>4/9</span></td>
+              <td><span class="gcell dash">ー</span></td>
+              <td><span class="gcell dash">ー</span></td>
+              <td><span class="gcell t-low"><span class="gcell-face" aria-hidden="true">sentiment_dissatisfied</span>4/9</span></td>
+              <td class="spark-col">
+                <svg class="spark-svg" viewBox="0 0 240 65" role="img" aria-label="社会：4年44%（1年生時点も同じ44%）">
+                  <circle class="trend-dot" cx="223.9" cy="65.9" r="4"/>
+                </svg><div class="spark-ticks"><span>3年</span><span>4年</span></div>
+              </td>
+              <td class="trend-col"><span class="trend-tag watch"><span class="trend-face" aria-hidden="true">trending_flat</span>変化なし</span>1年生では独立教科として評価があり（もうすこし・もうすこし・できる）、2・3年生は生活科に統合。4年生で独立教科に戻ってからも1年生と同じパターン</td>
+            </tr>
+            <tr>
+              <td class="subj-col">理科</td>
+              <td><span class="gcell t-low"><span class="gcell-face" aria-hidden="true">sentiment_dissatisfied</span>5/9</span></td>
+              <td><span class="gcell dash">ー</span></td>
+              <td><span class="gcell dash">ー</span></td>
+              <td><span class="gcell t-mid"><span class="gcell-face" aria-hidden="true">sentiment_neutral</span>6/9</span></td>
+              <td class="spark-col">
+                <svg class="spark-svg" viewBox="0 0 240 65" role="img" aria-label="理科：4年67%（1年生時点は56%）">
+                  <circle class="trend-dot" cx="223.9" cy="40.4" r="4"/>
+                </svg><div class="spark-ticks"><span>3年</span><span>4年</span></div>
+              </td>
+              <td class="trend-col"><span class="trend-tag good"><span class="trend-face" aria-hidden="true">trending_up</span>改善</span>1年生は「できる・もうすこし・できる」、4年生では「思考・判断・表現」がもうすこし→できるに改善し全項目「できる」に。2・3年生は生活科に統合されていた期間</td>
+            </tr>
+            <tr>
+              <td class="subj-col">音楽</td>
+              <td><span class="gcell t-mid"><span class="gcell-face" aria-hidden="true">sentiment_neutral</span>7/9</span></td>
+              <td><span class="gcell t-high"><span class="gcell-face" aria-hidden="true">sentiment_satisfied</span>6/6</span></td>
+              <td><span class="gcell t-mid"><span class="gcell-face" aria-hidden="true">sentiment_neutral</span>5/6</span></td>
+              <td><span class="gcell t-mid"><span class="gcell-face" aria-hidden="true">sentiment_neutral</span>6/9</span></td>
+              <td class="spark-col">
+                <svg class="spark-svg" viewBox="0 0 240 65" role="img" aria-label="音楽：3年83%から4年67%へ（評価基準が変わったための見た目の変化。実際は知識・技能がもうすこしからできるに改善）">
+                  <polyline class="trend-line" points="154.6,21.3 223.9,40.4"/>
+                  <circle class="trend-dot" cx="154.6" cy="21.3" r="4"/><circle class="trend-dot" cx="223.9" cy="40.4" r="4"/>
+                </svg><div class="spark-ticks"><span>3年</span><span>4年</span></div>
+              </td>
+              <td class="trend-col"><span class="trend-tag flat"><span class="trend-face" aria-hidden="true">trending_flat</span>安定</span>1年生は「態度」がよくできるの最高評価。3年生だけ「知識・技能」がもうすこしに下がったが、4年生では全項目「できる」に回復</td>
+            </tr>
+            <tr>
+              <td class="subj-col">図画工作</td>
+              <td><span class="gcell t-mid"><span class="gcell-face" aria-hidden="true">sentiment_neutral</span>6/9</span></td>
+              <td><span class="gcell t-high"><span class="gcell-face" aria-hidden="true">sentiment_satisfied</span>6/6</span></td>
+              <td><span class="gcell t-high"><span class="gcell-face" aria-hidden="true">sentiment_satisfied</span>6/6</span></td>
+              <td><span class="gcell t-low"><span class="gcell-face" aria-hidden="true">sentiment_dissatisfied</span>5/9</span></td>
+              <td class="spark-col">
+                <svg class="spark-svg" viewBox="0 0 240 65" role="img" aria-label="図画工作：3年100%から4年56%へ">
+                  <polyline class="trend-line" points="154.6,2.2 223.9,53.1"/>
+                  <circle class="trend-dot" cx="154.6" cy="2.2" r="4"/><circle class="trend-dot" cx="223.9" cy="53.1" r="4"/>
+                </svg><div class="spark-ticks"><span>3年</span><span>4年</span></div>
+              </td>
+              <td class="trend-col"><span class="trend-tag watch"><span class="trend-face" aria-hidden="true">trending_down</span>やや注意</span>1〜3年生は全項目「できる」で安定していたが、4年生で初めて「知識・技能」が「もうすこし」に</td>
+            </tr>
+            <tr>
+              <td class="subj-col">体育</td>
+              <td><span class="gcell t-mid"><span class="gcell-face" aria-hidden="true">sentiment_neutral</span>6/9</span></td>
+              <td><span class="gcell t-high"><span class="gcell-face" aria-hidden="true">sentiment_satisfied</span>6/6</span></td>
+              <td><span class="gcell t-high"><span class="gcell-face" aria-hidden="true">sentiment_satisfied</span>6/6</span></td>
+              <td><span class="gcell t-mid"><span class="gcell-face" aria-hidden="true">sentiment_neutral</span>6/9</span></td>
+              <td class="spark-col">
+                <svg class="spark-svg" viewBox="0 0 240 65" role="img" aria-label="体育：3年100%から4年67%（評価基準が変わったための見た目の低下）">
+                  <polyline class="trend-line" points="154.6,2.2 223.9,40.4"/>
+                  <circle class="trend-dot" cx="154.6" cy="2.2" r="4"/><circle class="trend-dot" cx="223.9" cy="40.4" r="4"/>
+                </svg><div class="spark-ticks"><span>3年</span><span>4年</span></div>
+              </td>
+              <td class="trend-col"><span class="trend-tag good"><span class="trend-face" aria-hidden="true">trending_up</span>好調</span>1年生から4年生まで、全項目「できる」以上を一貫して維持している数少ない教科</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="hc-note hc-note-outside">※「ー」はその学年で評価対象でない教科です。2・3年生は生活科の時期のため、社会・理科は単独教科としての評価がありません（1年生の通知表には社会・理科の評価があり、4年生から独立教科として再開しています）。1年生と4年生以降は9点満点（よくできる=3／できる=2／もうすこし=1）、2・3年生は6点満点（できる=2／もうすこし=1）のため、パーセンテージだけを見ると多くの教科で「下がった」ように見えますが、これは評価の物差しが変わったことによる見た目の変化です。実際に観点別のパターンで比べると、国語は1〜4年生の1学期すべてで完全に同じパターンを維持しており、体育も4学年を通じて全項目「できる」以上を保っています。算数だけは3年生に一時的に上がったものの、4年生は1・2年生と同じ水準に戻っており、他の教科より変動が大きい教科です。行動の記録（生活面）は3年3学期と4年1学期の比較を上に別途まとめています。</p>
+
+    </div>
+  </section>
+
+  <section id="timeline-j">
+    <div class="container">
+      <div class="section-head">
+        <div class="eyebrow">これまでの歩み（参考記録）</div>
+        <h2>1年生からの記録</h2>
+        <p>毎年の通知表の「所見」に書かれていたことから、そのまま抜き出しています。2・3年生の通知表原本はスキャン画像のみで保存されており、今回はテキストとして読み取れなかったため、所見の引用はまだ載せられていません。</p>
+      </div>
+      <div class="timeline">
+
+        <div class="tl-item">
+          <div class="tl-grade">1年生</div>
+          <div class="tl-body">
+            <span class="tl-tag">1学期</span>
+            <p>外国語活動の記録：「英語で歌ったりALTの発音を真似したりすることを通して、英語の音声やリズムに慣れ親しみ、基本的な英語の表現を使って、友達とコミュニケーションを取ることを楽しんでいます。」（所見は3学期にまとめて記載される方式でした）</p>
+            <span class="tl-tag" style="margin-top:14px;display:inline-block">2学期</span>
+            <p>総合的な学習の時間「わたしたちの立野公園」：「立野公園で遊んだり友達と話し合ったりしながらよりよい公園にするためのアイディアをすすんで考えました。ごみが多いことに注目し、皆がポイ捨てをしないことで美化に貢献できると気付きました。」</p>
+            <p>道徳「言わなきゃ」：「自分が正しいと思うことを友達に言い出せずに自己嫌悪に陥る主人公の気持ちを考えることを通して、正しいと思うことをはっきり相手に伝えることはその人のためになると、考えを深めていました。」</p>
+            <span class="tl-tag" style="margin-top:14px;display:inline-block">3学期・所見</span>
+            <p>「すすんで手を挙げて、発表することを1年間頑張りました。自分の考えをしっかりもっていて感心します。難しい課題には粘り強く取り組むことで力を発揮していました。算数の時間には、意欲的に問題を解き、解き方や答えをすすんで発表することができました。体育のマット運動では、後転や開脚前転などがとても上手で、皆のよい見本となっていました。いつも明るく、クラスを盛り上げる存在でした。係活動では、帰りの会でダンスを披露し皆を大いに楽しませていました。」</p>
+          </div>
+        </div>
+
+        <div class="tl-item">
+          <div class="tl-grade">2年生</div>
+          <div class="tl-body">
+            <p style="color:var(--text-dim)">通知表の原本はGoogleドライブにスキャン画像として保存されていますが、画像サイズが大きく、今回のチェックではテキストを読み取れませんでした。所見の引用は次回以降の課題にします。</p>
+          </div>
+        </div>
+
+        <div class="tl-item">
+          <div class="tl-grade">3年生</div>
+          <div class="tl-body">
+            <p style="color:var(--text-dim)">2年生と同じく、通知表原本はスキャン画像のみで、今回はテキストとして読み取れませんでした。</p>
+          </div>
+        </div>
+
+        <div class="tl-item">
+          <div class="tl-grade"><a href="../report-cards/juntaro-grade4-term1.html">4年生</a><span class="hint">1学期の通知表原本</span></div>
+          <div class="tl-body">
+            <p>1学期の所見・道徳の記録は3学期にまとめて記載される方式のため、まだ書かれていません。教科別の評価は上の「通知表」セクションにまとめています。</p>
+            <p><a href="../report-cards/juntaro-grade4-term1.html" style="color:var(--dust-blue-deep);font-weight:600;text-decoration:none">通知表の原本を見る →</a></p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <section id="message-j" style="border-bottom:none">
+    <div class="container">
+      <div class="message">
+        <h2>純太郎へ</h2>
+        <p>理科がよくできているのは自信を持っていいところ。社会もテストの点数はちゃんと取れています。</p>
+        <p>次は、話を聞くこと・忘れ物をしないことを少しずつ意識してみよう。難しいことじゃなくて、毎日のちょっとした積み重ねでできることです。</p>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="container">このページは家族だけが見られるようにしています。次回更新：2学期の通知表・テスト結果が出たタイミングで、国語・算数・理科の点数と所見も追加予定。</div>
+  </footer>
+
+
+</main>
+
+<div id="test-lightbox" class="test-lightbox" role="dialog" aria-modal="true" aria-hidden="true">
+  <div class="lb-backdrop"></div>
+  <button class="lb-close" aria-label="閉じる"><span class="material-face" aria-hidden="true">close</span></button>
+  <button class="lb-prev" aria-label="前のページ"><span class="material-face" aria-hidden="true">chevron_left</span></button>
+  <button class="lb-next" aria-label="次のページ"><span class="material-face" aria-hidden="true">chevron_right</span></button>
+  <div class="lb-content">
+    <img class="lb-img" src="" alt="">
+    <div class="lb-caption"></div>
+    <div class="lb-counter"></div>
+  </div>
+</div>
+
+<script>
+(function(){
+  // 注意：これは簡易的なUI上のロックです。ソースコードを見れば合言葉も中身も分かってしまうため、
+  // 本当のアクセス制御ではありません。実際に非公開にするには、Cloudflare Access など
+  // サーバー/エッジ側の認証を別途設定してください（README参照）。
+
+  // ★ローカル確認用フラグ：サーバーにアップする前に必ず false に戻すこと。
+  // true のままアップすると、誰でもパスワードなしで見られる状態になります。
+  var DISABLE_GATE_FOR_LOCAL_PREVIEW = false;
+
+  var PASS = "09180805";
+  var gate = document.getElementById('gate');
+  var main = document.getElementById('main');
+  var form = document.getElementById('gate-form');
+  var input = document.getElementById('gate-pass');
+  var err = document.getElementById('gate-err');
+
+  if(DISABLE_GATE_FOR_LOCAL_PREVIEW){
+    gate.style.display = 'none';
+    main.style.display = 'block';
+  } else if(sessionStorage.getItem('manabi-note-auth') === '1'){
+    gate.style.display = 'none';
+    main.style.display = 'block';
+  }
+
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+    if(input.value === PASS){
+      sessionStorage.setItem('manabi-note-auth', '1');
+      gate.style.display = 'none';
+      main.style.display = 'block';
+    } else {
+      err.textContent = '合言葉が違います。';
+      input.value = '';
+      input.focus();
+    }
+  });
+
+  // ---------- クイックナビ：今どのセクションを見ているかをハイライト ----------
+  function setupScrollSpy(){
+    var nav = document.querySelector('.quicknav');
+    if(!nav) return;
+    var links = Array.prototype.slice.call(nav.querySelectorAll('a'));
+    var sections = links.map(function(a){
+      var id = a.getAttribute('href').slice(1);
+      return document.getElementById(id);
+    }).filter(Boolean);
+    if(!sections.length) return;
+
+    function setActive(id){
+      links.forEach(function(l){
+        l.classList.toggle('active', l.getAttribute('href') === '#' + id);
+      });
+    }
+    setActive(sections[0].id);
+
+    if(!('IntersectionObserver' in window)) return;
+    var observer = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        if(entry.isIntersecting){ setActive(entry.target.id); }
+      });
+    }, { rootMargin: '-120px 0px -65% 0px', threshold: 0 });
+    sections.forEach(function(s){ observer.observe(s); });
+  }
+  setupScrollSpy();
+
+  // ---------- 印刷 / PDF保存ボタン ----------
+  var printBtn = document.getElementById('print-btn');
+  if(printBtn){
+    printBtn.addEventListener('click', function(){
+      window.print();
+    });
+  }
+
+  // ---------- 教科カード：カード全体クリックでテスト原本をその場で表示 ----------
+  var TESTS_BASE = '../report-cards/juntaro/tests/';
+  var TEST_GALLERIES = {
+    sansu: [
+      { src: 'sansu/01_ookiisuu_omote.jpg', label: '大きい数のしくみ（知識・技能）100/100' },
+      { src: 'sansu/02_ookiisuu_ura.jpg', label: '大きい数のしくみ（思考・判断・表現）30/50' },
+      { src: 'sansu/03_oregurafu_omote.jpg', label: '折れ線グラフと表（知識・技能）42/100' },
+      { src: 'sansu/04_oregurafu_ura.jpg', label: '折れ線グラフと表（思考・判断・表現）採点欄が未記入' },
+      { src: 'sansu/05_warizan_omote.jpg', label: 'わり算の筆算（1）（知識・技能）100/100' },
+      { src: 'sansu/06_warizan_ura.jpg', label: 'わり算の筆算（1）（思考・判断・表現）50/50' },
+      { src: 'sansu/07_kakunoookisa_ura.jpg', label: '角の大きさ（思考・判断・表現）45/50' },
+      { src: 'sansu/08_kakunoookisa_omote.jpg', label: '角の大きさ（知識・技能）25/100' },
+      { src: 'sansu/09_shousuu_omote.jpg', label: '小数のしくみ（知識・技能）65/100' },
+      { src: 'sansu/10_shousuu_ura.jpg', label: '小数のしくみ（思考・判断・表現）50/50' }
+    ],
+    rika: [
+      { src: 'rika/01_atatakaku_omote.jpg', label: '1.あたたかくなると（知識・技能）70/100' },
+      { src: 'rika/02_atatakaku_ura.jpg', label: '1.あたたかくなると（思考・判断・表現）30/50' },
+      { src: 'rika/03_doubutsu_omote.jpg', label: '2.動物のからだのつくりと運動（知識・技能）85/100' },
+      { src: 'rika/04_doubutsu_ura.jpg', label: '2.動物のからだのつくりと運動（思考・判断・表現）40/50' },
+      { src: 'rika/05_tenki_omote.jpg', label: '3.天気と気温（知識・技能）70/100' },
+      { src: 'rika/06_amamizu_omote.jpg', label: '5.雨水のゆくえと地面のようす（知識・技能）70/100' },
+      { src: 'rika/07_amamizu_ura.jpg', label: '5.雨水のゆくえと地面のようす（思考・判断・表現）30/50' },
+      { src: 'rika/08_shizen_omote.jpg', label: '7.自然のなかの水のすがた（知識・技能）90/100' },
+      { src: 'rika/09_shizen_ura.jpg', label: '7.自然のなかの水のすがた（思考・判断・表現）20/50' }
+    ],
+    shakai: [
+      { src: 'shakai/01_kurashitomizu_omote.jpg', label: 'わたしたちのくらしと水（知識・技能）100/100' },
+      { src: 'shakai/02_kurashitomizu_ura.jpg', label: 'わたしたちのくらしと水（思考・判断・表現）40/50' },
+      { src: 'shakai/03_gomi_omote.jpg', label: 'ごみの処理と再利用（知識・技能）85/100' },
+      { src: 'shakai/04_gomi_ura.jpg', label: 'ごみの処理と再利用（思考・判断・表現）40/50' }
+    ],
+    kokugo: [
+      { src: 'kokugo/01_jishugakushu_p1.jpg', label: '自主学習ノート p1' },
+      { src: 'kokugo/02_jishugakushu_p2.jpg', label: '自主学習ノート p2（漢字ドリル）' },
+      { src: 'kokugo/03_jishugakushu_p3.jpg', label: '自主学習ノート p3（アップとルーズで伝える）' },
+      { src: 'kokugo/04_jishugakushu_p4.jpg', label: '自主学習ノート p4（漢字辞典を使おう）' },
+      { src: 'kokugo/05_jishugakushu_p5.jpg', label: '自主学習ノート p5（一つの花）' },
+      { src: 'kokugo/06_jishugakushu_p6.jpg', label: '自主学習ノート p6（漢字の書き）' },
+      { src: 'kokugo/07_jishugakushu_p7.jpg', label: '自主学習ノート p7' },
+      { src: 'kokugo/08_jishugakushu_p8.jpg', label: '自主学習ノート p8（漢字辞典を使おう）' },
+      { src: 'kokugo/09_jishugakushu_p9.jpg', label: '自主学習ノート p9（漢字の書き）' }
+    ]
+  };
+
+  var lightbox = document.getElementById('test-lightbox');
+  var lbImg = lightbox.querySelector('.lb-img');
+  var lbCaption = lightbox.querySelector('.lb-caption');
+  var lbCounter = lightbox.querySelector('.lb-counter');
+  var lbPrev = lightbox.querySelector('.lb-prev');
+  var lbNext = lightbox.querySelector('.lb-next');
+  var lbClose = lightbox.querySelector('.lb-close');
+  var lbBackdrop = lightbox.querySelector('.lb-backdrop');
+  var currentGallery = null;
+  var currentIndex = 0;
+  var lastFocused = null;
+
+  function renderLightbox(){
+    if(!currentGallery) return;
+    var item = currentGallery[currentIndex];
+    lbImg.src = TESTS_BASE + item.src;
+    lbImg.alt = item.label;
+    lbCaption.textContent = item.label;
+    lbCounter.textContent = (currentIndex + 1) + ' / ' + currentGallery.length;
+  }
+  function openLightbox(key){
+    var gallery = TEST_GALLERIES[key];
+    if(!gallery || !gallery.length) return;
+    currentGallery = gallery;
+    currentIndex = 0;
+    lastFocused = document.activeElement;
+    renderLightbox();
+    lightbox.classList.add('open');
+    lightbox.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+    lbClose.focus();
+  }
+  function closeLightbox(){
+    lightbox.classList.remove('open');
+    lightbox.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+    currentGallery = null;
+    if(lastFocused && typeof lastFocused.focus === 'function') lastFocused.focus();
+  }
+  function stepLightbox(delta){
+    if(!currentGallery) return;
+    currentIndex = (currentIndex + delta + currentGallery.length) % currentGallery.length;
+    renderLightbox();
+  }
+
+  document.querySelectorAll('.subject-card.has-folder').forEach(function(card){
+    card.setAttribute('tabindex', '0');
+    card.setAttribute('role', 'button');
+    function trigger(e){
+      if(e.target.closest('a')) return; // 個別のテストへのリンクはそのまま優先
+      openLightbox(card.getAttribute('data-gallery'));
+    }
+    card.addEventListener('click', trigger);
+    card.addEventListener('keydown', function(e){
+      if(e.key === 'Enter' || e.key === ' '){
+        e.preventDefault();
+        trigger(e);
+      }
+    });
+  });
+
+  lbClose.addEventListener('click', closeLightbox);
+  lbBackdrop.addEventListener('click', closeLightbox);
+  lbPrev.addEventListener('click', function(){ stepLightbox(-1); });
+  lbNext.addEventListener('click', function(){ stepLightbox(1); });
+  document.addEventListener('keydown', function(e){
+    if(!lightbox.classList.contains('open')) return;
+    if(e.key === 'Escape') closeLightbox();
+    else if(e.key === 'ArrowLeft') stepLightbox(-1);
+    else if(e.key === 'ArrowRight') stepLightbox(1);
+  });
+})();
+</script>
+</body>
+</html>
