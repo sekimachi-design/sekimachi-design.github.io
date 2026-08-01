@@ -1411,6 +1411,13 @@
       window.print();
     });
   }
+  // 遅延読み込み(loading="lazy")の画像は、スクロールして表示していないと
+  // 印刷/PDF保存時に読み込みが間に合わず空欄になることがあるため、印刷前に先読みする
+  window.addEventListener('beforeprint', function(){
+    document.querySelectorAll('img[loading="lazy"]').forEach(function(img){
+      img.loading = 'eager';
+    });
+  });
 
   // ---------- 教科カード：カード全体クリックでテスト原本をその場で表示 ----------
   var TESTS_BASE = '../report-cards/juntaro/tests/';
