@@ -542,6 +542,8 @@
     h1,h2,h3{ break-after:avoid; }
     .section-head{ margin-bottom:10px; }
     .section-head h2{ font-size:1.3rem; }
+    /* 見出し（アイキャッチ＋タイトル＋リード文）がページをまたいで分断されないように */
+    .section-head{ break-inside:avoid; }
 
     /* カード・表・バナー類は途中で改ページしない */
     .stat-card,.chart-card,.insight,.up-banner,.subject-card,.tl-item,
@@ -549,9 +551,27 @@
     .naishin-explain,.report-compare{
       break-inside:avoid; box-shadow:none !important;
     }
+
+    /* 高校比較リストのランク帯：絶対配置だと改ページで分断・座標ズレが起きるため、
+       印刷では行ごとの帯（S/A/B/C/D）に置き換える */
+    .rank-strip-layer{ display:none !important; }
+    .hc-axis{ margin-left:40px !important; }
+    .hc-row{ position:relative; padding-left:38px !important; }
+    .hc-row[data-rank]::before{
+      content:attr(data-rank); position:absolute; left:0; top:2px; bottom:2px; width:30px;
+      border-radius:6px; color:#fff; font-weight:800; font-size:9.5px; text-transform:uppercase;
+      display:flex; align-items:center; justify-content:center;
+    }
+    .hc-row[data-rank="s"]::before{ background:var(--amber-deep); }
+    .hc-row[data-rank="a"]::before{ background:var(--dust-blue-deep); }
+    .hc-row[data-rank="b"]::before{ background:var(--sage-deep); }
+    .hc-row[data-rank="c"]::before{ background:var(--text-muted); }
+    .hc-row[data-rank="d"]::before{ background:var(--text-dim); }
     .grade-table-wrap thead{ display:table-header-group; }
 
     .glance-stats-row,.glance-charts,.subject-grid,.juku-split{ gap:10px !important; }
+    .glance-charts{ grid-template-columns:1.5fr 1fr !important; }
+    .subject-grid{ grid-template-columns:repeat(2,1fr) !important; }
     .stat-card,.chart-card{ padding:12px 14px !important; }
 
     /* 通知表原本の写真：印刷では高さ固定をやめて自然な比率で収める */
@@ -1972,6 +1992,13 @@
       window.print();
     });
   }
+  // 遅延読み込み(loading="lazy")の画像は、スクロールして表示していないと
+  // 印刷/PDF保存時に読み込みが間に合わず空欄になることがあるため、印刷前に先読みする
+  window.addEventListener('beforeprint', function(){
+    document.querySelectorAll('img[loading="lazy"]').forEach(function(img){
+      img.loading = 'eager';
+    });
+  });
 
   // ---------- 偏差値ラダー：左端のランク帯（縦軸）を描画 ----------
   function buildRankStrip(rowsId, stripId, itemSelector){

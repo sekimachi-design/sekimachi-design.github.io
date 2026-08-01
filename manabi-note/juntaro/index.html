@@ -541,6 +541,8 @@
     h1,h2,h3{ break-after:avoid; }
     .section-head{ margin-bottom:10px; }
     .section-head h2{ font-size:1.3rem; }
+    /* 見出し（アイキャッチ＋タイトル＋リード文）がページをまたいで分断されないように */
+    .section-head{ break-inside:avoid; }
 
     /* カード・表・バナー類は途中で改ページしない */
     .stat-card,.chart-card,.insight,.up-banner,.subject-card,.tl-item,
@@ -551,6 +553,8 @@
     .grade-table-wrap thead{ display:table-header-group; }
 
     .glance-stats-row,.glance-charts,.subject-grid,.juku-split{ gap:10px !important; }
+    .glance-charts{ grid-template-columns:1.5fr 1fr !important; }
+    .subject-grid{ grid-template-columns:repeat(2,1fr) !important; }
     .stat-card,.chart-card{ padding:12px 14px !important; }
 
     /* 通知表原本の写真：印刷では高さ固定をやめて自然な比率で収める */
@@ -1407,6 +1411,13 @@
       window.print();
     });
   }
+  // 遅延読み込み(loading="lazy")の画像は、スクロールして表示していないと
+  // 印刷/PDF保存時に読み込みが間に合わず空欄になることがあるため、印刷前に先読みする
+  window.addEventListener('beforeprint', function(){
+    document.querySelectorAll('img[loading="lazy"]').forEach(function(img){
+      img.loading = 'eager';
+    });
+  });
 
   // ---------- 教科カード：カード全体クリックでテスト原本をその場で表示 ----------
   var TESTS_BASE = '../report-cards/juntaro/tests/';
