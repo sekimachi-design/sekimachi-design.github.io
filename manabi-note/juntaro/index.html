@@ -541,6 +541,8 @@
     h1,h2,h3{ break-after:avoid; }
     .section-head{ margin-bottom:10px; }
     .section-head h2{ font-size:1.3rem; }
+    /* 見出し（アイキャッチ＋タイトル＋リード文）がページをまたいで分断されないように */
+    .section-head{ break-inside:avoid; }
 
     /* カード・表・バナー類は途中で改ページしない */
     .stat-card,.chart-card,.insight,.up-banner,.subject-card,.tl-item,
