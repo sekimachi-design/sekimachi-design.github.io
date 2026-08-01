@@ -1994,10 +1994,14 @@
   }
   // 遅延読み込み(loading="lazy")の画像は、スクロールして表示していないと
   // 印刷/PDF保存時に読み込みが間に合わず空欄になることがあるため、印刷前に先読みする
+  // また、テキストを選択したまま印刷すると選択ハイライトがPDFに焼き込まれてしまうため、
+  // 印刷直前に選択状態を解除する
   window.addEventListener('beforeprint', function(){
     document.querySelectorAll('img[loading="lazy"]').forEach(function(img){
       img.loading = 'eager';
     });
+    var sel = window.getSelection && window.getSelection();
+    if(sel){ sel.removeAllRanges(); }
   });
 
   // ---------- 偏差値ラダー：左端のランク帯（縦軸）を描画 ----------
