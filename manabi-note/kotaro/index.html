@@ -2022,6 +2022,9 @@
   refreshRankStrips();
   window.addEventListener('load', refreshRankStrips);
   window.addEventListener('resize', refreshRankStrips);
+  // 印刷/PDF保存でレイアウトが変わると帯の位置がずれるため、印刷直前・直後に再計算する
+  window.addEventListener('beforeprint', refreshRankStrips);
+  window.addEventListener('afterprint', refreshRankStrips);
 
   // ---------- 教科カード：カード全体クリックでテスト原本をその場で表示 ----------
   var TESTS_BASE = '../report-cards/kotaro/tests/';
