@@ -1,0 +1,1601 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>サイバー・アリーナ 3D アルティメット (ハッピーブライト大群戦)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Noto+Sans+JP:wght@400;700;900&display=swap');
+        
+        * {
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            font-family: 'Noto Sans JP', 'Orbitron', sans-serif;
+            background-color: #38bdf8;
+            color: #f8fafc;
+        }
+
+        @keyframes eternal-cutin {
+            0% { transform: translateY(-50%) scale(0.2) skewX(-25deg); opacity: 0; filter: blur(10px); }
+            20% { transform: translateY(-50%) scale(1.1) skewX(-20deg); opacity: 1; filter: blur(0px); }
+            80% { transform: translateY(-50%) scale(1) skewX(-20deg); opacity: 1; filter: blur(0px); }
+            100% { transform: translateY(-50%) scale(1.25) skewX(-25deg); opacity: 0; filter: blur(15px); }
+        }
+
+        .animate-eternal-cutin {
+            animation: eternal-cutin 2.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes skill-pop {
+            0% { transform: scale(0.3) translateY(30px); opacity: 0; }
+            15% { transform: scale(1.15) translateY(0); opacity: 1; }
+            85% { transform: scale(1) translateY(0); opacity: 1; }
+            100% { transform: scale(0.9) translateY(-30px); opacity: 0; }
+        }
+
+        .animate-skill-pop {
+            animation: skill-pop 1.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        .skill-btn {
+            transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .skill-btn:active {
+            transform: scale(0.92);
+        }
+
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: rgba(15, 23, 42, 0.6); }
+        ::-webkit-scrollbar-thumb { background: rgba(56, 189, 248, 0.5); border-radius: 3px; }
+    </style>
+</head>
+<body class="relative w-full h-full select-none overflow-hidden bg-sky-300">
+
+    <div id="canvas-container" class="absolute inset-0 w-full h-full z-0"></div>
+
+    <div id="cutin-overlay" class="hidden fixed inset-0 z-50 pointer-events-none flex items-center justify-center overflow-hidden">
+        <div class="absolute inset-0 bg-slate-950/60 backdrop-blur-md transition-opacity duration-300"></div>
+        <div id="cutin-banner" class="relative w-full py-8 md:py-12 bg-gradient-to-r from-transparent via-slate-950/95 to-transparent border-y-8 border-amber-400 flex flex-col items-center justify-center shadow-[0_0_120px_rgba(251,191,36,0.95)]">
+            <div id="cutin-sub" class="text-sm md:text-xl font-black tracking-[1em] text-amber-400 uppercase mb-3 drop-shadow-[0_0_10px_#fbbf24]">ETERNAL SUPREME ARTS</div>
+            <div id="cutin-title" class="text-3xl md:text-7xl font-black tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-rose-400 to-cyan-300 text-center drop-shadow-[0_0_35px_rgba(244,63,94,0.9)] uppercase skew-x-[-10deg]">
+                超奥義発動
+            </div>
+        </div>
+    </div>
+
+    <div id="skill-text-overlay" class="hidden fixed top-24 left-1/2 transform -translate-x-1/2 z-50 pointer-events-none flex flex-col items-center justify-center">
+        <div id="skill-popup-banner" class="px-8 py-5 bg-slate-900/95 border-4 border-cyan-400 rounded-3xl shadow-[0_0_60px_rgba(6,182,212,0.9)] backdrop-blur-md flex flex-col items-center transform skew-x-[-8deg]">
+            <div id="skill-popup-icon" class="text-5xl mb-2">⚡</div>
+            <div id="skill-popup-name" class="text-2xl md:text-4xl font-black tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-amber-300 to-rose-400 text-center drop-shadow-lg uppercase">
+                スキル名
+            </div>
+        </div>
+    </div>
+
+    <div id="crosshair" class="fixed pointer-events-none z-30 transform -translate-x-1/2 -translate-y-1/2 left-1/2 top-1/2">
+        <div class="w-6 h-6 border-2 border-cyan-400 rounded-full opacity-90 flex items-center justify-center shadow-[0_0_10px_#38bdf8]">
+            <div class="w-1.5 h-1.5 bg-pink-500 rounded-full"></div>
+        </div>
+    </div>
+
+    <header id="game-hud" class="fixed top-0 left-0 right-0 p-3 z-30 pointer-events-none flex items-center justify-between">
+        <div class="pointer-events-auto bg-white/95 backdrop-blur-md border border-slate-200 px-4 py-2 rounded-2xl shadow-xl flex items-center gap-4">
+            <div class="flex items-center gap-2">
+                <span class="text-rose-500 font-black text-lg">❤️ HP:</span>
+                <span class="text-emerald-600 font-black text-xl tracking-wider">∞ (無限)</span>
+            </div>
+            <div class="h-5 w-px bg-slate-300"></div>
+            <div class="flex items-center gap-1.5">
+                <span class="text-amber-500 font-bold text-sm">🗝️ 鍵:</span>
+                <span id="hud-keys" class="text-amber-600 font-black text-lg">0.0</span>
+            </div>
+            <div class="h-5 w-px bg-slate-300"></div>
+            <div class="flex items-center gap-1.5">
+                <span class="text-purple-600 font-bold text-sm">🌊 WAVE:</span>
+                <span id="hud-wave" class="text-purple-700 font-black text-lg">1</span>
+                <span class="text-slate-500 text-xs">(<span id="hud-wave-kills">0</span>/100体)</span>
+            </div>
+            <div class="h-5 w-px bg-slate-300"></div>
+            <div class="flex items-center gap-1.5">
+                <span class="text-cyan-600 font-bold text-sm">👤 覚醒者:</span>
+                <span id="hud-active-char" class="text-cyan-700 font-black text-sm">通常兵装</span>
+            </div>
+        </div>
+
+        <div id="boss-hud" class="hidden pointer-events-auto w-1/3 bg-white/95 border-2 border-rose-500 px-4 py-2 rounded-2xl shadow-[0_0_30px_rgba(225,29,72,0.4)] flex flex-col items-center">
+            <div class="flex justify-between w-full text-xs font-black text-rose-600 uppercase tracking-widest mb-1">
+                <span id="boss-name">⚠️ タイタン・オメガ ⚠️</span>
+                <span id="boss-hp-text">1,000,000,000 / 1,000,000,000</span>
+            </div>
+            <div class="w-full h-3 bg-slate-100 rounded-full overflow-hidden border border-rose-200">
+                <div id="boss-hp-bar" class="h-full bg-gradient-to-r from-rose-500 via-amber-400 to-rose-500 transition-all duration-150" style="width: 100%;"></div>
+            </div>
+        </div>
+
+        <div class="pointer-events-auto flex items-center gap-2">
+            <button id="btn-admin-panel" class="hidden px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-black text-sm shadow-[0_0_15px_rgba(147,51,234,0.5)] flex items-center gap-1.5 transition">
+                <span>👑</span>
+                <span id="admin-panel-btn-text">純太郎アドミンパネル</span>
+            </button>
+            <button id="btn-open-lobby" class="px-4 py-2 rounded-xl bg-white/95 hover:bg-slate-100 border border-cyan-400 text-cyan-700 font-black text-sm shadow-[0_0_15px_rgba(6,182,212,0.3)] flex items-center gap-1.5 transition">
+                <span>🏠</span>
+                <span>ホームロビー</span>
+            </button>
+        </div>
+    </header>
+
+    <div id="action-dock" class="fixed bottom-3 left-1/2 transform -translate-x-1/2 z-30 flex flex-col items-center gap-2 pointer-events-auto max-w-[98vw]">
+        <div class="flex flex-wrap items-center justify-center gap-1.5 md:gap-2">
+            <button id="btn-hover-fly" class="skill-btn px-3 py-1.5 rounded-xl bg-gradient-to-r from-blue-500 to-indigo-500 text-white text-xs font-black border border-blue-300 shadow-md flex items-center gap-1">
+                <span>🕊️</span>
+                <span id="hover-btn-text">[Y] 永続滞空: OFF</span>
+            </button>
+            <button id="btn-island-bigbang" class="skill-btn px-3 py-1.5 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 text-white text-xs font-black border border-amber-300 shadow-md flex items-center gap-1">
+                <span>🪐</span>
+                <span>[Z] 島消滅ビッグバン</span>
+            </button>
+            <button id="btn-holy-blast" class="skill-btn px-3 py-1.5 rounded-xl bg-gradient-to-r from-yellow-400 to-amber-400 text-slate-900 text-xs font-black border border-yellow-200 shadow-md flex items-center gap-1">
+                <span>💥</span>
+                <span>[X] 神聖爆発</span>
+            </button>
+            <button id="btn-awaken-toggle" class="skill-btn px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-rose-500 via-purple-500 to-amber-400 text-white text-xs font-black border-2 border-amber-200 shadow-[0_0_20px_rgba(244,63,94,0.5)] flex items-center gap-1 animate-pulse">
+                <span>⚡</span>
+                <span id="awaken-btn-text">[H] 純太郎モード起動</span>
+            </button>
+            <button id="btn-super-secret-1" class="skill-btn px-3 py-1.5 rounded-xl bg-gradient-to-r from-purple-600 via-pink-500 to-amber-400 text-white text-xs font-black border-2 border-pink-200 shadow-[0_0_25px_rgba(236,72,153,0.6)] flex items-center gap-1 animate-pulse">
+                <span>💫</span>
+                <span>[U] 第壱超奥義</span>
+            </button>
+            <button id="btn-super-secret-2" class="skill-btn px-3 py-1.5 rounded-xl bg-gradient-to-r from-indigo-600 via-cyan-400 to-teal-400 text-white text-xs font-black border-2 border-cyan-200 shadow-[0_0_25px_rgba(6,182,212,0.7)] flex items-center gap-1 animate-pulse">
+                <span>🌌</span>
+                <span>[J] 第弐超奥義</span>
+            </button>
+        </div>
+
+        <div id="char-skills-container" class="flex flex-wrap items-center justify-center gap-1.5 bg-white/95 p-1.5 rounded-2xl border border-slate-200 shadow-2xl backdrop-blur-md">
+            <div id="skills-juntaro" class="hidden flex flex-wrap items-center justify-center gap-1 max-h-24 overflow-y-auto p-1 max-w-[95vw]"></div>
+            <div id="skills-awakened-juntaro" class="hidden flex flex-wrap items-center justify-center gap-1 max-h-36 overflow-y-auto p-1 max-w-[95vw]"></div>
+
+            <div id="skills-1x1x" class="hidden flex flex-wrap items-center justify-center gap-1">
+                <button id="skill-1x1x-1" class="skill-btn px-2.5 py-1.5 rounded-lg bg-emerald-100 border border-emerald-500 text-emerald-900 text-xs font-bold">[1/C] 迅雷突進</button>
+                <button id="skill-1x1x-2" class="skill-btn px-2.5 py-1.5 rounded-lg bg-emerald-100 border border-emerald-500 text-emerald-900 text-xs font-bold">[2/V] ヴォイド隕石</button>
+                <button id="skill-1x1x-3" class="skill-btn px-2.5 py-1.5 rounded-lg bg-emerald-100 border border-emerald-500 text-emerald-900 text-xs font-bold">[3/B] 引力孔吸引</button>
+                <button id="skill-1x1x-4" class="skill-btn px-2.5 py-1.5 rounded-lg bg-emerald-100 border border-emerald-500 text-emerald-900 text-xs font-bold">[4/F] 時間停止</button>
+                <button id="skill-1x1x-5" class="skill-btn px-2.5 py-1.5 rounded-lg bg-emerald-100 border border-emerald-500 text-emerald-900 text-xs font-bold">[5/G] 終極ヴォイド</button>
+                <button id="skill-1x1x-6" class="skill-btn px-2.5 py-1.5 rounded-lg bg-emerald-100 border border-emerald-400 text-emerald-900 text-xs font-bold">[6/Q] 虚空分身</button>
+                <button id="skill-1x1x-7" class="skill-btn px-2.5 py-1.5 rounded-lg bg-emerald-100 border border-emerald-400 text-emerald-900 text-xs font-bold">[7/E] 万物両断</button>
+            </div>
+            <div id="skills-guest" class="hidden flex flex-wrap items-center justify-center gap-1">
+                <button id="skill-guest-1" class="skill-btn px-2.5 py-1.5 rounded-lg bg-rose-100 border border-rose-500 text-rose-900 text-xs font-bold">[1/C] 巨神化踏潰</button>
+                <button id="skill-guest-2" class="skill-btn px-2.5 py-1.5 rounded-lg bg-rose-100 border border-rose-500 text-rose-900 text-xs font-bold">[2/V] 冥府血焔</button>
+                <button id="skill-guest-3" class="skill-btn px-2.5 py-1.5 rounded-lg bg-rose-100 border border-rose-500 text-rose-900 text-xs font-bold">[3/B] 亡霊連撃</button>
+                <button id="skill-guest-4" class="skill-btn px-2.5 py-1.5 rounded-lg bg-rose-100 border border-rose-500 text-rose-900 text-xs font-bold">[4/F] 奈落血雨</button>
+                <button id="skill-guest-5" class="skill-btn px-2.5 py-1.5 rounded-lg bg-rose-100 border border-rose-500 text-rose-900 text-xs font-bold">[5/G] 怨嗟絶叫</button>
+                <button id="skill-guest-6" class="skill-btn px-2.5 py-1.5 rounded-lg bg-rose-100 border border-rose-400 text-rose-900 text-xs font-bold">[6/Q] 地獄鎖縛</button>
+                <button id="skill-guest-7" class="skill-btn px-2.5 py-1.5 rounded-lg bg-rose-100 border border-rose-400 text-rose-900 text-xs font-bold">[7/E] 鬼角猛進</button>
+            </div>
+            <div id="skills-john" class="hidden flex flex-wrap items-center justify-center gap-1">
+                <button id="skill-john-1" class="skill-btn px-2.5 py-1.5 rounded-lg bg-amber-100 border border-amber-500 text-amber-900 text-xs font-bold">[1/C] グリッチ奇襲</button>
+                <button id="skill-john-2" class="skill-btn px-2.5 py-1.5 rounded-lg bg-amber-100 border border-amber-500 text-amber-900 text-xs font-bold">[2/V] SYS CRASH</button>
+                <button id="skill-john-3" class="skill-btn px-2.5 py-1.5 rounded-lg bg-amber-100 border border-amber-500 text-amber-900 text-xs font-bold">[3/B] バイナリ浸食</button>
+                <button id="skill-john-4" class="skill-btn px-2.5 py-1.5 rounded-lg bg-amber-100 border border-amber-500 text-amber-900 text-xs font-bold">[4/F] テクスチャ</button>
+                <button id="skill-john-5" class="skill-btn px-2.5 py-1.5 rounded-lg bg-amber-100 border border-amber-500 text-amber-900 text-xs font-bold">[5/G] 404 NOT</button>
+                <button id="skill-john-6" class="skill-btn px-2.5 py-1.5 rounded-lg bg-amber-100 border border-amber-400 text-amber-900 text-xs font-bold">[6/Q] メモリリーク</button>
+                <button id="skill-john-7" class="skill-btn px-2.5 py-1.5 rounded-lg bg-amber-100 border border-amber-400 text-amber-900 text-xs font-bold">[7/E] カーネル支配</button>
+            </div>
+            <div id="skills-azur" class="hidden flex flex-wrap items-center justify-center gap-1">
+                <button id="skill-azur-1" class="skill-btn px-2.5 py-1.5 rounded-lg bg-sky-100 border border-sky-400 text-sky-900 text-xs font-bold">[1/C] 蒼巨神化</button>
+                <button id="skill-azur-2" class="skill-btn px-2.5 py-1.5 rounded-lg bg-sky-100 border border-sky-400 text-sky-900 text-xs font-bold">[2/V] ちっちゃい花</button>
+                <button id="skill-azur-3" class="skill-btn px-2.5 py-1.5 rounded-lg bg-sky-100 border border-sky-400 text-sky-900 text-xs font-bold">[3/B] でかい花掴投</button>
+                <button id="skill-azur-4" class="skill-btn px-2.5 py-1.5 rounded-lg bg-sky-100 border border-sky-400 text-sky-900 text-xs font-bold">[4/F] 蒼霊の加護</button>
+                <button id="skill-azur-5" class="skill-btn px-2.5 py-1.5 rounded-lg bg-sky-100 border border-sky-400 text-sky-900 text-xs font-bold">[5/G] 千本花弁嵐</button>
+                <button id="skill-azur-6" class="skill-btn px-2.5 py-1.5 rounded-lg bg-sky-100 border border-sky-400 text-sky-900 text-xs font-bold">[6/Q] 蒼荊牢</button>
+                <button id="skill-azur-7" class="skill-btn px-2.5 py-1.5 rounded-lg bg-sky-100 border border-sky-400 text-sky-900 text-xs font-bold">[7/E] ゾンビパレード</button>
+            </div>
+            <div id="skills-nori" class="hidden flex flex-wrap items-center justify-center gap-1">
+                <button id="skill-nori-1" class="skill-btn px-2.5 py-1.5 rounded-lg bg-violet-100 border border-violet-400 text-violet-900 text-xs font-bold">[1/C] ヴォイドブリンク</button>
+                <button id="skill-nori-2" class="skill-btn px-2.5 py-1.5 rounded-lg bg-violet-100 border border-violet-400 text-violet-900 text-xs font-bold">[2/V] コズミック</button>
+                <button id="skill-nori-3" class="skill-btn px-2.5 py-1.5 rounded-lg bg-violet-100 border border-violet-400 text-violet-900 text-xs font-bold">[3/B] 特異点重力</button>
+                <button id="skill-nori-4" class="skill-btn px-2.5 py-1.5 rounded-lg bg-violet-100 border border-violet-400 text-violet-900 text-xs font-bold">[4/F] アストラル</button>
+                <button id="skill-nori-5" class="skill-btn px-2.5 py-1.5 rounded-lg bg-violet-100 border border-violet-400 text-violet-900 text-xs font-bold">[5/G] ノヴァ連星</button>
+                <button id="skill-nori-6" class="skill-btn px-2.5 py-1.5 rounded-lg bg-violet-100 border border-violet-300 text-violet-900 text-xs font-bold">[6/Q] ダークマター</button>
+                <button id="skill-nori-7" class="skill-btn px-2.5 py-1.5 rounded-lg bg-violet-100 border border-violet-300 text-violet-900 text-xs font-bold">[7/E] 反物質ビーム</button>
+            </div>
+            <div id="skills-noestra" class="hidden flex flex-wrap items-center justify-center gap-1">
+                <button id="skill-noestra-1" class="skill-btn px-2.5 py-1.5 rounded-lg bg-slate-100 border border-red-400 text-red-900 text-xs font-bold">[1/C] 蝙蝠疾駆</button>
+                <button id="skill-noestra-2" class="skill-btn px-2.5 py-1.5 rounded-lg bg-slate-100 border border-red-400 text-red-900 text-xs font-bold">[2/V] 超音波</button>
+                <button id="skill-noestra-3" class="skill-btn px-2.5 py-1.5 rounded-lg bg-slate-100 border border-red-400 text-red-900 text-xs font-bold">[3/B] 鮮血吸収</button>
+                <button id="skill-noestra-4" class="skill-btn px-2.5 py-1.5 rounded-lg bg-slate-100 border border-red-400 text-red-900 text-xs font-bold">[4/F] ナイトウィング</button>
+                <button id="skill-noestra-5" class="skill-btn px-2.5 py-1.5 rounded-lg bg-slate-100 border border-red-400 text-red-900 text-xs font-bold">[5/G] 千翼蝙蝠乱舞</button>
+                <button id="skill-noestra-6" class="skill-btn px-2.5 py-1.5 rounded-lg bg-slate-100 border border-red-300 text-red-900 text-xs font-bold">[6/Q] 処刑棺桶</button>
+                <button id="skill-noestra-7" class="skill-btn px-2.5 py-1.5 rounded-lg bg-slate-100 border border-red-300 text-red-900 text-xs font-bold">[7/E] 紅蓮血槍</button>
+            </div>
+            <div id="skills-brimstone" class="hidden flex flex-wrap items-center justify-center gap-1">
+                <button id="skill-brimstone-1" class="skill-btn px-2.5 py-1.5 rounded-lg bg-orange-100 border border-orange-500 text-orange-900 text-xs font-bold">[1/C] 業火熱線</button>
+                <button id="skill-brimstone-2" class="skill-btn px-2.5 py-1.5 rounded-lg bg-orange-100 border border-orange-500 text-orange-900 text-xs font-bold">[2/V] アビス火山</button>
+                <button id="skill-brimstone-3" class="skill-btn px-2.5 py-1.5 rounded-lg bg-orange-100 border border-orange-500 text-orange-900 text-xs font-bold">[3/B] 獄炎重力</button>
+                <button id="skill-brimstone-4" class="skill-btn px-2.5 py-1.5 rounded-lg bg-orange-100 border border-orange-500 text-orange-900 text-xs font-bold">[4/F] 灼熱焦土</button>
+                <button id="skill-brimstone-5" class="skill-btn px-2.5 py-1.5 rounded-lg bg-orange-100 border border-orange-500 text-orange-900 text-xs font-bold">[5/G] 業火連鎖</button>
+                <button id="skill-brimstone-6" class="skill-btn px-2.5 py-1.5 rounded-lg bg-orange-100 border border-orange-400 text-orange-900 text-xs font-bold">[6/Q] 奈落獄門</button>
+                <button id="skill-brimstone-7" class="skill-btn px-2.5 py-1.5 rounded-lg bg-orange-100 border border-orange-400 text-orange-900 text-xs font-bold">[7/E] アビス破滅</button>
+            </div>
+
+            <div id="skills-normal-hint" class="text-xs text-slate-600 px-3 py-1 flex items-center gap-2 font-bold">
+                <span>[P/クリック]: 射撃</span>
+                <span>|</span>
+                <span>[Space]: ジャンプ</span>
+                <span>|</span>
+                <span>[Y]: 永続滞空</span>
+                <span>|</span>
+                <span>[Z]: 島消滅</span>
+                <span>|</span>
+                <span>[U/J]: 超奥義</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ホームロビー -->
+    <div id="lobby-modal" class="fixed inset-0 z-40 bg-sky-900/80 backdrop-blur-md flex flex-col items-center justify-center p-4 overflow-y-auto">
+        <div class="relative w-full max-w-4xl bg-white border-4 border-cyan-400 rounded-3xl p-6 md:p-8 shadow-[0_0_80px_rgba(6,182,212,0.6)] flex flex-col gap-6 my-auto max-h-[90vh] overflow-y-auto text-slate-800">
+            <div class="flex items-center justify-between border-b border-slate-200 pb-4">
+                <div>
+                    <h1 class="text-2xl md:text-3xl font-black tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-cyan-600 via-sky-600 to-purple-600 flex items-center gap-2">
+                        <span>サイバー・アリーナ 3D ホームロビー</span>
+                    </h1>
+                    <p class="text-xs md:text-sm text-slate-500 mt-1">作戦本部: 通常武器庫 ＆ 島ステージ選択</p>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button id="btn-deploy-battle" class="px-6 py-3 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-400 hover:from-emerald-400 hover:to-teal-300 text-white font-black text-base shadow-[0_0_25px_rgba(16,185,129,0.7)] flex items-center gap-2 transform hover:scale-105 transition active:scale-95">
+                        <span>⚔️</span>
+                        <span>出撃 / 戦闘開始</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="p-4 rounded-2xl bg-cyan-50 border-2 border-cyan-300 flex flex-col gap-2">
+                <div class="text-sm font-black text-cyan-800 flex items-center gap-1.5">
+                    <span>💡</span>
+                    <span>はじめての方へ (チュートリアル)</span>
+                </div>
+                <p class="text-xs text-slate-700 leading-relaxed">
+                    1. **移動**: <code>W A S D</code> キーで島内を自由に移動。<br>
+                    2. **攻撃**: マウスクリックまたは <code>P</code> キーで銃弾を発射して敵を倒そう！<br>
+                    3. **ジャンプ・滞空**: <code>Space</code> キーでジャンプ。<code>Y</code> キーを押すと「永続滞空飛行」がONになります。<br>
+                    4. **ステージ移動**: 下の「全島ステージ選択」タブからいつでもお好きな島へ出撃できます。
+                </p>
+            </div>
+
+            <div class="flex flex-wrap gap-2 border-b border-slate-200 pb-2">
+                <button id="tab-btn-weapons" class="px-4 py-2 rounded-xl bg-cyan-100 text-cyan-800 border border-cyan-400 font-bold text-sm">⚔️ 通常武器庫 (30+種)</button>
+                <button id="tab-btn-stages" class="px-4 py-2 rounded-xl bg-slate-100 text-slate-600 hover:text-slate-900 font-bold text-sm">🪐 全島ステージ選択</button>
+            </div>
+
+            <div id="tab-content-weapons" class="flex flex-col gap-3">
+                <div class="text-xs text-slate-500 flex items-center justify-between">
+                    <span>所持キー: <span id="lobby-keys-count" class="text-amber-600 font-bold">0.0</span> 個</span>
+                    <span class="text-cyan-600 font-bold">30種以上の武器完備</span>
+                </div>
+                <div id="weapon-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 max-h-72 overflow-y-auto p-1"></div>
+            </div>
+
+            <div id="tab-content-stages" class="hidden grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                <div class="stage-card p-4 rounded-2xl bg-sky-50 border-2 border-cyan-400 flex flex-col justify-between shadow-md">
+                    <div>
+                        <div class="text-lg font-black text-cyan-700">サイバー・アリーナ</div>
+                        <p class="text-xs text-slate-600 mt-1">明るく輝く電脳都市。</p>
+                    </div>
+                    <button class="stage-select-btn mt-3 w-full py-2 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-white font-bold text-xs shadow" data-stage="arena">▶ この島に入る</button>
+                </div>
+                <div class="stage-card p-4 rounded-2xl bg-orange-50 border-2 border-orange-400 flex flex-col justify-between shadow-md">
+                    <div>
+                        <div class="text-lg font-black text-orange-700">マグマ・ボルケーノ</div>
+                        <p class="text-xs text-slate-600 mt-1">キラキラ溶岩の灼熱島。</p>
+                    </div>
+                    <button class="stage-select-btn mt-3 w-full py-2 rounded-xl bg-orange-500 hover:bg-orange-400 text-white font-bold text-xs shadow" data-stage="volcano">▶ この島に入る</button>
+                </div>
+                <div class="stage-card p-4 rounded-2xl bg-purple-50 border-2 border-purple-400 flex flex-col justify-between shadow-md">
+                    <div>
+                        <div class="text-lg font-black text-purple-700">ネオン・ディメンション</div>
+                        <p class="text-xs text-slate-600 mt-1">明るいマゼンタの異次元空間。</p>
+                    </div>
+                    <button class="stage-select-btn mt-3 w-full py-2 rounded-xl bg-purple-500 hover:bg-purple-400 text-white font-bold text-xs shadow" data-stage="neon">▶ この島に入る</button>
+                </div>
+                <div class="stage-card p-4 rounded-2xl bg-indigo-50 border-2 border-indigo-400 flex flex-col justify-between shadow-md">
+                    <div>
+                        <div class="text-lg font-black text-indigo-700">コズミック・宇宙島</div>
+                        <p class="text-xs text-slate-600 mt-1">美しい星屑が広がる宇宙島。</p>
+                    </div>
+                    <button class="stage-select-btn mt-3 w-full py-2 rounded-xl bg-indigo-500 hover:bg-indigo-400 text-white font-bold text-xs shadow" data-stage="cosmic">▶ この島に入る</button>
+                </div>
+                <div class="stage-card p-4 rounded-2xl bg-sky-50 border-2 border-sky-300 flex flex-col justify-between shadow-md">
+                    <div>
+                        <div class="text-lg font-black text-sky-700">極寒サイバー・アイス</div>
+                        <p class="text-xs text-slate-600 mt-1">きらめく氷結グリッドの雪原島。</p>
+                    </div>
+                    <button class="stage-select-btn mt-3 w-full py-2 rounded-xl bg-sky-400 hover:bg-sky-300 text-slate-900 font-bold text-xs shadow" data-stage="ice">▶ この島に入る</button>
+                </div>
+                <div class="stage-card p-4 rounded-2xl bg-amber-50 border-2 border-amber-400 flex flex-col justify-between shadow-md">
+                    <div>
+                        <div class="text-lg font-black text-amber-700">👑 神の領域 (終極)</div>
+                        <p class="text-xs text-slate-600 mt-1">黄金の光が降り注ぐ聖域。</p>
+                    </div>
+                    <button class="stage-select-btn mt-3 w-full py-2 rounded-xl bg-gradient-to-r from-amber-400 to-yellow-400 hover:from-amber-300 hover:to-yellow-300 text-slate-900 font-black text-xs shadow" data-stage="god">▶ この島に入る</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="secret-terminal-modal" class="hidden fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
+        <div class="relative w-full max-w-lg bg-white border-4 border-emerald-500 rounded-3xl p-6 shadow-[0_0_60px_rgba(16,185,129,0.6)] flex flex-col gap-4 text-slate-800 my-auto max-h-[90vh] overflow-y-auto">
+            <div class="flex items-center justify-between border-b border-slate-200 pb-3">
+                <div class="flex items-center gap-2">
+                    <span class="text-2xl text-emerald-600 animate-pulse">⭐</span>
+                    <span class="text-emerald-700 font-black text-lg tracking-wider">シークレット覚醒端末</span>
+                </div>
+                <button id="secret-terminal-close" class="text-slate-400 hover:text-slate-800 text-xl font-bold">✕</button>
+            </div>
+            
+            <div class="flex flex-col gap-3">
+                <p class="text-xs text-slate-500">暗証コードに <strong class="text-emerald-600">666</strong> と入力して認証すると、すべての隠しキャラクターが全解放されます。</p>
+                <div class="flex items-center gap-2">
+                    <input id="secret-terminal-input" type="password" maxlength="4" placeholder="666" class="w-2/3 bg-slate-100 border border-slate-300 rounded-xl px-3 py-2.5 text-center text-lg font-black text-slate-700 tracking-widest">
+                    <button id="secret-terminal-submit" class="w-1/3 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-white font-bold text-xs shadow">
+                        コード認証 (666)
+                    </button>
+                </div>
+
+                <div id="character-selector-panel" class="hidden flex flex-col gap-2 mt-3 pt-3 border-t border-slate-200">
+                    <div class="text-xs font-black text-slate-700">👑 覚醒キャラクター選択 (即時変身)</div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <button class="char-select-btn p-2 rounded-xl bg-slate-100 hover:bg-cyan-50 border border-slate-300 hover:border-cyan-400 text-slate-800 text-xs font-black transition flex items-center justify-center gap-1.5" data-char="normal">👤 通常兵装</button>
+                        <button class="char-select-btn p-2 rounded-xl bg-amber-50 hover:bg-amber-100 border border-amber-300 text-amber-900 text-xs font-black transition flex items-center justify-center gap-1.5" data-char="god">👑 純太郎モード</button>
+                        <button class="char-select-btn p-2.5 rounded-xl bg-gradient-to-r from-purple-600 via-amber-500 to-rose-600 text-white text-xs font-black shadow transition flex items-center justify-center gap-1.5 col-span-2" data-char="awakened-god">🌟 覚醒純太郎 (1000大奥義＆100アドミン)</button>
+                        <button class="char-select-btn p-2 rounded-xl bg-emerald-50 hover:bg-emerald-100 border border-emerald-300 text-emerald-900 text-xs font-black transition flex items-center justify-center gap-1.5" data-char="1x1x">☠️ 1x1x</button>
+                        <button class="char-select-btn p-2 rounded-xl bg-rose-50 hover:bg-rose-100 border border-rose-300 text-rose-900 text-xs font-black transition flex items-center justify-center gap-1.5" data-char="guest">👹 ゲスト666</button>
+                        <button class="char-select-btn p-2 rounded-xl bg-amber-50 hover:bg-amber-100 border border-amber-300 text-amber-900 text-xs font-black transition flex items-center justify-center gap-1.5" data-char="john">💻 ジョン・ドゥ</button>
+                        <button class="char-select-btn p-2 rounded-xl bg-sky-50 hover:bg-sky-100 border border-sky-300 text-sky-900 text-xs font-black transition flex items-center justify-center gap-1.5" data-char="azur">🌸 アズール</button>
+                        <button class="char-select-btn p-2 rounded-xl bg-violet-50 hover:bg-violet-100 border border-violet-300 text-violet-900 text-xs font-black transition flex items-center justify-center gap-1.5" data-char="nori">🌌 ノリ</button>
+                        <button class="char-select-btn p-2 rounded-xl bg-red-50 hover:bg-red-100 border border-red-300 text-red-900 text-xs font-black transition flex items-center justify-center gap-1.5" data-char="noestra">🦇 ノエストラ</button>
+                        <button class="char-select-btn col-span-2 p-2.5 rounded-xl bg-gradient-to-r from-orange-500 to-rose-600 text-white text-xs font-black shadow transition flex items-center justify-center gap-1.5" data-char="brimstone">🔥 最強アビス神 ブリムストーン</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 超細密管理アドミンパネル (100個の完全固有アドミン項目) -->
+    <div id="admin-panel-modal" class="hidden fixed inset-0 z-50 bg-purple-950/85 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
+        <div class="relative w-full max-w-3xl bg-white border-4 border-purple-500 rounded-3xl p-6 shadow-[0_0_80px_rgba(147,51,234,0.6)] flex flex-col gap-4 text-slate-800 my-auto max-h-[92vh] overflow-y-auto">
+            <div class="flex items-center justify-between border-b border-slate-200 pb-3">
+                <div class="flex items-center gap-2">
+                    <span class="text-2xl text-purple-600">👑</span>
+                    <span id="admin-panel-title" class="text-purple-700 font-black text-base tracking-wider">純太郎管理アドミンパネル (100項目)</span>
+                </div>
+                <button id="admin-panel-close" class="text-slate-400 hover:text-slate-800 text-xl font-bold">✕</button>
+            </div>
+            
+            <div class="flex flex-col gap-3 text-xs font-bold text-slate-700">
+                <div class="flex flex-col gap-1.5 p-3 rounded-2xl bg-purple-50 border-2 border-purple-300">
+                    <label class="text-purple-900 font-black">👤 管理パネルからキャラクター即時変身</label>
+                    <div class="grid grid-cols-3 gap-1.5">
+                        <button class="admin-char-btn p-2 rounded bg-white border border-purple-200 text-purple-800 text-xs font-bold shadow-sm" data-char="normal">通常兵装</button>
+                        <button class="admin-char-btn p-2 rounded bg-amber-100 border border-amber-300 text-amber-900 text-xs font-bold shadow-sm" data-char="god">純太郎モード</button>
+                        <button class="admin-char-btn p-2 rounded bg-gradient-to-r from-purple-600 to-amber-500 text-white text-xs font-bold shadow-sm" data-char="awakened-god">🌟 覚醒純太郎</button>
+                    </div>
+                </div>
+
+                <div class="flex flex-col gap-1.5 p-3 rounded-2xl bg-gradient-to-r from-amber-100 to-rose-100 border-2 border-amber-400">
+                    <label class="flex justify-between items-center text-amber-900">
+                        <span class="font-black text-sm">👏 全島完全即死キルコマンド「純太郎クラップ」</span>
+                        <span class="text-xs text-rose-600 font-bold">どんな敵やボスも1発で完全即死</span>
+                    </label>
+                    <button id="admin-juntaro-clap" class="py-2.5 rounded-xl bg-gradient-to-r from-amber-500 via-rose-500 to-purple-600 text-white font-black text-sm shadow">
+                        👏 純太郎クラップ発動 (マジの無限即死)
+                    </button>
+                </div>
+
+                <div id="admin-grid-container" class="grid grid-cols-2 gap-2 max-h-[50vh] overflow-y-auto p-1 bg-slate-50 border border-purple-200 rounded-2xl"></div>
+
+                <button id="admin-apply-btn" class="w-full py-3 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-black text-sm shadow">
+                    アドミン設定を適用して保存
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="game-alert-box" class="hidden fixed top-16 left-1/2 transform -translate-x-1/2 z-50 px-6 py-3 rounded-2xl bg-white/95 border-2 border-cyan-400 text-slate-900 font-black text-sm shadow-[0_0_30px_rgba(6,182,212,0.4)] flex items-center gap-2 pointer-events-none transition-all duration-300">
+        <span id="alert-icon">⚡</span>
+        <span id="alert-message">メッセージ</span>
+    </div>
+
+    <script>
+    const AudioEngine = {
+        ctx: null,
+        isBgmPlaying: false,
+        init() {
+            if (!this.ctx) {
+                const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                if (AudioCtx) this.ctx = new AudioCtx();
+            }
+            if (this.ctx && this.ctx.state === 'suspended') {
+                this.ctx.resume();
+            }
+        },
+        startBGM() {
+            this.init();
+            if (!this.ctx || this.isBgmPlaying) return;
+            this.isBgmPlaying = true;
+            
+            const playNoteSequence = () => {
+                if (!this.isBgmPlaying) return;
+                const notes = [261.63, 329.63, 392.00, 523.25, 587.33, 659.25, 783.99, 1046.50];
+                const note = notes[Math.floor(Math.random() * notes.length)];
+                
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(note, this.ctx.currentTime);
+                
+                gain.gain.setValueAtTime(0.03, this.ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.3);
+                
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc.start();
+                osc.stop(this.ctx.currentTime + 0.3);
+
+                setTimeout(playNoteSequence, 300);
+            };
+            playNoteSequence();
+        },
+        playShoot() {
+            this.init();
+            if (!this.ctx) return;
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(587.33, this.ctx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(880, this.ctx.currentTime + 0.1);
+            gain.gain.setValueAtTime(0.1, this.ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.1);
+            osc.connect(gain);
+            gain.connect(this.ctx.destination);
+            osc.start();
+            osc.stop(this.ctx.currentTime + 0.1);
+        },
+        playExplosion() {
+            this.init();
+            if (!this.ctx) return;
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(220, this.ctx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(50, this.ctx.currentTime + 0.3);
+            gain.gain.setValueAtTime(0.2, this.ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.3);
+            osc.connect(gain);
+            gain.connect(this.ctx.destination);
+            osc.start();
+            osc.stop(this.ctx.currentTime + 0.3);
+        },
+        playChirin() {
+            this.init();
+            if (!this.ctx) return;
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(1046.50, this.ctx.currentTime);
+            osc.frequency.setValueAtTime(1318.51, this.ctx.currentTime + 0.08);
+            gain.gain.setValueAtTime(0.2, this.ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.25);
+            osc.connect(gain);
+            gain.connect(this.ctx.destination);
+            osc.start();
+            osc.stop(this.ctx.currentTime + 0.25);
+        },
+        playAwaken() {
+            this.init();
+            if (!this.ctx) return;
+            [523.25, 659.25, 783.99, 1046.50].forEach((freq, i) => {
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(freq, this.ctx.currentTime + i * 0.07);
+                gain.gain.setValueAtTime(0.15, this.ctx.currentTime + i * 0.07);
+                gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + i * 0.07 + 0.35);
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc.start(this.ctx.currentTime + i * 0.07);
+                osc.stop(this.ctx.currentTime + i * 0.07 + 0.35);
+            });
+        }
+    };
+
+    let scene, camera, renderer;
+    let playerPos = new THREE.Vector3(0, 1.6, 0);
+    let playerVelocityY = 0;
+    let isGrounded = true;
+    let isHoverFlying = false;
+    let isJuntaroMode = false;
+    let isAwakenedJuntaro = false;
+    let isTimeFrozen = false;
+
+    let playerKeys = 0.0;
+    let currentWave = 1;
+    let waveKills = 0;
+    let currentBoss = null;
+    let currentStage = 'arena';
+    let activeCharacter = 'none';
+
+    let adminSettings = {
+        wave: 1,
+        damageMultiplier: 1.0,
+        maxSpawnCount: 60,
+        enemySpeedMultiplier: 1.0,
+        enemyHpMultiplier: 1.0,
+        skillRangeMultiplier: 1.0,
+        mapSize: 90,
+        rateMultiplier: 1.0,
+        killRadius: 25,
+        keyBoost: 1.0,
+        playerSpeed: 1.0,
+        skillSpeed: 1.0,
+        rareSpawnRate: 15,
+        bossWaveInterval: 10,
+        gravity: 0.015,
+        jumpForce: 0.35,
+        bulletSize: 0.5,
+        enemySize: 2.0,
+        bossSize: 12.0
+    };
+    for(let i=21; i<=100; i++) {
+        adminSettings[`param_${i}`] = 1.0;
+    }
+
+    const WEAPONS = [];
+    const weaponPrefixes = ['ハッピー', 'シャイニー', 'レインボー', 'スカイ', 'スター', 'ギャラクシー', 'サンシャイン', 'クリスタル', 'ダイヤ', 'プラチナ'];
+    const weaponTypes = ['アサルト', 'ガン', 'ショット', 'スナイパー', 'ブラスター', 'バズーカ', 'カノン', 'リボルバー', 'マシンガン', 'レイザー'];
+    for (let i = 1; i <= 35; i++) {
+        const p = weaponPrefixes[(i - 1) % weaponPrefixes.length];
+        const t = weaponTypes[Math.floor((i - 1) / weaponPrefixes.length) % weaponTypes.length];
+        WEAPONS.push({
+            id: i,
+            name: `${p}・${t} #${i}`,
+            unlocked: true,
+            damage: 25000000 + i * 15000000,
+            rate: Math.max(50, 200 - i * 4)
+        });
+    }
+    let currentWeapon = WEAPONS[0];
+
+    const enemies = [];
+    const bullets = [];
+    const particles = [];
+    const keysPressed = {};
+    let mouseX = window.innerWidth / 2;
+    let mouseY = window.innerHeight / 2;
+
+    function init3D() {
+        const container = document.getElementById('canvas-container');
+        scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x38bdf8);
+        scene.fog = new THREE.FogExp2(0x38bdf8, 0.0001);
+
+        camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.set(0, 1.6, 0);
+
+        renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        renderer.shadowMap.enabled = true;
+        container.appendChild(renderer.domElement);
+
+        const ambientLight = new THREE.AmbientLight(0xffffff, 9.0);
+        scene.add(ambientLight);
+
+        const hemiLight = new THREE.HemisphereLight(0xffffff, 0xfef08a, 6.0);
+        hemiLight.position.set(0, 300, 0);
+        scene.add(hemiLight);
+
+        const dirLight = new THREE.DirectionalLight(0xffffff, 7.0);
+        dirLight.position.set(150, 400, 150);
+        scene.add(dirLight);
+
+        buildIsland('arena');
+        spawnInitialEnemies();
+        buildJuntaro10スキルUI();
+        buildAwakenedJuntaro1000スキルUI();
+        buildAdminGridUI(100);
+
+        window.addEventListener('resize', onWindowResize);
+    }
+
+    let groundMesh = null;
+    let gridHelper = null;
+
+    function buildIsland(stageType) {
+        currentStage = stageType;
+        if (groundMesh) scene.remove(groundMesh);
+        if (gridHelper) scene.remove(gridHelper);
+
+        let groundColor = 0x38bdf8;
+        let gridColor1 = 0xbae6fd;
+
+        if (stageType === 'volcano') {
+            groundColor = 0xf97316; gridColor1 = 0xfed7aa;
+        } else if (stageType === 'neon') {
+            groundColor = 0xa855f7; gridColor1 = 0xe9d5ff;
+        } else if (stageType === 'cosmic') {
+            groundColor = 0x4f46e5; gridColor1 = 0xc7d2fe;
+        } else if (stageType === 'ice') {
+            groundColor = 0x0ea5e9; gridColor1 = 0xbae6fd;
+        } else if (stageType === 'god') {
+            groundColor = 0xf59e0b; gridColor1 = 0xfef08a;
+        }
+
+        scene.background = new THREE.Color(groundColor);
+        scene.fog = new THREE.FogExp2(groundColor, 0.0001);
+
+        const mapRadius = adminSettings.mapSize;
+        const geo = new THREE.CylinderGeometry(mapRadius, mapRadius, 4, 32);
+        const mat = new THREE.MeshStandardMaterial({ color: groundColor, roughness: 0.2, metalness: 0.1 });
+        groundMesh = new THREE.Mesh(geo, mat);
+        groundMesh.position.y = -2;
+        groundMesh.receiveShadow = true;
+        scene.add(groundMesh);
+
+        gridHelper = new THREE.GridHelper(mapRadius * 2, 60, 0xffffff, gridColor1);
+        gridHelper.position.y = 0.02;
+        scene.add(gridHelper);
+    }
+
+    function onWindowResize() {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+    }
+
+    function spawnInitialEnemies() {
+        while (enemies.length < adminSettings.maxSpawnCount) {
+            spawnSingleEnemy();
+        }
+    }
+
+    function checkAndSpawnEnemies() {
+        if (enemies.length < adminSettings.maxSpawnCount) {
+            spawnSingleEnemy();
+        }
+        if (currentWave % adminSettings.bossWaveInterval === 0 && !currentBoss) {
+            spawnTitanOmegaBoss();
+        }
+    }
+
+    function spawnSingleEnemy() {
+        const isRare = Math.random() < (adminSettings.rareSpawnRate / 100);
+        const size = adminSettings.enemySize;
+        const enemyGeo = isRare ? new THREE.BoxGeometry(size * 1.4, size * 2.0, size * 1.4) : new THREE.BoxGeometry(size, size * 1.5, size);
+        let enemyColor = isRare ? 0xf59e0b : 0xf43f5e;
+        if (activeCharacter === '1x1x') enemyColor = 0x10b981;
+        else if (activeCharacter === 'guest') enemyColor = 0x991b1b;
+        else if (activeCharacter === 'john') enemyColor = 0xf59e0b;
+        else if (activeCharacter === 'azur') enemyColor = 0x0284c7;
+        else if (activeCharacter === 'nori') enemyColor = 0x8b5cf6;
+        else if (activeCharacter === 'noestra') enemyColor = 0x991b1b;
+        else if (activeCharacter === 'brimstone') enemyColor = 0xea580c;
+
+        const enemyMat = new THREE.MeshStandardMaterial({
+            color: enemyColor,
+            emissive: enemyColor,
+            emissiveIntensity: isRare ? 0.9 : 0.6
+        });
+        const mesh = new THREE.Mesh(enemyGeo, enemyMat);
+
+        const angle = Math.random() * Math.PI * 2;
+        const dist = 30 + Math.random() * 40;
+        mesh.position.set(playerPos.x + Math.cos(angle) * dist, isRare ? 2.0 : 1.5, playerPos.z + Math.sin(angle) * dist);
+
+        const baseHp = (350000000 + currentWave * 50000000) * (isRare ? 5.0 : 1.0) * adminSettings.enemyHpMultiplier; 
+        const enemy = {
+            mesh,
+            hp: baseHp,
+            maxHp: baseHp,
+            isRare: isRare,
+            speed: (1.0 + Math.random() * 0.4) * adminSettings.enemySpeedMultiplier
+        };
+        scene.add(mesh);
+        enemies.push(enemy);
+    }
+
+    function spawnTitanOmegaBoss() {
+        const bSize = adminSettings.bossSize;
+        const bossGeo = new THREE.BoxGeometry(bSize, bSize * 1.6, bSize);
+        const bossMat = new THREE.MeshStandardMaterial({
+            color: 0x991b1b,
+            emissive: 0xef4444,
+            emissiveIntensity: 0.9
+        });
+        const mesh = new THREE.Mesh(bossGeo, bossMat);
+        mesh.position.set(0, bSize * 0.8, -50);
+
+        const bossHp = (5000000000000 + currentWave * 1000000000000) * adminSettings.enemyHpMultiplier;
+        currentBoss = {
+            mesh,
+            hp: bossHp,
+            maxHp: bossHp,
+            speed: 0.8 * adminSettings.enemySpeedMultiplier
+        };
+        scene.add(mesh);
+
+        const bossHud = document.getElementById('boss-hud');
+        bossHud.classList.remove('hidden');
+        updateBossHPUI();
+        alertBox("⚠️ 巨大ボス タイタン・オメガ出現！ ⚠️", "👹");
+    }
+
+    function updateBossHPUI() {
+        if (!currentBoss) return;
+        const pct = Math.max(0, (currentBoss.hp / currentBoss.maxHp) * 100);
+        document.getElementById('boss-hp-bar').style.width = pct + '%';
+        document.getElementById('boss-hp-text').textContent = `${Math.ceil(currentBoss.hp).toLocaleString()} / ${currentBoss.maxHp.toLocaleString()}`;
+    }
+
+    function destroyBoss() {
+        if (!currentBoss) return;
+        createParticleExplosion(currentBoss.mesh.position, 0xfacc15, 80);
+        scene.remove(currentBoss.mesh);
+        currentBoss = null;
+        document.getElementById('boss-hud').classList.add('hidden');
+        alertBox("🎉 タイタン・オメガ討伐完了！！", "👑");
+        playerKeys += 100000.0 * adminSettings.keyBoost;
+        updateHUDKeys();
+    }
+
+    function createParticleExplosion(pos, colorHex, count = 40) {
+        for (let i = 0; i < count; i++) {
+            const pGeo = new THREE.SphereGeometry(0.3 + Math.random() * 0.5, 6, 6);
+            const pMat = new THREE.MeshBasicMaterial({ color: colorHex });
+            const pMesh = new THREE.Mesh(pGeo, pMat);
+            pMesh.position.copy(pos);
+            const vel = new THREE.Vector3(
+                (Math.random() - 0.5) * 2.0,
+                Math.random() * 1.5 + 0.3,
+                (Math.random() - 0.5) * 2.0
+            );
+            scene.add(pMesh);
+            particles.push({ mesh: pMesh, vel, life: 50 });
+        }
+    }
+
+    let lastShootTime = 0;
+    function shootBullet() {
+        AudioEngine.startBGM();
+        const now = performance.now();
+        const adjustedRate = currentWeapon.rate / adminSettings.rateMultiplier;
+        if (now - lastShootTime < adjustedRate) return;
+        lastShootTime = now;
+
+        AudioEngine.playShoot();
+
+        const bulletGeo = new THREE.SphereGeometry(adminSettings.bulletSize, 8, 8);
+        let bColor = 0x38bdf8;
+        if (activeCharacter === '1x1x') bColor = 0x10b981;
+        else if (activeCharacter === 'guest') bColor = 0xef4444;
+        else if (activeCharacter === 'john') bColor = 0xfbbf24;
+        else if (activeCharacter === 'azur') bColor = 0x0284c7;
+        else if (activeCharacter === 'nori') bColor = 0xc084fc;
+        else if (activeCharacter === 'noestra') bColor = 0xdc2626;
+        else if (activeCharacter === 'brimstone') bColor = 0xf97316;
+
+        const bulletMat = new THREE.MeshBasicMaterial({ color: bColor });
+        const bulletMesh = new THREE.Mesh(bulletGeo, bulletMat);
+        bulletMesh.position.copy(playerPos);
+        bulletMesh.position.y += 0.2;
+
+        const dir = new THREE.Vector3();
+        camera.getWorldDirection(dir);
+
+        scene.add(bulletMesh);
+        bullets.push({
+            mesh: bulletMesh,
+            dir: dir.clone().normalize(),
+            damage: currentWeapon.damage * (isJuntaroMode || isAwakenedJuntaro ? 1000 : 1) * adminSettings.damageMultiplier,
+            life: 90
+        });
+    }
+
+    function showCutin(subText, mainTitle, borderColor = '#fbbf24') {
+        const overlay = document.getElementById('cutin-overlay');
+        const banner = document.getElementById('cutin-banner');
+        const sub = document.getElementById('cutin-sub');
+        const title = document.getElementById('cutin-title');
+
+        sub.textContent = subText;
+        title.textContent = mainTitle;
+        banner.style.borderColor = borderColor;
+
+        overlay.classList.remove('hidden');
+        banner.classList.remove('animate-eternal-cutin');
+        void banner.offsetWidth;
+        banner.classList.add('animate-eternal-cutin');
+
+        clearTimeout(overlay.timer);
+        overlay.timer = setTimeout(() => {
+            overlay.classList.add('hidden');
+        }, 2200);
+    }
+
+    function showSkillPopup(skillName, icon = "⚡") {
+        const overlay = document.getElementById('skill-text-overlay');
+        const banner = document.getElementById('skill-popup-banner');
+        const nameEl = document.getElementById('skill-popup-name');
+        const iconEl = document.getElementById('skill-popup-icon');
+
+        nameEl.textContent = skillName;
+        iconEl.textContent = icon;
+
+        overlay.classList.remove('hidden');
+        banner.classList.remove('animate-skill-pop');
+        void banner.offsetWidth;
+        banner.classList.add('animate-skill-pop');
+
+        clearTimeout(overlay.timer);
+        overlay.timer = setTimeout(() => {
+            overlay.classList.add('hidden');
+        }, 1800);
+    }
+
+    function triggerCameraQuake(durationMs = 1200, magnitude = 0.8) {
+        const start = performance.now();
+        const interval = setInterval(() => {
+            const elapsed = performance.now() - start;
+            if (elapsed > durationMs) {
+                clearInterval(interval);
+                camera.position.y = playerPos.y;
+                return;
+            }
+            const factor = (1 - elapsed / durationMs) * magnitude;
+            camera.position.x = playerPos.x + (Math.random() - 0.5) * factor;
+            camera.position.y = playerPos.y + (Math.random() - 0.5) * factor;
+        }, 20);
+    }
+
+    function inflictDamageToAll(dmg) {
+        const finalDmg = 1e300;
+
+        for (let j = enemies.length - 1; j >= 0; j--) {
+            const en = enemies[j];
+            en.hp -= finalDmg;
+            createParticleExplosion(en.mesh.position, 0xfacc15, 15);
+            if (en.hp <= 0) {
+                scene.remove(en.mesh);
+                enemies.splice(j, 1);
+                waveKills++;
+                playerKeys += (en.isRare ? 200.0 : 50.0) * adminSettings.keyBoost;
+                updateHUDKeys();
+                document.getElementById('hud-wave-kills').textContent = waveKills;
+                if (waveKills >= 100) {
+                    currentWave++; waveKills = 0;
+                    document.getElementById('hud-wave').textContent = currentWave;
+                    showSkillPopup(`WAVE ${currentWave} 到達！！`, "🏆");
+                }
+            }
+        }
+        if (currentBoss) {
+            currentBoss.hp -= finalDmg;
+            createParticleExplosion(currentBoss.mesh.position, 0xef4444, 45);
+            updateBossHPUI();
+            if (currentBoss.hp <= 0) destroyBoss();
+        }
+    }
+
+    function triggerJuntaroClap() {
+        AudioEngine.playAwaken();
+        AudioEngine.playExplosion();
+        triggerCameraQuake(2500, 2.5);
+        showCutin("JUNTARO ULTIMATE CLAP", "純太郎クラップ・真の無限即死キルコマンド", "#a855f7");
+        showSkillPopup("純太郎クラップ発動！全島全敵一網打尽", "👏");
+        playerKeys += 999999.0 * adminSettings.keyBoost;
+        updateHUDKeys();
+        inflictDamageToAll(1e300);
+    }
+
+    const juntaro10Names = [
+        "皇神・神威閃光", "終焉・天罰雷光", "覇道・次元断層", "虚空・絶対零度", "創世・星屑嵐",
+        "滅神・業火審判", "転生・神聖結界", "天魔・無量大数", "覚醒・神速破界", "皇神制覇・純太郎エタニティ"
+    ];
+
+    function executeJuntaroSkill(index) {
+        AudioEngine.playAwaken();
+        const name = juntaro10Names[index - 1] || `純太郎秘技 #${index}`;
+        triggerCameraQuake(1400, 1.3);
+        showCutin("JUNTARO SUPREME ART", name, "#a855f7");
+        showSkillPopup(`[${index}] ${name}`, "👑");
+        inflictDamageToAll(1e300);
+    }
+
+    const awakened1000Names = [];
+    const prefixes = ['皇神', '終焉', '覇道', '虚空', '創世', '滅神', '転生', '天魔', '覚醒', 'エターナル', '神威', '無限', '究極', '絶対', '真・超'];
+    const suffixes = ['神剣', '雷光', '断層', '零度', '嵐', '審判', '結界', '大数', '破界', 'エタニティ', 'ビッグバン', 'カタクリズム', 'ジャッジメント', 'ディザスター', 'マキシマム'];
+    for (let i = 1; i <= 1000; i++) {
+        const p = prefixes[(i - 1) % prefixes.length];
+        const s = suffixes[Math.floor((i - 1) / prefixes.length) % suffixes.length];
+        awakened1000Names.push(`${p}・${s} #${i}`);
+    }
+
+    function executeAwakenedJuntaroSkill(index) {
+        AudioEngine.playAwaken();
+        const name = awakened1000Names[index - 1] || `覚醒純太郎奥義 #${index}`;
+        triggerCameraQuake(1600, 1.5);
+        showCutin("AWAKENED ETERNITY ART", name, "#facc15");
+        showSkillPopup(`[覚醒 ${index}] ${name}`, "🌟");
+        inflictDamageToAll(1e300);
+    }
+
+    function buildJuntaro10スキルUI() {
+        const container = document.getElementById('skills-juntaro');
+        if (!container) return;
+        container.innerHTML = '';
+        for (let i = 1; i <= 10; i++) {
+            const btn = document.createElement('button');
+            btn.className = "skill-btn px-2.5 py-1.5 rounded-lg bg-purple-100 hover:bg-purple-200 border border-purple-400 text-purple-900 text-xs font-bold";
+            btn.textContent = `[${i}] ${juntaro10Names[i - 1]}`;
+            btn.addEventListener('click', () => executeJuntaroSkill(i));
+            container.appendChild(btn);
+        }
+    }
+
+    function buildAwakenedJuntaro1000スキルUI() {
+        const container = document.getElementById('skills-awakened-juntaro');
+        if (!container) return;
+        container.innerHTML = '';
+        for (let i = 1; i <= 1000; i++) {
+            const btn = document.createElement('button');
+            btn.className = "skill-btn px-2 py-1 rounded bg-gradient-to-r from-purple-100 to-amber-100 hover:from-purple-200 hover:to-amber-200 border border-amber-400 text-purple-900 text-[10px] font-bold";
+            btn.textContent = `[${i}] ${awakened1000Names[i - 1]}`;
+            btn.addEventListener('click', () => executeAwakenedJuntaroSkill(i));
+            container.appendChild(btn);
+        }
+    }
+
+    // 100個の完全固有アドミングリッド構築（1番から100番まで全て異なる機能と名称）
+    function buildAdminGridUI(count = 100) {
+        const grid = document.getElementById('admin-grid-container');
+        if (!grid) return;
+        grid.innerHTML = '';
+
+        const adminTitles = [
+            "1. 🌊 WAVE数の変更", "2. ⚔️ プレイヤー火力倍率 (最大100万倍)", "3. 👾 敵の同時出現最大数", "4. 🏃‍♂️ 敵の移動速度倍率",
+            "5. ❤️ 敵・ボスのHP倍率", "6. 💥 スキル攻撃範囲倍率", "7. 🪐 マップ(島)の広さ", "8. ⚡ 銃連射レート倍率",
+            "9. 💀 一撃消滅キル範囲", "10. 🗝️ 鍵獲得ブースト倍率", "11. 🦅 プレイヤー移動速度", "12. ☄️ スキル・隕石落下速度",
+            "13. 🌟 レアゾンビ出現確率", "14. 🌋 ボス出現ウェーブ間隔", "15. 🌍 重力の大きさ変更", "16. 🦘 ジャンプ力の高さ",
+            "17. 🔵 銃弾のサイズ変更", "18. 🟥 通常敵のサイズ変更", "19. 👑 ボスのサイズ変更", "20. 🧬 スキルミックス切替",
+            "21. 🌀 空間歪曲フィールド強度", "22. 🛡️ プレイヤー無効シールド", "23. ⏳ タイムスロー係数", "24. 💎 キー自動引き寄せ磁力",
+            "25. 🔥 炎上エフェクト密度", "26. ⚡ 雷撃チェイン回数", "27. 🧊 氷結フリーズ時間", "28. 🌪️ 竜巻旋風の吸引力",
+            "29. 🔮 ダークマター引力範囲", "30. 🌠 流星群の落下頻度", "31. 🗡️ 近接斬撃判定の広さ", "32. 🏹 遠距離弾速ブースト",
+            "33. 🛡️ アーマー防御力倍率", "34. 💖 自動HP回復速度", "35. 💰 鍵ドロップ報酬倍率", "36. 🗺️ マップ起伏の高さ",
+            "37. 🌫️ 霧・フォグの濃さ", "38. 🎆 花火パーティクル量", "39. 🎶 BGMテンポスピード", "40. 🕹️ マウス感度調整",
+            "41. 🌠 宇宙星屑のきらめき度", "42. 🌋 溶岩の熱量エフェクト", "43. 🧊 氷の反射率調整", "44. 👑 神聖オーラの発光量",
+            "45. 👥 影・シャドウの解像度", "46. 📷 カメラの視野角(FOV)", "47. 📺 画面揺れ強度", "48. 🎯 クロスヘアの大きさ",
+            "49. 🔋 スタミナ回復速度", "50. 🚀 ダッシュ推進力倍率", "51. 🧱 地面タイルの粗さ", "52. 🚪 ポータルのワープ距離",
+            "53. 🏮 提灯ライトの明るさ", "54. 🧬 遺伝子組換え変異率", "55. 🧪 科学的重力加速度", "56. 📻 音響エコー残響",
+            "57. 📐 ジオメトリ頂点数", "58. 🎨 カラーパレット彩度", "59. 🕹️ 入力遅延軽減", "60. 🛡️ 物理バリア耐久値",
+            "61. ⚡ 電流スパーク頻度", "62. 🌊 津波シミュレーション", "63. 🌪️ 気圧・風向ベクトル", "64. 🔥 爆風の拡散半径",
+            "65. ❄️ 冷却ガスの噴射量", "66. 💎 宝石の屈折率", "67. 🧬 DNA二重螺旋回転速度", "68. 🧠 AI思考ルーチン速度",
+            "69. 👁️ 視界レンダリング距離", "70. 👣 足音のエコー音量", "71. 🦾 サイバネティック強度", "72. 📡 レーダー索敵範囲",
+            "73. 🔋 エネルギーコア容量", "74. ⚙️ 歯車ギミック回転数", "75. 🕳️ ワームホール収縮率", "76. 🌌 銀河系スピン速度",
+            "77. ☄️ 隕石衝突クレーター深度", "78. 🌋 火山灰の飛散量", "79. 🧊 氷河の融解速度", "80. 👑 皇神威圧感の範囲",
+            "81. ⚡ プラズマ放電密度", "82. 🛡️ エナジーシールド展開率", "83. ⏳ 亜空間クロック速度", "84. 💎 クリスタル共鳴音量",
+            "85. 🔥 マグマ対流スピード", "86. 🌪️ 暴風シャドウ強度", "87. ❄️ 吹雪パーティクル数", "88. 🔮 魔力ポテンシャル量",
+            "89. 🗡️ 刀剣ブレードの鋭さ", "90. 🏹 弓矢のテンション強度", "91. 🧱 ブロック破壊耐久力", "92. 🚪 自動ドア開閉速度",
+            "93. 🏮 ネオンサイン点滅速度", "94. 🧬 細胞再生スピード", "95. 🧪 化学薬品反応速度", "96. 📻 通信ノイズフィルター",
+            "97. 📐 黄金比グリッド密度", "98. 🎨 グラデーション彩度", "99. 🕹️ コントローラー振動", "100. 👑 制作者アドミン全権限"
+        ];
+
+        for (let i = 1; i <= count; i++) {
+            let labelText = adminTitles[i - 1] || `${i}. ⚙️ 固有カスタム調整項目 #${i}`;
+            let inputHtml = `<input id="adm-in-${i}" type="range" min="0.1" max="100.0" step="0.1" value="1.0" class="w-full accent-purple-600">`;
+
+            if (i === 2) {
+                inputHtml = `<input id="adm-in-2" type="range" min="1.0" max="1000000.0" step="10.0" value="1.0" class="w-full accent-purple-600">`;
+            } else if (i === 1) {
+                inputHtml = `<div class="flex gap-1"><input id="adm-in-1" type="number" min="1" max="100" value="1" class="w-2/3 bg-white border border-purple-300 rounded px-2 py-0.5"><button id="adm-btn-wave" class="w-1/3 bg-purple-600 hover:bg-purple-500 text-white rounded text-[10px] font-bold">決定</button></div>`;
+            } else if (i === 15) {
+                inputHtml = `<input id="adm-in-15" type="range" min="0.001" max="0.050" step="0.001" value="0.015" class="w-full accent-purple-600">`;
+            } else if (i === 16) {
+                inputHtml = `<input id="adm-in-16" type="range" min="0.1" max="1.5" step="0.05" value="0.35" class="w-full accent-purple-600">`;
+            }
+
+            const div = document.createElement('div');
+            div.className = "flex flex-col gap-1 p-2 rounded-xl bg-purple-50 border border-purple-200";
+            div.innerHTML = `
+                <label class="flex justify-between text-[11px] text-purple-900 font-bold truncate">
+                    <span>${labelText}</span>
+                    <span>(<span id="adm-val-${i}">1.0</span>)</span>
+                </label>
+                ${inputHtml}
+            `;
+            grid.appendChild(div);
+        }
+
+        for (let i = 1; i <= count; i++) {
+            const input = document.getElementById(`adm-in-${i}`);
+            const valSpan = document.getElementById(`adm-val-${i}`);
+            if (input && valSpan) {
+                if (i === 1) {
+                    const waveBtn = document.getElementById('adm-btn-wave');
+                    if (waveBtn) {
+                        waveBtn.addEventListener('click', () => {
+                            const val = parseInt(input.value);
+                            valSpan.textContent = val;
+                            currentWave = val;
+                            document.getElementById('hud-wave').textContent = currentWave;
+                            alertBox(`WAVEを ${val} に変更しました！`, "🌊");
+                        });
+                    }
+                } else {
+                    input.addEventListener('input', (e) => {
+                        const val = parseFloat(e.target.value);
+                        valSpan.textContent = val;
+                        adminSettings[`param_${i}`] = val;
+
+                        if (i === 2) adminSettings.damageMultiplier = val;
+                        if (i === 3) adminSettings.maxSpawnCount = Math.floor(val * 30);
+                        if (i === 4) adminSettings.enemySpeedMultiplier = val;
+                        if (i === 5) adminSettings.enemyHpMultiplier = val;
+                        if (i === 6) adminSettings.skillRangeMultiplier = val;
+                        if (i === 7) adminSettings.mapSize = Math.floor(val * 90);
+                        if (i === 8) adminSettings.rateMultiplier = val;
+                        if (i === 9) adminSettings.killRadius = Math.floor(val * 25);
+                        if (i === 10) adminSettings.keyBoost = val;
+                        if (i === 11) adminSettings.playerSpeed = val;
+                        if (i === 15) adminSettings.gravity = val;
+                        if (i === 16) adminSettings.jumpForce = val;
+                        if (i === 17) adminSettings.bulletSize = val;
+                        if (i === 18) adminSettings.enemySize = val;
+                        if (i === 19) adminSettings.bossSize = val;
+                    });
+                }
+            }
+        }
+    }
+
+    function executeSkillByAction(char, index) {
+        AudioEngine.playAwaken();
+        let skillName = "最強奥義";
+        let icon = "⚡";
+
+        if (char === '1x1x') {
+            if (index === 1) { skillName="迅雷突進・神速斬り"; icon="⚡"; }
+            else if (index === 2) { skillName="ヴォイド隕石・終極落下"; icon="☄️"; triggerCameraQuake(1000, 1.0); }
+            else if (index === 3) { skillName="引力孔ブラックホール吸引"; icon="🕳️"; enemies.forEach(en => en.mesh.position.lerp(playerPos, 0.95)); }
+            else if (index === 4) { skillName="時間停止フィールド・世界凍結"; icon="⏱️"; isTimeFrozen=true; setTimeout(()=>isTimeFrozen=false, 8000); }
+            else if (index === 5) { skillName="終極ヴォイド・絶対零度衝撃"; icon="🌊"; triggerCameraQuake(1200, 1.2); }
+            else if (index === 6) { skillName="虚空ブレード分身・千本乱舞"; icon="👥"; }
+            else if (index === 7) { skillName="万物無限両断・天裂破界"; icon="🗡️"; playerKeys+=5000.0 * adminSettings.keyBoost; updateHUDKeys(); }
+        }
+        else if (char === 'guest') {
+            if (index === 1) { skillName="巨神化・大地踏み潰し"; icon="👹"; playerPos.y=14.0; }
+            else if (index === 2) { skillName="冥府血焔・地獄烈火"; icon="🔥"; triggerCameraQuake(1000, 1.0); }
+            else if (index === 3) { skillName="亡霊連撃・阿鼻地獄ストライク"; icon="👻"; }
+            else if (index === 4) { skillName="奈落酸性血雨・溶解暴風"; icon="🌧️"; }
+            else if (index === 5) { skillName="怨嗟絶叫・魔神咆哮"; icon="🗣️"; }
+            else if (index === 6) { skillName="地獄鎖縛・ヘルバインド牢獄"; icon="⛓️"; }
+            else if (index === 7) { skillName="鬼角猛進・阿修羅チャージ"; icon="🦏"; triggerCameraQuake(1100, 1.2); }
+        }
+        else if (char === 'john') {
+            if (index === 1) { skillName="グリッチ奇襲・量子ワープ"; icon="💻"; playerPos.add(new THREE.Vector3((Math.random()-0.5)*30, 0, (Math.random()-0.5)*30)); }
+            else if (index === 2) { skillName="SYSTEM CRASH 爆発崩壊"; icon="⚠️"; triggerCameraQuake(1100, 1.1); }
+            else if (index === 3) { skillName="バイナリデータ・深層浸食"; icon="01"; }
+            else if (index === 4) { skillName="テクスチャ崩壊ウェーブ"; icon="📐"; }
+            else if (index === 5) { skillName="404 NOT FOUND 神域消去"; icon="🔍"; }
+            else if (index === 6) { skillName="メモリリーク・連鎖大爆雷"; icon="💣"; }
+            else if (index === 7) { skillName="カーネル支配・全宇宙改竄波"; icon="🧠"; }
+        }
+        else if (char === 'azur') {
+            if (index === 1) { skillName="蒼蓮巨神化・絶対守護"; icon="🌸"; }
+            else if (index === 2) { skillName="ちっちゃい花・遠距離光弾乱撃"; icon="🌸"; }
+            else if (index === 3) { skillName="でかい花掴み・敵豪快ぶん投げ"; icon="🌺"; }
+            else if (index === 4) { skillName="蒼霊の加護・無敵結界"; icon="🛡️"; }
+            else if (index === 5) { skillName="千本花弁嵐・蒼穹メガブルーム"; icon="🌪️"; }
+            else if (index === 6) { skillName="常世の蒼荊牢・茨の檻"; icon="🌿"; }
+            else if (index === 7) { skillName="1000体ゾンビパレード・奈落葬"; icon="🧟‍♂️"; playerKeys+=10000.0 * adminSettings.keyBoost; updateHUDKeys(); }
+        }
+        else if (char === 'nori') {
+            if (index === 1) { skillName="ヴォイドブリンク・次元跳躍"; icon="🌌"; }
+            else if (index === 2) { skillName="コズミックノヴァ・超新星爆発"; icon="💫"; triggerCameraQuake(1200, 1.2); }
+            else if (index === 3) { skillName="特異点重力崩壊・絶対引力"; icon="🕳️"; enemies.forEach(en => en.mesh.position.copy(playerPos)); }
+            else if (index === 4) { skillName="アストラルシフト・神霊憑依"; icon="✨"; }
+            else if (index === 5) { skillName="ノヴァ連星爆・双子星消滅"; icon="☄️"; }
+            else if (index === 6) { skillName="ダークマター・球界消滅"; icon="🔮"; }
+            else if (index === 7) { skillName="反物質消滅ビーム・創世砲"; icon="⚡"; triggerCameraQuake(1100, 1.3); }
+        }
+        else if (char === 'noestra') {
+            if (index === 1) { skillName="蝙蝠疾駆・暗黒ナイト"; icon="🦇"; }
+            else if (index === 2) { skillName="超音波スクリーム・絶叫波"; icon="🔊"; }
+            else if (index === 3) { skillName="鮮血吸収・ブラッドドレイン"; icon="🩸"; playerKeys+=3000.0 * adminSettings.keyBoost; updateHUDKeys(); }
+            else if (index === 4) { skillName="ナイトウィング飛翔・吸血鬼王"; icon="🌙"; isHoverFlying=true; playerPos.y=16.0; }
+            else if (index === 5) { skillName="千翼蝙蝠乱舞・紅蓮の群れ"; icon="🦇"; }
+            else if (index === 6) { skillName="鮮血の処刑棺桶・即死圧縮"; icon="⚰️"; }
+            else if (index === 7) { skillName="紅蓮血槍乱射・ブラッドランス"; icon="🗡️"; triggerCameraQuake(1100, 1.2); }
+        }
+        else if (char === 'brimstone') {
+            if (index === 1) { skillName="深淵業火熱線・アビスレイ"; icon="🔥"; triggerCameraQuake(1200, 1.4); }
+            else if (index === 2) { skillName="アビスボルケーノ・溶岩噴火"; icon="🌋"; triggerCameraQuake(1400, 1.5); }
+            else if (index === 3) { skillName="獄炎重力球・アビスホール"; icon="🕳️"; enemies.forEach(en => en.mesh.position.lerp(playerPos, 0.95)); }
+            else if (index === 4) { skillName="灼熱焦土領域展開・アビスドメイン"; icon="👑"; isHoverFlying=true; playerPos.y=18.0; }
+            else if (index === 5) { skillName="業火連鎖爆散・アビスチェイン"; icon="💥"; triggerCameraQuake(1300, 1.4); }
+            else if (index === 6) { skillName="奈落獄門召喚・アビスゲート"; icon="⛩️"; }
+            else if (index === 7) { skillName="アビスカタクリズム・終焉破滅"; icon="☄️"; triggerCameraQuake(1700, 1.8); playerKeys+=20000.0 * adminSettings.keyBoost; updateHUDKeys(); }
+        }
+
+        showSkillPopup(skillName, icon);
+        inflictDamageToAll(1e300);
+    }
+
+    function triggerSuperSecretArt1() {
+        AudioEngine.playAwaken();
+        AudioEngine.playExplosion();
+        triggerCameraQuake(1600, 1.4);
+        showCutin("SUPREME SECRET ART I", "メガコズミック・ディザスター", "#38bdf8");
+        showSkillPopup("第壱超奥義発動！", "💫");
+        playerKeys += 50000.0 * adminSettings.keyBoost; updateHUDKeys();
+        inflictDamageToAll(1e300);
+    }
+
+    function triggerSuperSecretArt2() {
+        AudioEngine.playAwaken();
+        AudioEngine.playExplosion();
+        triggerCameraQuake(1900, 1.7);
+        showCutin("SUPREME SECRET ART II", "エターナル・ビッグバンカタクリズム", "#facc15");
+        showSkillPopup("第弐超奥義発動！", "🌌");
+        playerKeys += 100000.0 * adminSettings.keyBoost; updateHUDKeys();
+        inflictDamageToAll(1e300);
+    }
+
+    function triggerIslandBigBang() {
+        AudioEngine.playExplosion();
+        showSkillPopup("島消滅ビッグバン", "🪐");
+        playerPos.y = 60;
+        triggerCameraQuake(1600, 1.4);
+        inflictDamageToAll(1e300);
+        playerKeys += 3000.0 * adminSettings.keyBoost; updateHUDKeys();
+    }
+
+    function triggerHolyBlast() {
+        AudioEngine.playExplosion();
+        showSkillPopup("神聖爆発ブラスト", "💥");
+        createParticleExplosion(playerPos, 0xfef08a, 45);
+        inflictDamageToAll(1e300);
+    }
+
+    function activateCharacterMode(charType) {
+        activeCharacter = charType;
+        AudioEngine.playAwaken();
+
+        let charName = "通常兵装";
+        const adminBtn = document.getElementById('btn-admin-panel');
+        adminBtn.classList.add('hidden');
+        isJuntaroMode = false;
+        isAwakenedJuntaro = false;
+
+        if (charType === 'god') {
+            charName = "👑 純太郎モード";
+            isJuntaroMode = true;
+            adminBtn.classList.remove('hidden');
+            document.getElementById('admin-panel-title').textContent = "純太郎管理アドミンパネル (100項目)";
+            buildAdminGridUI(100);
+            showSkillPopup("純太郎モード覚醒！10大奥義＆100アドミン解禁", "👑");
+        } else if (charType === 'awakened-god') {
+            charName = "🌟 覚醒純太郎 (1000大奥義)";
+            isAwakenedJuntaro = true;
+            adminBtn.classList.remove('hidden');
+            document.getElementById('admin-panel-title').textContent = "覚醒純太郎管理アドミンパネル (100項目)";
+            buildAdminGridUI(100);
+            showSkillPopup("覚醒純太郎降臨！1000大奥義＆100アドミン全解放", "🌟");
+        } else if (charType === '1x1x') {
+            charName = "☠️ 1x1x (終極破界)";
+            showSkillPopup("1x1x モード覚醒！", "☠️");
+        } else if (charType === 'guest') {
+            charName = "👹 Guest 666";
+            showSkillPopup("Guest 666 覚醒！", "👹");
+        } else if (charType === 'john') {
+            charName = "💻 John Doe";
+            showSkillPopup("John Doe 覚醒！", "💻");
+        } else if (charType === 'azur') {
+            charName = "🌸 アズール";
+            showSkillPopup("アズール 覚醒！", "🌸");
+        } else if (charType === 'nori') {
+            charName = "🌌 ノリ (Nori)";
+            showSkillPopup("ノリ覚醒！", "🌌");
+        } else if (charType === 'noestra') {
+            charName = "🦇 ノエストラ";
+            showSkillPopup("ノエストラ覚醒！", "🦇");
+        } else if (charType === 'brimstone') {
+            charName = "🔥 ブリムストーン";
+            showSkillPopup("最強アビス神降臨！", "🔥");
+        }
+
+        document.getElementById('hud-active-char').textContent = charName;
+        updateSkillsDock(charType);
+    }
+
+    function updateSkillsDock(mode) {
+        ['juntaro', 'awakened-juntaro', '1x1x', 'guest', 'john', 'azur', 'nori', 'noestra', 'brimstone'].forEach(m => {
+            const el = document.getElementById(`skills-${m}`);
+            if (el) el.classList.add('hidden');
+        });
+        document.getElementById('skills-normal-hint').classList.add('hidden');
+
+        if (mode === 'god') {
+            document.getElementById('skills-juntaro').classList.remove('hidden');
+        } else if (mode === 'awakened-god') {
+            document.getElementById('skills-awakened-juntaro').classList.remove('hidden');
+        } else {
+            const activeEl = document.getElementById(`skills-${mode}`);
+            if (activeEl) activeEl.classList.remove('hidden');
+            else document.getElementById('skills-normal-hint').classList.remove('hidden');
+        }
+    }
+
+    function updateHUDKeys() {
+        document.getElementById('hud-keys').textContent = playerKeys.toFixed(1);
+        document.getElementById('lobby-keys-count').textContent = playerKeys.toFixed(1);
+    }
+
+    function alertBox(text, icon = "⚡") {
+        const box = document.getElementById('game-alert-box');
+        document.getElementById('alert-icon').textContent = icon;
+        document.getElementById('alert-message').textContent = text;
+        box.classList.remove('hidden');
+        clearTimeout(box.timer);
+        box.timer = setTimeout(() => { box.classList.add('hidden'); }, 3000);
+    }
+
+    let bulbClickCount = 0;
+    function setupEvents() {
+        window.addEventListener('keydown', (e) => {
+            keysPressed[e.code] = true;
+
+            if (e.code === 'KeyP') shootBullet();
+            if (e.code === 'KeyY') {
+                isHoverFlying = !isHoverFlying;
+                document.getElementById('hover-btn-text').textContent = `[Y] 永続滞空: ${isHoverFlying ? 'ON' : 'OFF'}`;
+                showSkillPopup(`永続滞空: ${isHoverFlying ? 'ON' : 'OFF'}`, "🕊️");
+            }
+            if (e.code === 'KeyZ') triggerIslandBigBang();
+            if (e.code === 'KeyX') triggerHolyBlast();
+            if (e.code === 'KeyH') {
+                if (!isJuntaroMode && !isAwakenedJuntaro) {
+                    activateCharacterMode('god');
+                } else if (isJuntaroMode) {
+                    activateCharacterMode('awakened-god');
+                } else {
+                    activateCharacterMode('normal');
+                }
+            }
+            if (e.code === 'KeyU') triggerSuperSecretArt1();
+            if (e.code === 'KeyJ') triggerSuperSecretArt2();
+
+            if (isJuntaroMode) {
+                if (e.code === 'Digit1') executeJuntaroSkill(1);
+                if (e.code === 'Digit2') executeJuntaroSkill(2);
+                if (e.code === 'Digit3') executeJuntaroSkill(3);
+                if (e.code === 'Digit4') executeJuntaroSkill(4);
+                if (e.code === 'Digit5') executeJuntaroSkill(5);
+                if (e.code === 'Digit6') executeJuntaroSkill(6);
+                if (e.code === 'Digit7') executeJuntaroSkill(7);
+                if (e.code === 'Digit8') executeJuntaroSkill(8);
+                if (e.code === 'Digit9') executeJuntaroSkill(9);
+                if (e.code === 'Digit0') executeJuntaroSkill(10);
+            }
+
+            if (isAwakenedJuntaro) {
+                if (e.code.startsWith('Digit')) {
+                    const num = parseInt(e.code.replace('Digit', ''));
+                    if (num >= 1 && num <= 9) executeAwakenedJuntaroSkill(num);
+                }
+            }
+
+            if (['1x1x', 'guest', 'john', 'azur', 'nori', 'noestra', 'brimstone'].includes(activeCharacter)) {
+                if (e.code === 'Digit1' || e.code === 'KeyC') executeSkillByAction(activeCharacter, 1);
+                if (e.code === 'Digit2' || e.code === 'KeyV') executeSkillByAction(activeCharacter, 2);
+                if (e.code === 'Digit3' || e.code === 'KeyB') executeSkillByAction(activeCharacter, 3);
+                if (e.code === 'Digit4' || e.code === 'KeyF') executeSkillByAction(activeCharacter, 4);
+                if (e.code === 'Digit5' || e.code === 'KeyG') executeSkillByAction(activeCharacter, 5);
+                if (e.code === 'Digit6' || e.code === 'KeyQ') executeSkillByAction(activeCharacter, 6);
+                if (e.code === 'Digit7' || e.code === 'KeyE') executeSkillByAction(activeCharacter, 7);
+            }
+        });
+
+        window.addEventListener('keyup', (e) => { keysPressed[e.code] = false; });
+
+        window.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX; mouseY = e.clientY;
+            const crosshair = document.getElementById('crosshair');
+            crosshair.style.left = mouseX + 'px'; crosshair.style.top = mouseY + 'px';
+
+            const normX = (mouseX / window.innerWidth - 0.5) * 2;
+            const normY = (mouseY / window.innerHeight - 0.5) * 2;
+            camera.rotation.y = -normX * 1.8;
+            camera.rotation.x = -normY * 0.8;
+        });
+
+        window.addEventListener('mousedown', (e) => {
+            if (e.target.tagName !== 'BUTTON' && e.target.tagName !== 'INPUT' && e.target.tagName !== 'RANGE') {
+                shootBullet();
+            }
+        });
+
+        const bulb = document.querySelector('.bg-cyan-50 span');
+        if (bulb) {
+            bulb.addEventListener('click', () => {
+                bulbClickCount++;
+                AudioEngine.playChirin();
+                if (bulbClickCount >= 5) {
+                    bulbClickCount = 0;
+                    document.getElementById('secret-terminal-modal').classList.remove('hidden');
+                    alertBox("✨ シークレット端末起動！ (コード: 666)", "⭐");
+                }
+            });
+        }
+
+        document.getElementById('btn-hover-fly').addEventListener('click', () => {
+            isHoverFlying = !isHoverFlying;
+            document.getElementById('hover-btn-text').textContent = `[Y] 永続滞空: ${isHoverFlying ? 'ON' : 'OFF'}`;
+        });
+        document.getElementById('btn-island-bigbang').addEventListener('click', triggerIslandBigBang);
+        document.getElementById('btn-holy-blast').addEventListener('click', triggerHolyBlast);
+        document.getElementById('btn-awaken-toggle').addEventListener('click', () => {
+            if (!isJuntaroMode && !isAwakenedJuntaro) {
+                activateCharacterMode('god');
+            } else if (isJuntaroMode) {
+                activateCharacterMode('awakened-god');
+            } else {
+                activateCharacterMode('normal');
+            }
+        });
+        document.getElementById('btn-super-secret-1').addEventListener('click', triggerSuperSecretArt1);
+        document.getElementById('btn-super-secret-2').addEventListener('click', triggerSuperSecretArt2);
+
+        document.getElementById('btn-admin-panel').addEventListener('click', () => {
+            document.getElementById('admin-panel-modal').classList.remove('hidden');
+        });
+        document.getElementById('admin-panel-close').addEventListener('click', () => {
+            document.getElementById('admin-panel-modal').classList.add('hidden');
+        });
+        document.getElementById('admin-juntaro-clap').addEventListener('click', () => {
+            triggerJuntaroClap();
+            document.getElementById('admin-panel-modal').classList.add('hidden');
+        });
+
+        document.querySelectorAll('.admin-char-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const charType = e.target.getAttribute('data-char');
+                if (charType === 'normal') {
+                    activateCharacterMode('normal');
+                    document.getElementById('btn-admin-panel').classList.add('hidden');
+                    showSkillPopup("通常兵装に戻りました", "👤");
+                } else {
+                    activateCharacterMode(charType);
+                }
+                document.getElementById('admin-panel-modal').classList.add('hidden');
+            });
+        });
+
+        document.getElementById('admin-apply-btn').addEventListener('click', () => {
+            currentWave = adminSettings.wave;
+            document.getElementById('hud-wave').textContent = currentWave;
+            buildIsland(currentStage);
+            document.getElementById('admin-panel-modal').classList.add('hidden');
+            alertBox("👑 アドミン設定を適用して保存しました！", "👑");
+        });
+
+        ['1x1x', 'guest', 'john', 'azur', 'nori', 'noestra', 'brimstone'].forEach(charKey => {
+            for (let i = 1; i <= 7; i++) {
+                const btn = document.getElementById(`skill-${charKey}-${i}`);
+                if (btn) { btn.addEventListener('click', () => executeSkillByAction(charKey, i)); }
+            }
+        });
+
+        document.getElementById('btn-deploy-battle').addEventListener('click', () => {
+            AudioEngine.startBGM();
+            document.getElementById('lobby-modal').classList.add('hidden');
+        });
+        document.getElementById('btn-open-lobby').addEventListener('click', () => {
+            document.getElementById('lobby-modal').classList.remove('hidden');
+        });
+
+        document.getElementById('tab-btn-weapons').addEventListener('click', () => switchLobbyTab('weapons'));
+        document.getElementById('tab-btn-stages').addEventListener('click', () => switchLobbyTab('stages'));
+
+        document.querySelectorAll('.stage-select-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                buildIsland(e.target.getAttribute('data-stage'));
+                document.getElementById('lobby-modal').classList.add('hidden');
+                showSkillPopup(`「${e.target.getAttribute('data-stage')}」島出撃！`, "🪐");
+            });
+        });
+
+        document.getElementById('secret-terminal-close').addEventListener('click', () => {
+            document.getElementById('secret-terminal-modal').classList.add('hidden');
+        });
+        document.getElementById('secret-terminal-submit').addEventListener('click', () => {
+            const code = document.getElementById('secret-terminal-input').value.trim();
+            if (code === '666') {
+                document.getElementById('character-selector-panel').classList.remove('hidden');
+                alertBox("🔐 コード 666 認証成功！キャラクターを選択してください", "⭐");
+            } else {
+                alertBox("❌ コードが違います (コード: 666)", "⚠️");
+            }
+        });
+
+        document.querySelectorAll('.char-select-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const charType = e.target.getAttribute('data-char');
+                if (charType === 'normal') {
+                    activateCharacterMode('normal');
+                    document.getElementById('btn-admin-panel').classList.add('hidden');
+                    showSkillPopup("通常兵装に戻りました", "👤");
+                } else {
+                    activateCharacterMode(charType);
+                }
+                document.getElementById('secret-terminal-modal').classList.add('hidden');
+            });
+        });
+    }
+
+    function switchLobbyTab(tab) {
+        document.getElementById('tab-content-weapons').classList.add('hidden');
+        document.getElementById('tab-content-stages').classList.add('hidden');
+        if (tab === 'weapons') document.getElementById('tab-content-weapons').classList.remove('hidden');
+        if (tab === 'stages') document.getElementById('tab-content-stages').classList.remove('hidden');
+    }
+
+    function renderWeaponList() {
+        const grid = document.getElementById('weapon-grid');
+        grid.innerHTML = '';
+        WEAPONS.forEach(w => {
+            const card = document.createElement('div');
+            card.className = "p-3 rounded-xl border border-cyan-300 bg-sky-50 hover:bg-sky-100 cursor-pointer transition shadow-sm flex flex-col justify-between";
+            card.innerHTML = `
+                <div>
+                    <div class="text-xs font-black text-cyan-800 truncate">${w.name}</div>
+                    <div class="text-[10px] text-slate-500 mt-1">威力: ${w.damage.toLocaleString()}</div>
+                </div>
+                <div class="text-[10px] font-bold text-emerald-600 mt-2">✓ 装備する</div>
+            `;
+            card.addEventListener('click', () => {
+                currentWeapon = w;
+                showSkillPopup(`${w.name} 装備！`, "⚔️");
+            });
+            grid.appendChild(card);
+        });
+    }
+
+    let spawnTimer = 0;
+    function animate() {
+        requestAnimationFrame(animate);
+
+        spawnTimer++;
+        if (spawnTimer >= 2) {
+            spawnTimer = 0;
+            checkAndSpawnEnemies();
+        }
+
+        const moveSpeed = 0.35 * adminSettings.playerSpeed;
+        const forward = new THREE.Vector3(); camera.getWorldDirection(forward); forward.y = 0; forward.normalize();
+        const right = new THREE.Vector3(); right.crossVectors(forward, new THREE.Vector3(0, 1, 0)).normalize();
+
+        if (keysPressed['KeyW']) playerPos.addScaledVector(forward, moveSpeed);
+        if (keysPressed['KeyS']) playerPos.addScaledVector(forward, -moveSpeed);
+        if (keysPressed['KeyA']) playerPos.addScaledVector(right, -moveSpeed);
+        if (keysPressed['KeyD']) playerPos.addScaledVector(right, moveSpeed);
+
+        if (isHoverFlying) {
+            if (keysPressed['Space']) playerPos.y += 0.25;
+            if (keysPressed['ShiftLeft']) playerPos.y = Math.max(1.6, playerPos.y - 0.25);
+            playerVelocityY = 0;
+        } else {
+            if (keysPressed['Space'] && isGrounded) { playerVelocityY = adminSettings.jumpForce; isGrounded = false; }
+            playerVelocityY -= adminSettings.gravity;
+            playerPos.y += playerVelocityY;
+            if (playerPos.y <= 1.6) { playerPos.y = 1.6; playerVelocityY = 0; isGrounded = true; }
+        }
+
+        camera.position.set(playerPos.x, playerPos.y, playerPos.z);
+
+        for (let i = bullets.length - 1; i >= 0; i--) {
+            const b = bullets[i];
+            b.mesh.position.addScaledVector(b.dir, 1.8 * adminSettings.skillSpeed);
+            b.life--;
+
+            for (let j = enemies.length - 1; j >= 0; j--) {
+                const en = enemies[j];
+                if (b.mesh.position.distanceTo(en.mesh.position) < 2.5) {
+                    en.hp -= b.damage;
+                    createParticleExplosion(en.mesh.position, 0x38bdf8, 10);
+                    b.life = 0;
+
+                    if (en.hp <= 0) {
+                        scene.remove(en.mesh);
+                        enemies.splice(j, 1);
+                        waveKills++;
+                        playerKeys += (en.isRare ? 200.0 : 50.0) * adminSettings.keyBoost;
+                        updateHUDKeys();
+                        document.getElementById('hud-wave-kills').textContent = waveKills;
+
+                        if (waveKills >= 100) {
+                            currentWave++; waveKills = 0;
+                            document.getElementById('hud-wave').textContent = currentWave;
+                            showSkillPopup(`WAVE ${currentWave} 到達！！`, "🏆");
+                        }
+                    }
+                    break;
+                }
+            }
+
+            if (currentBoss && b.life > 0) {
+                if (b.mesh.position.distanceTo(currentBoss.mesh.position) < 8.0) {
+                    currentBoss.hp -= b.damage;
+                    createParticleExplosion(currentBoss.mesh.position, 0xef4444, 25);
+                    b.life = 0; updateBossHPUI();
+                    if (currentBoss.hp <= 0) destroyBoss();
+                }
+            }
+
+            if (b.life <= 0) { scene.remove(b.mesh); bullets.splice(i, 1); }
+        }
+
+        if (!isTimeFrozen) {
+            enemies.forEach(en => {
+                const dir = new THREE.Vector3().subVectors(playerPos, en.mesh.position);
+                dir.y = 0; 
+                dir.normalize();
+                en.mesh.position.addScaledVector(dir, en.speed);
+                en.mesh.lookAt(playerPos.x, en.mesh.position.y, playerPos.z);
+            });
+            if (currentBoss) {
+                const bDir = new THREE.Vector3().subVectors(playerPos, currentBoss.mesh.position);
+                bDir.y = 0; bDir.normalize();
+                currentBoss.mesh.position.addScaledVector(bDir, currentBoss.speed);
+                currentBoss.mesh.lookAt(playerPos.x, currentBoss.mesh.position.y, playerPos.z);
+            }
+        }
+
+        for (let i = particles.length - 1; i >= 0; i--) {
+            const p = particles[i]; p.mesh.position.add(p.vel); p.life--;
+            if (p.life <= 0) { scene.remove(p.mesh); particles.splice(i, 1); }
+        }
+
+        renderer.render(scene, camera);
+    }
+
+    if (document.readyState === 'complete') {
+        init3D();
+        setupEvents();
+        renderWeaponList();
+        updateHUDKeys();
+        animate();
+    } else {
+        window.addEventListener('load', () => {
+            init3D();
+            setupEvents();
+            renderWeaponList();
+            updateHUDKeys();
+            animate();
+        });
+    }
+    </script>
+</body>
+</html>
