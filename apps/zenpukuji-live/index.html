@@ -1,0 +1,1445 @@
+<!DOCTYPE html>
+<html lang="ja" data-theme="auto">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>善福寺川ライブ（非公式）— 杉並区の川をリアルタイムで見る</title>
+<meta name="description" content="【非公式】杉並区を流れる善福寺川のライブカメラ15地点を1画面で。杉並区・東京都・気象庁の公開データを個人がまとめたビューアです。公式サイトではありません。">
+<meta property="og:title" content="善福寺川ライブ（非公式）">
+<meta property="og:description" content="杉並区・東京都が公開している善福寺川のライブカメラ15地点をまとめた、個人運営の非公式ビューアです。">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#F5F7F8">
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="icon" href="favicon-32.png" type="image/png" sizes="32x32">
+<link rel="icon" href="favicon-192.png" type="image/png" sizes="192x192">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="preconnect" href="https://i.ytimg.com">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+<style>
+/* ==========================================================
+   善福寺川ライブ
+   書体：システムフォント1つ（SF Pro / ヒラギノ）。数字は tabular figures。
+   色  ：川のブルーを基調に、状態は 緑=発表なし / 橙=注意報 / 赤=警報。
+   ========================================================== */
+:root{
+  --brand:#1558A8;
+  --brand-2:#2B7BD4;
+  --brand-soft:#E8EFFA;
+  --brand-ink:#FFFFFF;
+
+  --bg:#F5F7F8;
+  --surface:#FFFFFF;
+  --surface-2:#F0F3F4;
+  --line:#D6DFE2;
+  --line-soft:#E6ECEE;
+
+  --text:#17242C;
+  --muted:#566771;
+
+  --kanda:#8F5518; --kanda-ink:#FFFFFF;
+  --track-off:#7F8D93;
+  --ok:#16A34A; --ok-text:#15803D;
+  --warn:#F59E0B; --warn-text:#A25C00;
+  --danger:#E03B30; --danger-text:#C22318;
+
+  --r-xl:20px; --r-lg:16px; --r-md:12px; --r-sm:8px; --r-full:999px;
+  --shadow-s:0 1px 2px rgba(23,36,44,.06),0 1px 3px rgba(23,36,44,.05);
+  --shadow-m:0 4px 16px rgba(23,36,44,.08);
+  --shadow-l:0 12px 40px rgba(23,36,44,.16);
+
+  --ff:-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",
+       "Hiragino Sans","Hiragino Kaku Gothic ProN","Yu Gothic Medium","Meiryo",sans-serif;
+
+  --pad:16px; --maxw:1380px;
+  color-scheme:light;
+}
+@media (min-width:900px){ :root{ --pad:24px; } }
+
+html[data-theme="dark"], html[data-theme="auto"].dark-auto{
+  --brand:#6FB2F5; --brand-2:#9BC9FF; --brand-soft:rgba(111,178,245,.18); --brand-ink:#06203F;
+  --bg:#0D1417; --surface:#161F24; --surface-2:#1D272D;
+  --line:#37444B; --line-soft:#2A353B;
+  --text:#F2F6F7; --muted:#9FB2BA;
+  --kanda:#E8A85C; --kanda-ink:#2B1900;
+  --track-off:#6E7F86;
+  --ok:#34D399; --ok-text:#34D399;
+  --warn:#FBBF24; --warn-text:#FBBF24;
+  --danger:#F87171; --danger-text:#F87171;
+  --shadow-s:0 1px 2px rgba(0,0,0,.4);
+  --shadow-m:0 4px 16px rgba(0,0,0,.45);
+  --shadow-l:0 12px 40px rgba(0,0,0,.6);
+  color-scheme:dark;
+}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{
+  font-family:var(--ff);background:var(--bg);color:var(--text);
+  font-size:16px;line-height:1.6;min-height:100dvh;
+  -webkit-font-smoothing:antialiased;overflow-wrap:anywhere;
+}
+img{display:block;max-width:100%}
+button,input,select{font:inherit;color:inherit;background:none;border:0}
+button{cursor:pointer}
+a{color:var(--brand);text-underline-offset:3px}
+.num{font-variant-numeric:tabular-nums;font-feature-settings:"tnum" 1}
+:focus-visible{outline:3px solid var(--brand-2);outline-offset:2px;border-radius:10px}
+@media (prefers-contrast: more){
+  :root{ --muted:#3C4A51; --line:#9AA8AD; --track-off:#4A585E; }
+  html[data-theme="dark"],html[data-theme="auto"].dark-auto{ --muted:#D2DFE4; --line:#7C8E96; --track-off:#95A6AD; }
+  .cam,.notice,.updated,.status-card{border-width:2px}
+  .area{outline:1px solid currentColor;outline-offset:-1px}
+}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.001ms!important;transition-duration:.001ms!important;scroll-behavior:auto!important}}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.skip{position:fixed;left:8px;top:-80px;z-index:2600;background:var(--brand);color:var(--brand-ink);
+  padding:12px 18px;border-radius:0 0 12px 12px;font-weight:600;text-decoration:none;transition:top .15s}
+.skip:focus{top:0}
+.wrap{max-width:var(--maxw);margin-inline:auto;padding-inline:var(--pad)}
+.ico{width:1em;height:1em;stroke:currentColor;fill:none;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round;flex:none}
+
+/* ---------------- ヘッダー ---------------- */
+.topbar{background:var(--surface);border-bottom:1px solid var(--line)}
+.bar-in{display:flex;align-items:center;gap:16px;min-height:72px;padding-block:10px;flex-wrap:wrap}
+.brand-h1{margin:0;flex:none;line-height:0;font-size:0}
+.brand{display:flex;align-items:center;flex:none;text-decoration:none;line-height:0}
+.brand img{height:44px;width:auto;max-width:100%}
+.sitefoot .brand img{height:38px}
+/* ロゴの明暗切り替えは applyTheme() で src を差し替える（CSS の content は Firefox で効かないため） */
+
+.topnav{display:flex;align-items:center;gap:4px;margin-left:auto}
+.tnav{
+  display:flex;align-items:center;gap:7px;min-height:42px;padding:0 12px;
+  border-radius:var(--r-full);font-size:14px;font-weight:500;color:var(--muted);
+  transition:background .15s,color .15s;white-space:nowrap;
+}
+.tnav .ico{width:17px;height:17px}
+.tnav:hover{background:var(--surface-2);color:var(--text)}
+.updated{
+  display:flex;align-items:center;gap:8px;flex:none;
+  padding:4px 4px 4px 15px;border-radius:var(--r-full);
+  border:1px solid var(--line);background:var(--surface);box-shadow:var(--shadow-s);
+}
+.updated .sdot{width:8px;height:8px;border-radius:50%;background:var(--ok);flex:none}
+.updated[data-lv="advisory"] .sdot{background:var(--warn)}
+.updated[data-lv="warning"] .sdot,.updated[data-lv="emergency"] .sdot{background:var(--danger)}
+.updated .txt{font-size:14px;color:var(--text);white-space:nowrap}
+.updated .ulbl{color:var(--muted)}
+.refresh{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;color:var(--brand);
+  background:var(--brand-soft);transition:transform .15s}
+.refresh .ico{width:19px;height:19px;stroke-width:2}
+.refresh:hover{transform:rotate(-30deg)}
+.refresh.spin .ico{animation:spin .8s linear}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+@media (max-width:400px){ .brand img{height:32px} }
+@media (max-width:860px){
+  .bar-in{min-height:60px;gap:10px}
+  .brand img{height:36px}
+  .tnav{flex-direction:column;gap:3px;min-height:50px;width:66px;padding:5px 2px;font-size:12px;font-weight:500}
+  .tnav .ico{width:19px;height:19px}
+  .topnav{order:3;margin-left:0;width:100%;justify-content:space-around;border-top:1px solid var(--line-soft);padding-top:4px}
+  .updated{margin-left:auto;padding-left:11px}
+  .updated .txt{font-size:14px}
+  .updated .ulbl{display:none}
+}
+
+/* ---------------- 地図 ---------------- */
+.mapcard{
+  position:relative;margin-top:16px;border-radius:var(--r-xl);overflow:hidden;
+  background:var(--surface-2);box-shadow:var(--shadow-s);border:1px solid var(--line);
+}
+#map{height:clamp(340px,42vh,400px);width:100%;background:var(--surface-2);z-index:1}
+.mapcard.big{position:fixed;inset:0;z-index:3000;margin:0;border:0;border-radius:0}
+.mapview{position:relative}
+.mapcard.big .mapview,.mapcard.big #map{height:100dvh}
+body.map-open{overflow:hidden}
+
+.map-fab{
+  position:absolute;z-index:1100;display:inline-flex;align-items:center;gap:7px;
+  min-height:40px;padding:0 14px;border-radius:var(--r-full);
+  background:var(--surface);color:var(--text);font-size:14px;font-weight:500;
+  box-shadow:var(--shadow-m);border:1px solid var(--line);
+}
+.map-fab:hover{background:var(--surface-2)}
+.map-fab[hidden]{display:none}
+.mapcard.no-map .mapview{display:none}
+.map-fab .ico{width:16px;height:16px}
+.map-fab.ic{min-width:40px;padding:0;justify-content:center}
+#fabExpand{right:14px;bottom:14px}
+#fabLocate{right:14px;top:96px}
+#fabLayers{left:14px;top:14px}
+
+.status-card{
+  position:absolute;left:14px;top:14px;z-index:1100;width:300px;max-width:calc(100% - 28px);
+  background:var(--surface);border-radius:var(--r-lg);padding:15px 16px 16px;
+  box-shadow:var(--shadow-m);border:1px solid var(--line);
+}
+.status-card h2{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:600;color:var(--muted)}
+.status-card h2 .wv{width:18px;height:18px;color:var(--brand-2);stroke:currentColor;fill:none;stroke-width:2.2;stroke-linecap:round}
+.status-now{display:flex;align-items:center;gap:9px;margin-top:9px}
+.status-now .dot{width:12px;height:12px;border-radius:50%;background:var(--ok);flex:none}
+.status-now .lbl{font-size:20px;font-weight:700;letter-spacing:.01em;line-height:1.25}
+.status-card[data-lv="advisory"] .dot{background:var(--warn)}
+.status-card[data-lv="advisory"] .lbl{color:var(--warn-text)}
+.status-card[data-lv="warning"] .dot,.status-card[data-lv="emergency"] .dot{background:var(--danger)}
+.status-card[data-lv="warning"] .lbl,.status-card[data-lv="emergency"] .lbl{color:var(--danger-text)}
+.status-sub{font-size:14px;color:var(--muted);margin-top:6px;line-height:1.55}
+.status-time{font-size:13px;color:var(--muted);margin-top:7px}
+.status-caveat{
+  font-size:12.5px;line-height:1.5;color:var(--text);
+  margin-top:10px;padding:8px 10px;border-radius:var(--r-sm);
+  background:var(--surface-2);
+}
+.status-btn{
+  display:inline-flex;align-items:center;gap:7px;margin-top:13px;
+  min-height:40px;padding:0 15px;border-radius:var(--r-full);
+  border:1.5px solid var(--brand);color:var(--brand);font-size:14px;font-weight:600;
+  background:var(--surface);transition:background .15s;
+}
+.status-btn:hover{background:var(--brand-soft)}
+.status-btn .ico{width:15px;height:15px;stroke-width:2}
+
+.map-legend{
+  position:absolute;left:14px;bottom:14px;z-index:1100;
+  display:flex;align-items:flex-end;padding:6px 10px;border-radius:var(--r-md);
+  background:rgba(255,255,255,.88);backdrop-filter:blur(12px) saturate(180%);
+  -webkit-backdrop-filter:blur(12px) saturate(180%);
+  border:1px solid var(--line);box-shadow:var(--shadow-s);
+  font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums;
+  pointer-events:none;
+}
+html[data-theme="dark"] .map-legend,html[data-theme="auto"].dark-auto .map-legend{background:rgba(22,31,36,.88)}
+.map-legend .lt{margin-right:8px;align-self:center;font-size:12px;font-weight:600;color:var(--text);white-space:nowrap}
+.map-legend b{display:flex;flex-direction:column;align-items:stretch;gap:3px;font-weight:400;min-width:32px;text-align:center}
+.map-legend i{display:block;width:100%;height:7px}
+.map-legend[hidden]{display:none}
+
+.leaflet-container{font-family:var(--ff);background:var(--surface-2)}
+html[data-theme="dark"] .gsi-base,html[data-theme="auto"].dark-auto .gsi-base{filter:brightness(.8) contrast(1.06) saturate(.85)}
+.leaflet-top.leaflet-right{top:14px;right:14px}
+.leaflet-bar{border:1px solid var(--line)!important;border-radius:var(--r-md)!important;overflow:hidden;box-shadow:var(--shadow-m)!important}
+.leaflet-bar a,.leaflet-touch .leaflet-bar a{
+  background:var(--surface);color:var(--text);border-bottom-color:var(--line);
+  width:40px;height:40px;line-height:40px;font-size:21px;
+}
+.leaflet-bar a:hover{background:var(--surface-2);color:var(--text)}
+.leaflet-control-attribution{background:rgba(255,255,255,.8)!important;color:var(--muted)!important;font-size:9.5px;margin:0 0 4px 0!important}
+.leaflet-bottom.leaflet-right{bottom:44px}
+html[data-theme="dark"] .leaflet-control-attribution,html[data-theme="auto"].dark-auto .leaflet-control-attribution{background:rgba(22,31,36,.8)!important}
+.leaflet-control-attribution a{color:var(--brand)!important}
+.leaflet-tooltip{background:var(--surface);color:var(--text);border:1px solid var(--line);border-radius:var(--r-sm);
+  font-size:12px;font-weight:600;box-shadow:var(--shadow-m)}
+.leaflet-tooltip::before{display:none}
+.pin{display:grid;place-items:center;width:30px;height:30px;border-radius:50% 50% 50% 4px;
+  transform:rotate(-45deg);background:var(--brand);color:var(--brand-ink);
+  border:2.5px solid var(--surface);box-shadow:0 2px 7px rgba(10,25,45,.45);
+  font-size:13px;font-weight:700;font-variant-numeric:tabular-nums;cursor:pointer}
+.pin span{transform:rotate(45deg)}
+.pin.kanda{background:var(--kanda);color:var(--kanda-ink)}
+.here-dot{width:16px;height:16px;border-radius:50%;background:#12B5E5;border:3px solid #fff;box-shadow:0 0 0 4px rgba(18,181,229,.3)}
+.map-fallback{padding:18px;color:var(--muted);font-size:13px}
+
+@media (max-width:760px){
+  .status-card{position:static;width:auto;max-width:none;border:0;border-radius:0;
+    border-top:1px solid var(--line);box-shadow:none;padding:14px 14px 15px}
+  #map{height:clamp(200px,30vh,260px)}
+  #fabLocate{top:10px;right:10px;bottom:auto}
+  #fabExpand{right:10px;bottom:10px;min-width:40px;padding:0 10px;gap:0}
+  #fabExpand #fabExpandLabel,#fabExpand .fab-arrow{display:none}
+  .map-legend{left:10px;bottom:10px;top:auto;padding:5px 7px}
+  .map-legend .lt{font-size:11px;margin-right:5px}
+  .map-legend b{min-width:21px;font-size:11px}
+  .map-legend b:last-child{min-width:28px}
+  .leaflet-bottom.leaflet-right{bottom:56px}
+}
+
+/* ---------------- ツールバー（エリア・自動再生・並び順） ---------------- */
+.toolbar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:18px 0 14px}
+.areas{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;flex:1 1 auto;min-width:0;
+  margin-inline:calc(var(--pad)*-1);padding-inline:var(--pad);padding-block:2px}
+.areas::-webkit-scrollbar{display:none}
+.area{
+  flex:none;display:inline-flex;align-items:center;gap:9px;
+  min-height:44px;padding:0 18px;border-radius:var(--r-full);
+  background:var(--brand-soft);color:var(--brand);font-size:15px;font-weight:600;
+  transition:background .15s,color .15s;white-space:nowrap;
+}
+html[data-theme="dark"] .area,html[data-theme="auto"].dark-auto .area{color:var(--brand-2)}
+.area:hover{background:color-mix(in srgb,var(--brand) 18%,var(--brand-soft))}
+.area .cnt{
+  min-width:22px;height:22px;padding:0 6px;border-radius:var(--r-full);
+  display:grid;place-items:center;font-size:13px;font-weight:600;
+  background:var(--surface);color:var(--brand);font-variant-numeric:tabular-nums;
+}
+.area[aria-pressed="true"]{background:var(--brand);color:var(--brand-ink)}
+html[data-theme="dark"] .area[aria-pressed="true"],html[data-theme="auto"].dark-auto .area[aria-pressed="true"]{color:var(--brand-ink)}
+
+.tools-right{display:flex;align-items:center;gap:10px;flex:none;flex-wrap:wrap}
+.switch{
+  display:inline-flex;align-items:center;gap:10px;min-height:44px;padding:0 6px 0 15px;
+  border-radius:var(--r-full);background:var(--surface);border:1px solid var(--line);
+  font-size:14.5px;font-weight:500;box-shadow:var(--shadow-s);white-space:nowrap;
+}
+.switch .ico{width:16px;height:16px;color:var(--brand)}
+.track{width:46px;height:28px;border-radius:var(--r-full);background:var(--track-off);position:relative;transition:background .2s;flex:none}
+.track::after{content:"";position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;
+  background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.35);transition:transform .2s}
+.switch[aria-pressed="true"] .track{background:var(--brand)}
+.switch[aria-pressed="true"] .track::after{transform:translateX(18px)}
+
+.sortwrap{position:relative;display:inline-flex;align-items:center}
+.sortwrap .ico{position:absolute;left:14px;width:16px;height:16px;color:var(--muted);pointer-events:none}
+.sortwrap::after{content:"";position:absolute;right:14px;width:8px;height:8px;pointer-events:none;
+  border-right:1.8px solid var(--muted);border-bottom:1.8px solid var(--muted);transform:translateY(-2px) rotate(45deg)}
+#sortSel{
+  appearance:none;-webkit-appearance:none;min-height:44px;padding:0 34px 0 38px;
+  border-radius:var(--r-full);background:var(--surface);border:1px solid var(--line);
+  font-size:14.5px;font-weight:500;color:var(--text);box-shadow:var(--shadow-s);cursor:pointer;
+}
+@media (max-width:560px){ .sheet-head{padding:16px 16px 12px} .sheet-head h2{font-size:23px} .sheet-body{padding:0 16px 22px} }
+@media (max-width:640px){
+  .toolbar{gap:10px}
+  .tools-right{width:100%;justify-content:space-between}
+  .switch{padding-left:13px;font-size:14px}
+  #sortSel{font-size:14px}
+}
+
+/* ---------------- カメラグリッド ---------------- */
+.grid{display:grid;gap:16px;grid-template-columns:repeat(auto-fill,minmax(235px,1fr))}
+@media (max-width:640px){ .grid{gap:12px;grid-template-columns:repeat(auto-fill,minmax(150px,1fr))} }
+
+.cam{
+  display:block;width:100%;text-align:left;
+  background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);
+  padding:8px;box-shadow:var(--shadow-s);
+  transition:box-shadow .16s,border-color .16s,transform .12s;
+}
+.cam:hover{box-shadow:var(--shadow-m);border-color:color-mix(in srgb,var(--brand) 35%,var(--line))}
+.cam:active{transform:scale(.99)}
+.shot{position:relative;aspect-ratio:16/9;border-radius:var(--r-md);overflow:hidden;background:#0B1417;display:block}
+.shot img{width:100%;height:100%;object-fit:cover;transition:opacity .3s}
+.shot img.load{opacity:.4}
+.shot iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.live-badge{
+  position:absolute;right:7px;top:7px;z-index:2;display:none;align-items:center;gap:5px;
+  height:24px;padding:0 10px;border-radius:var(--r-sm);
+  background:rgba(8,15,18,.78);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+  color:#fff;font-size:12px;font-weight:600;letter-spacing:.02em;
+}
+.live-badge::before{content:"";width:6px;height:6px;border-radius:50%;background:#FF3B30}
+.shot[data-s="live"] .live-badge{display:flex}
+.still-badge{
+  position:absolute;right:7px;top:7px;z-index:2;display:none;align-items:center;
+  height:24px;padding:0 10px;border-radius:var(--r-sm);
+  background:rgba(8,15,18,.78);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+  color:#fff;font-size:12px;font-weight:600;
+}
+.shot[data-s="thumb"] .still-badge{display:flex}
+.expand-ic{
+  position:absolute;right:7px;bottom:7px;z-index:2;width:26px;height:26px;border-radius:7px;
+  display:grid;place-items:center;color:#fff;
+  background:rgba(8,15,18,.66);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+}
+.expand-ic .ico{width:14px;height:14px;stroke-width:2}
+.cam:hover .expand-ic{background:var(--brand)}
+.play-ic{position:absolute;inset:0;display:grid;place-items:center;opacity:0;transition:opacity .15s;pointer-events:none}
+.shot[data-s="thumb"] .play-ic{opacity:1}
+.play-ic span{width:40px;height:40px;border-radius:50%;background:rgba(11,20,23,.42);
+  backdrop-filter:blur(3px);border:1.5px solid rgba(255,255,255,.85);display:grid;place-items:center}
+.play-ic span::after{content:"";width:0;height:0;margin-left:3px;
+  border-left:11px solid #fff;border-top:7px solid transparent;border-bottom:7px solid transparent}
+.errbox{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;
+  gap:5px;padding:10px;text-align:center;background:var(--surface-2);color:var(--muted);font-size:13px}
+.shot[data-s="error"] .errbox{display:flex}
+.shot[data-s="error"] .play-ic,.shot[data-s="error"] .still-badge{display:none}
+
+.cmeta{display:block;padding:10px 6px 2px}
+.crow1{display:flex;align-items:flex-start;gap:8px}
+.cno{
+  width:24px;height:24px;flex:none;border-radius:50%;margin-top:1px;
+  display:grid;place-items:center;background:var(--brand);color:var(--brand-ink);
+  font-size:13px;font-weight:600;font-variant-numeric:tabular-nums;
+}
+.cno.kanda{background:var(--kanda);color:var(--kanda-ink)}
+.cname{display:block;font-size:15.5px;font-weight:600;line-height:1.35;flex:1;min-width:0}
+.crow2{display:flex;align-items:baseline;gap:8px;margin-top:2px;padding-left:32px}
+.cplace{font-size:13px;color:var(--muted);flex:1;min-width:0;
+  display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}
+.ctime{font-size:13px;color:var(--muted);flex:none;font-variant-numeric:tabular-nums}
+@media (max-width:640px){
+  .cam{padding:6px}
+  .cmeta{padding:9px 4px 1px}
+  .cname{font-size:14.5px}
+  .crow2{padding-left:0;margin-top:3px}
+}
+
+.sect{grid-column:1/-1;display:flex;align-items:center;gap:10px;margin:6px 0 0}
+.sect h2{font-size:14px;font-weight:600;color:var(--muted);white-space:nowrap}
+.sect::after{content:"";flex:1;height:1px;background:var(--line)}
+
+/* ---------------- フッター ---------------- */
+.sitefoot{margin:30px 0 40px;padding-top:20px;border-top:1px solid var(--line);
+  display:flex;align-items:center;gap:16px 24px;flex-wrap:wrap}
+.sitefoot .brand{pointer-events:none}
+.sitefoot .fdesc{font-size:13px;color:var(--muted);flex:1 1 260px;line-height:1.6}
+
+/* ---------------- シート ---------------- */
+dialog.sheet{
+  position:fixed;inset:auto 0 0 0;margin:0 auto;padding:0;border:0;
+  width:100%;max-width:560px;max-height:92dvh;
+  border-radius:var(--r-xl) var(--r-xl) 0 0;background:var(--surface);color:var(--text);
+  box-shadow:var(--shadow-l);overflow:hidden;animation:sin .26s cubic-bezier(.32,.72,0,1);
+}
+@keyframes sin{from{transform:translateY(16px);opacity:.4}}
+dialog.sheet::backdrop{background:rgba(9,18,22,.5);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
+@media (min-width:700px){ dialog.sheet{inset:0;margin:auto;max-height:86dvh;border-radius:24px;max-width:720px}
+  @keyframes sin{from{transform:scale(.97);opacity:0}} }
+.sheet-grab{display:flex;justify-content:center;padding:9px 0 2px}
+.sheet-grab::before{content:"";width:36px;height:5px;border-radius:3px;background:var(--line)}
+@media (min-width:700px){ .sheet-grab{display:none} }
+.sheet-head{display:flex;align-items:flex-start;gap:12px;padding:20px 24px 16px}
+.sheet-head h2{font-size:27px;font-weight:700;letter-spacing:.01em;flex:1;line-height:1.25;padding-top:2px}
+.xbtn{width:44px;height:44px;flex:none;border-radius:50%;display:grid;place-items:center;background:var(--surface-2);color:var(--muted)}
+.xbtn:hover{background:var(--line);color:var(--text)}
+.xbtn .ico{width:19px;height:19px;stroke-width:2}
+.sheet-body{padding:0 24px 26px;overflow-y:auto;max-height:calc(92dvh - 92px);-webkit-overflow-scrolling:touch}
+@media (min-width:700px){ .sheet-body{max-height:calc(86dvh - 92px)} }
+.row{display:flex;align-items:center;gap:14px;width:100%;min-height:66px;padding:14px 17px;
+  border-radius:var(--r-md);text-align:left;background:var(--surface-2);margin-bottom:8px;color:inherit;text-decoration:none}
+.row .rl{display:block;flex:1;min-width:0}
+.row .rt{display:block;font-size:16px;font-weight:600}
+.row .rs{display:block;font-size:13.5px;color:var(--muted);line-height:1.5;margin-top:2px}
+.row .go{color:var(--muted);flex:none}
+.row input[type="checkbox"]{width:24px;height:24px;accent-color:var(--brand);flex:none;cursor:pointer}
+.row.link:hover{background:var(--brand-soft)}
+.seg{display:flex;gap:4px;background:var(--surface-2);border-radius:var(--r-full);padding:5px;margin-bottom:8px}
+.seg button{flex:1;min-height:44px;border-radius:var(--r-full);font-size:14.5px;font-weight:500;color:var(--text)}
+.seg button[aria-pressed="true"]{background:var(--brand);color:var(--brand-ink);font-weight:600}
+.sheet-h3{font-size:13.5px;font-weight:600;color:var(--muted);margin:20px 2px 8px}
+
+/* ---- 防災情報シートの中身 ---- */
+.wx-state{
+  display:flex;align-items:center;gap:14px;
+  padding:16px 18px;border-radius:var(--r-lg);margin-bottom:8px;
+  background:color-mix(in srgb,var(--ok) 11%,var(--surface));
+  border:1px solid color-mix(in srgb,var(--ok) 34%,transparent);
+}
+.wx-ic{width:42px;height:42px;flex:none;border-radius:50%;display:grid;place-items:center;background:var(--ok);color:#fff}
+.wx-ic svg{width:23px;height:23px;stroke:currentColor;fill:none;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.wx-ic .i-alert{display:none}
+.wx-state[data-lv="advisory"]{background:color-mix(in srgb,var(--warn) 13%,var(--surface));border-color:color-mix(in srgb,var(--warn) 40%,transparent)}
+.wx-state[data-lv="advisory"] .wx-ic{background:var(--warn-text)}
+.wx-state[data-lv="warning"],.wx-state[data-lv="emergency"]{background:color-mix(in srgb,var(--danger) 12%,var(--surface));border-color:color-mix(in srgb,var(--danger) 40%,transparent)}
+.wx-state[data-lv="warning"] .wx-ic,.wx-state[data-lv="emergency"] .wx-ic{background:var(--danger-text)}
+.wx-state:not([data-lv="ok"]) .i-ok{display:none}
+.wx-state:not([data-lv="ok"]) .i-alert{display:block}
+.wx-state .rt{display:block;font-size:16px;font-weight:600}
+.wx-state .rs{display:block;font-size:13.5px;color:var(--muted);margin-top:2px;line-height:1.5}
+
+.sec{display:flex;align-items:center;gap:10px;font-size:18px;font-weight:700;margin:22px 0 10px;letter-spacing:.01em}
+.sec-ic{width:34px;height:34px;flex:none;border-radius:10px;display:grid;place-items:center;
+  background:var(--brand-soft);color:var(--brand)}
+.sec-ic svg{width:19px;height:19px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+
+
+.quote{background:var(--surface-2);border-radius:var(--r-md);padding:15px 17px;font-size:14.5px;line-height:1.75}
+.quote-time{font-size:13px;color:var(--muted);margin:9px 2px 0}
+
+.lrow{
+  display:flex;align-items:center;gap:14px;width:100%;
+  padding:14px 17px;border-radius:var(--r-md);margin-bottom:8px;
+  background:var(--surface-2);color:inherit;text-decoration:none;min-height:66px;
+  transition:background .15s;
+}
+.lrow:hover{background:var(--brand-soft)}
+.lno,.lic{width:38px;height:38px;flex:none;border-radius:50%;display:grid;place-items:center;
+  background:var(--brand);color:var(--brand-ink);font-size:16px;font-weight:700}
+.lic{border-radius:11px;background:var(--surface);color:var(--brand);border:1.5px solid color-mix(in srgb,var(--brand) 38%,transparent)}
+.lic svg{width:19px;height:19px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.lrow .rl{display:block;flex:1;min-width:0}
+.lrow .rt{display:block;font-size:16px;font-weight:600}
+.lrow .rs{display:block;font-size:13.5px;color:var(--muted);margin-top:2px;line-height:1.45}
+.ext{width:18px;height:18px;flex:none;stroke:var(--muted);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.lrow:hover .ext{stroke:var(--brand)}
+@media (max-width:560px){
+  .sec{font-size:16.5px}
+  .lrow{gap:11px;padding:13px 14px}
+  .lno,.lic{width:34px;height:34px;font-size:15px}
+  .lrow .rt,.wx-state .rt{font-size:15px}
+  .wx-state{gap:12px;padding:14px 15px}
+  .wx-ic{width:38px;height:38px}
+}
+.sheet-note{font-size:13.5px;color:var(--muted);line-height:1.75;margin:10px 2px 0}
+.sheet-note strong{color:var(--text)}
+.warnbox{display:flex;align-items:flex-start;gap:13px;
+  margin:18px 0 0;padding:15px 17px;border-radius:var(--r-md);font-size:13.5px;line-height:1.7;
+  background:color-mix(in srgb,var(--warn) 12%,var(--surface-2));border:1px solid color-mix(in srgb,var(--warn) 38%,transparent)}
+.warnbox b{color:var(--text);font-weight:700}
+
+/* ---- このサイトについて ---- */
+.alertbox{
+  display:flex;align-items:flex-start;gap:16px;
+  padding:18px 20px;border-radius:var(--r-lg);
+  background:color-mix(in srgb,var(--warn) 11%,var(--surface));
+  border:1px solid color-mix(in srgb,var(--warn) 42%,transparent);
+}
+.ab-ic{width:40px;height:40px;flex:none;color:var(--warn);display:grid;place-items:center}
+.ab-ic svg{width:38px;height:38px}
+.ab-tx{font-size:13.5px;line-height:1.75;color:var(--muted)}
+.ab-tx b{display:block;color:var(--text);font-weight:700;font-size:15px;line-height:1.6;margin-bottom:6px}
+
+.sec2{border-bottom:1px solid var(--line);margin:28px 0 14px}
+.sec2 h3{display:inline-block;font-size:19px;font-weight:700;letter-spacing:.01em;
+  padding-bottom:9px;border-bottom:2px solid var(--text);margin-bottom:-1px}
+
+.irow{display:flex;align-items:center;gap:16px;padding:12px 14px;
+  border-radius:var(--r-md);background:var(--surface-2);margin-bottom:8px}
+.itile{width:46px;height:46px;flex:none;border-radius:12px;display:grid;place-items:center;
+  background:var(--brand-soft);color:var(--brand)}
+.itile svg{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.ilabel{font-size:15px;font-weight:700;flex:0 0 auto;width:192px;line-height:1.45}
+.idesc{flex:1;min-width:0;font-size:13.5px;line-height:1.7;color:var(--muted);
+  border-left:1px solid var(--line);padding-left:16px}
+
+.srclist{list-style:none;background:var(--surface-2);border-radius:var(--r-md);overflow:hidden}
+.srclist li+li{border-top:1px solid var(--line)}
+.srclist a{display:flex;align-items:center;gap:12px;padding:13px 16px;min-height:50px;
+  font-size:13.5px;color:var(--text);text-decoration:none;line-height:1.5}
+.srclist a:hover{background:var(--brand-soft)}
+.srclist .u{color:var(--brand);text-decoration:underline;text-underline-offset:3px;word-break:break-all}
+.srclist span{flex:1;min-width:0}
+.lnk{width:17px;height:17px;flex:none;stroke:var(--muted);fill:none;stroke-width:1.8;stroke-linecap:round}
+
+.endnote{display:flex;align-items:flex-start;gap:12px;margin:18px 2px 0;padding-top:16px;
+  border-top:1px solid var(--line);font-size:13px;line-height:1.7;color:var(--muted)}
+.en-ic{width:28px;height:28px;flex:none;border-radius:50%;display:grid;place-items:center;
+  background:var(--surface-2);color:var(--muted)}
+.en-ic svg{width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round}
+
+@media (max-width:560px){
+  .alertbox{gap:12px;padding:15px 16px}
+  .ab-ic{width:32px;height:32px}.ab-ic svg{width:30px;height:30px}
+  .ab-tx b{font-size:14.5px}
+  .sec2 h3{font-size:17px}
+  .irow{flex-wrap:wrap;gap:12px}
+  .ilabel{width:auto;flex:1 1 auto}
+  .idesc{flex:1 1 100%;border-left:0;padding-left:0;border-top:1px solid var(--line);padding-top:10px}
+}
+
+.wb-ic{width:30px;height:30px;flex:none;color:var(--warn-text);display:grid;place-items:center}
+.wb-ic svg{width:26px;height:26px;stroke:currentColor;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+
+/* ---------------- 拡大ビュー ---------------- */
+dialog.viewer{
+  margin:auto;padding:0;border:0;border-radius:var(--r-xl);
+  /* 16:9 のステージが縮まずに収まる幅を、画面の高さからも決める（160px は上下の帯のぶん） */
+  width:min(1120px, 96vw, calc((94dvh - 160px) * 16 / 9));
+  max-width:96vw;max-height:94dvh;
+  background:var(--surface);color:var(--text);overflow:hidden;box-shadow:var(--shadow-l)}
+dialog.viewer::backdrop{background:rgba(9,18,22,.72);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+.v-head{display:flex;align-items:center;gap:12px;padding:13px 16px}
+.v-head .vno{width:26px;height:26px;flex:none;border-radius:50%;display:grid;place-items:center;
+  background:var(--brand);color:var(--brand-ink);font-size:13.5px;font-weight:600;font-variant-numeric:tabular-nums}
+.v-head .vt{flex:1;min-width:0}
+.v-head h2{font-size:18px;font-weight:700;line-height:1.3}
+.v-head p{font-size:13.5px;color:var(--muted)}
+.v-stage{position:relative;width:100%;aspect-ratio:16/9;background:#000;margin-inline:auto}
+.v-stage iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+/* 1fr auto 1fr の3列にして、ページャを「画面の中央」に固定する */
+.v-foot{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:10px;padding:14px 16px}
+.v-pager{grid-column:2;display:flex;align-items:center;gap:10px}
+.v-yt{grid-column:3;justify-self:end}
+.vnav{
+  display:inline-flex;align-items:center;justify-content:center;gap:10px;
+  min-height:56px;padding:0 18px;border-radius:var(--r-lg);
+  background:var(--brand-soft);color:var(--brand);
+  white-space:nowrap;transition:background .15s,color .15s;
+}
+.vnav-tx{display:flex;flex-direction:column;line-height:1.25;min-width:0}
+.vnav-dir{font-size:15px;font-weight:700}
+.vnav-name{font-size:12px;font-weight:500;opacity:.85;max-width:150px;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.vnav-name:empty{display:none}
+#vPrev .vnav-tx{align-items:flex-start}
+#vNext .vnav-tx{align-items:flex-end}
+.vnav:hover:not(:disabled){background:var(--brand);color:var(--brand-ink)}
+.vnav:disabled{background:var(--surface-2);color:var(--muted);opacity:.5;cursor:not-allowed}
+.vnav .ico{width:18px;height:18px;stroke-width:2.2}
+.vbtn{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:44px;padding:0 16px;
+  border-radius:var(--r-full);background:var(--surface-2);color:var(--text);font-size:14.5px;font-weight:500;text-decoration:none}
+.vbtn:hover{background:var(--brand-soft);color:var(--brand)}
+.vbtn:disabled{opacity:.4;cursor:not-allowed}
+.vbtn .ico{width:15px;height:15px}
+.vpos{font-size:15px;font-weight:600;color:var(--muted);min-width:66px;text-align:center;padding:0 2px}
+
+@media (max-width:620px){
+  .v-foot{grid-template-columns:1fr;justify-items:center;gap:10px;padding:12px}
+  .v-pager,.v-yt{grid-column:1;justify-self:center}
+  .vnav{min-height:54px;padding:0 12px;gap:7px}
+  .vnav-dir{font-size:14px}
+  .vnav-name{font-size:11.5px;max-width:84px}
+  .vpos{min-width:48px;font-size:13.5px}
+}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom));transform:translateX(-50%);
+  z-index:2500;max-width:min(92vw,520px);padding:13px 20px;border-radius:var(--r-full);
+  background:var(--text);color:var(--surface);font-size:14.5px;text-align:center;box-shadow:var(--shadow-l)}
+.toast[hidden]{display:none}
+</style>
+</head>
+<body>
+<a class="skip" href="#grid">映像一覧へスキップ</a>
+
+<header class="topbar">
+  <div class="wrap bar-in">
+    <h1 class="brand-h1">
+      <a class="brand" href="#main">
+        <img class="logo" src="logo.webp" width="820" height="158"
+             alt="善福寺川ライブ ZENPUKUJI RIVER LIVE" decoding="async">
+      </a>
+    </h1>
+    <nav class="topnav" aria-label="サイト内メニュー">
+      <button class="tnav" type="button" id="btnAbout">
+        <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 7.6v.4"/></svg>
+        <span>このサイトについて</span>
+      </button>
+      <button class="tnav" type="button" id="btnWx">
+        <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 8.5a6 6 0 1 0-12 0c0 6-2 7.5-2 7.5h16s-2-1.5-2-7.5Z"/><path d="M13.7 19.5a2 2 0 0 1-3.4 0"/></svg>
+        <span>防災情報</span>
+      </button>
+      <button class="tnav" type="button" id="btnSettings">
+        <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.2"/><path d="M19.4 14.5a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-2.9 1.22V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-2.9-1.2l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.7 1.7 0 0 0 3.1 14H3a2 2 0 1 1 0-4h.1A1.7 1.7 0 0 0 4.3 7.1l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.7 1.7 0 0 0 10 3.1V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 2.9 1.2l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.7 1.7 0 0 0 1.2 2.87H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1.04Z"/></svg>
+        <span>設定</span>
+      </button>
+    </nav>
+
+    <div class="updated" id="updated" data-lv="ok" aria-label="映像の最終更新時刻">
+      <span class="sdot" aria-hidden="true"></span>
+      <span class="txt num"><span class="ulbl">最終更新</span> <span id="stampLine">--:--</span></span>
+      <button class="refresh" type="button" id="btnRefresh" aria-label="映像を今すぐ更新">
+        <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11a8 8 0 1 0-.6 4"/><path d="M20 5v6h-6"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main class="wrap" id="main">
+
+  <!-- 地図 -->
+  <h2 class="sr-only">カメラの位置と雨雲</h2>
+  <section class="mapcard" id="mapcard">
+    <div class="mapview">
+      <div id="map" role="application" aria-label="ライブカメラの位置を示す地図。ピンを押すとその地点のライブ映像が開きます。同じ内容は下の一覧でも確認できます。"></div>
+      <button class="map-fab ic" type="button" id="fabLocate" aria-label="現在地を地図に表示">
+        <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.4"/><circle cx="12" cy="12" r="8"/><path d="M12 1.6v2.6M12 19.8v2.6M22.4 12h-2.6M4.2 12H1.6"/></svg>
+      </button>
+      <button class="map-fab" type="button" id="fabExpand" aria-pressed="false" aria-label="地図を拡大する">
+        <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M20 15v5h-5M20 9V4h-5M4 15v5h5"/></svg>
+        <span id="fabExpandLabel">地図を拡大する</span>
+        <svg class="ico fab-arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </button>
+      <p class="map-legend" id="rainLegend">
+        <span class="lt">雨 mm/h</span>
+        <b><i style="background:#F2F2FF"></i>0.1</b><b><i style="background:#A0D2FF"></i>1</b><b><i style="background:#218CFF"></i>5</b><b><i style="background:#0041FF"></i>10</b><b><i style="background:#FAF500"></i>20</b><b><i style="background:#FFB900"></i>30</b><b><i style="background:#FF5000"></i>50</b><b><i style="background:#B40068"></i>80〜</b>
+      </p>
+    </div>
+
+    <div class="status-card" id="statusCard" data-lv="ok">
+      <h2>
+        <svg class="wv" viewBox="0 0 24 18" aria-hidden="true"><path d="M1 4c2.2-2.4 4.4-2.4 6.6 0s4.4 2.4 6.6 0 4.4-2.4 6.6 0"/><path d="M1 9c2.2-2.4 4.4-2.4 6.6 0s4.4 2.4 6.6 0 4.4-2.4 6.6 0"/><path d="M1 14c2.2-2.4 4.4-2.4 6.6 0s4.4 2.4 6.6 0 4.4-2.4 6.6 0"/></svg>
+        気象庁の発表（杉並区）
+      </h2>
+      <p class="status-now"><span class="dot" aria-hidden="true"></span><span class="lbl" id="statusLbl">確認中</span></p>
+      <p class="status-sub" id="statusSub">気象庁の発表を読み込んでいます</p>
+      <p class="status-time num" id="statusTime">—</p>
+      <p class="status-caveat">川の水位を測った値ではありません。増水しているかどうかは映像と公式の水位情報でご確認ください。</p>
+      <button class="status-btn" type="button" id="btnStatusMore">
+        水位・危険度を確認する
+        <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </button>
+    </div>
+
+    <p class="map-fallback" id="mapFallback" hidden>地図を読み込めませんでした。下の一覧は通常どおり使えます。</p>
+  </section>
+
+  <!-- ツールバー -->
+  <h2 class="sr-only">エリアと表示の設定</h2>
+  <div class="toolbar">
+    <div class="areas" role="group" aria-label="エリアで絞り込む">
+      <button class="area" type="button" data-area="all" aria-pressed="true">
+        すべてのカメラ<span class="cnt" data-cnt="all">15</span>
+      </button>
+      <button class="area" type="button" data-area="up" aria-pressed="false">
+        上流エリア<span class="cnt" data-cnt="up">5</span>
+      </button>
+      <button class="area" type="button" data-area="mid" aria-pressed="false">
+        中流エリア<span class="cnt" data-cnt="mid">5</span>
+      </button>
+      <button class="area" type="button" data-area="down" aria-pressed="false">
+        下流エリア<span class="cnt" data-cnt="down">5</span>
+      </button>
+    </div>
+
+    <div class="tools-right">
+      <button class="switch" type="button" id="swLive" aria-pressed="true">
+        <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 7.5 12 3l7 4.5v9L12 21l-7-4.5z"/><path d="m10.5 9.5 4 2.5-4 2.5z" fill="currentColor" stroke="none"/></svg>
+        自動再生
+        <span class="track" aria-hidden="true"></span>
+      </button>
+      <span class="sortwrap">
+        <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 4v16M8 4 5 7.5M8 4l3 3.5M16 20V4M16 20l-3-3.5M16 20l3-3.5"/></svg>
+        <label class="sr-only" for="sortSel">並び順</label>
+        <select id="sortSel">
+          <option value="down">上流から下流へ</option>
+          <option value="up">下流から上流へ</option>
+          <option value="near">現在地から近い順</option>
+        </select>
+      </span>
+    </div>
+  </div>
+
+  <h2 class="sr-only">ライブカメラ一覧</h2>
+  <div id="grid" class="grid" tabindex="-1"></div>
+
+  <footer class="sitefoot">
+    <span class="brand">
+      <img class="logo" src="logo.webp" width="820" height="158" alt="善福寺川ライブ" decoding="async">
+    </span>
+    <p class="fdesc">
+      杉並区・東京都が公開している善福寺川のライブ映像をまとめて表示している、個人運営の非公式サイトです。<br>
+      出典：<a href="https://www.jma.go.jp/bosai/" target="_blank" rel="noopener">気象庁ホームページ</a>／<a href="https://www.city.suginami.tokyo.jp/kasenlive/index.html" target="_blank" rel="noopener">杉並区</a>／<a href="https://www.kensetsu.metro.tokyo.lg.jp/" target="_blank" rel="noopener">東京都建設局</a>／<a href="https://maps.gsi.go.jp/development/ichiran.html" target="_blank" rel="noopener">国土地理院</a>　これらを加工して表示しています。
+    </p>
+  </footer>
+</main>
+
+<!-- 防災情報シート -->
+<dialog class="sheet" id="sheetWx" aria-labelledby="wxTitle">
+  <div class="sheet-grab" aria-hidden="true"></div>
+  <div class="sheet-head">
+    <h2 id="wxTitle">防災情報</h2>
+    <button class="xbtn" type="button" data-close aria-label="閉じる"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
+  </div>
+  <div class="sheet-body">
+    <div class="wx-state" id="wxState" data-lv="ok">
+      <span class="wx-ic" aria-hidden="true">
+        <svg viewBox="0 0 24 24" class="i-ok"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>
+        <svg viewBox="0 0 24 24" class="i-alert"><path d="M12 8.5v5M12 16.4v.2"/><path d="M12 3.5 2.6 19.8h18.8z"/></svg>
+      </span>
+      <span class="rl">
+        <span class="rt" id="wxArea">杉並区の警報・注意報</span>
+        <span class="rs" id="wxList">—</span>
+      </span>
+    </div>
+
+    <h3 class="sec">
+      <span class="sec-ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4M9 12h6M9 16h6"/></svg></span>
+      東京都全体の概況（気象庁）
+    </h3>
+    <p class="quote" id="wxHead">—</p>
+    <p class="quote-time num" id="wxTime">—</p>
+
+    <h3 class="sec">
+      <span class="sec-ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 5.5A2.5 2.5 0 0 1 5.5 3H11v16H5.5A2.5 2.5 0 0 0 3 21.5z"/><path d="M21 5.5A2.5 2.5 0 0 0 18.5 3H13v16h5.5a2.5 2.5 0 0 1 2.5 2.5z"/></svg></span>
+      危ないと思ったら、この順に見る
+    </h3>
+    <a class="lrow" href="https://www.jma.go.jp/bosai/risk/#zoom:13/lat:35.694/lon:139.629/colordepth:normal/elements:flood" target="_blank" rel="noopener">
+      <span class="lno num">1</span>
+      <span class="rl"><span class="rt">気象庁 キキクル</span><span class="rs">洪水・浸水の危険度分布を色で確認</span></span>
+      <svg class="ext" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 6H5v13h13v-5"/><path d="M14 4h6v6M20 4l-9 9"/></svg>
+    </a>
+    <a class="lrow" href="https://www.kasen-suibo.metro.tokyo.lg.jp/" target="_blank" rel="noopener">
+      <span class="lno num">2</span>
+      <span class="rl"><span class="rt">東京都 水防災総合情報システム</span><span class="rs">観測所の水位を数値で確認</span></span>
+      <svg class="ext" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 6H5v13h13v-5"/><path d="M14 4h6v6M20 4l-9 9"/></svg>
+    </a>
+    <a class="lrow" href="https://www.city.suginami.tokyo.jp/bousai/index.html" target="_blank" rel="noopener">
+      <span class="lno num">3</span>
+      <span class="rl"><span class="rt">杉並区 防災・災害情報</span><span class="rs">避難情報と開設中の避難所</span></span>
+      <svg class="ext" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 6H5v13h13v-5"/><path d="M14 4h6v6M20 4l-9 9"/></svg>
+    </a>
+    <a class="lrow" href="https://disaportal.gsi.go.jp/maps/index.html?ll=35.690,139.630&amp;z=14&amp;base=pale&amp;vs=c1j0l0u0t0h0z0" target="_blank" rel="noopener">
+      <span class="lic" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9 4 3 6.5v13L9 17l6 3 6-2.5v-13L15 7Z"/><path d="M9 4v13M15 7v13"/></svg></span>
+      <span class="rl"><span class="rt">重ねるハザードマップ</span><span class="rs">この地域の洪水浸水想定区域を平常時に確認しておく</span></span>
+      <svg class="ext" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 6H5v13h13v-5"/><path d="M14 4h6v6M20 4l-9 9"/></svg>
+    </a>
+
+    <p class="warnbox">
+      <span class="wb-ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 9v4.5M12 16.6v.2"/><path d="M12 3.5 2.6 19.8h18.8z"/></svg></span>
+      <span><b>警戒レベル3</b> 高齢者等避難／<b>レベル4</b> 避難指示（全員避難）／<b>レベル5</b> 緊急安全確保（すでに災害発生）。映像だけで判断せず、必ず公式の避難情報を確認してください。</span>
+    </p>
+  </div>
+</dialog>
+
+<!-- このサイトについて -->
+<dialog class="sheet" id="sheetAbout" aria-labelledby="abTitle">
+  <div class="sheet-grab" aria-hidden="true"></div>
+  <div class="sheet-head">
+    <h2 id="abTitle">このサイトについて</h2>
+    <button class="xbtn" type="button" data-close aria-label="閉じる"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
+  </div>
+  <div class="sheet-body">
+
+    <div class="alertbox">
+      <span class="ab-ic" aria-hidden="true">
+        <svg viewBox="0 0 24 24"><path d="M12 2.6 1.3 21.4h21.4z" fill="currentColor" stroke="none"/><path d="M12 9.2v5.2M12 17.4v.2" stroke="#fff" stroke-width="2.1" stroke-linecap="round" fill="none"/></svg>
+      </span>
+      <span class="ab-tx">
+        <b>このサイトは杉並区・東京都・気象庁の公式サイトではなく、<br>これらの機関とは一切関係ありません。</b>
+        個人が、各機関の公開データを加工して表示している非公式のビューアです。<br>
+        配信の停止や遅延、地図のピン位置のずれが起こることがあります。<br>
+        避難するかどうかの判断は、必ず自治体の避難情報と気象庁の発表にしたがってください。
+      </span>
+    </div>
+
+    <div class="sec2"><h3>表示している情報</h3></div>
+    <div class="irow">
+      <span class="itile" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="2.6" y="6" width="13" height="12" rx="3"/><path d="m16.4 11 4.6-3v8l-4.6-3z"/></svg></span>
+      <span class="ilabel">ライブ映像 15地点</span>
+      <span class="idesc">東京都建設局「東京都水防チャンネル」および杉並区が YouTube で公開しているライブ配信。著作権は各配信者に帰属します。</span>
+    </div>
+    <div class="irow">
+      <span class="itile" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M18 8.5a6 6 0 1 0-12 0c0 6-2 7.5-2 7.5h16s-2-1.5-2-7.5Z"/><path d="M13.7 19.5a2 2 0 0 1-3.4 0"/></svg></span>
+      <span class="ilabel">「気象庁の発表（杉並区）」</span>
+      <span class="idesc">気象庁が杉並区に発表している警報・注意報をそのまま表示しています。川の水位を計測した値ではありません。</span>
+    </div>
+    <div class="irow">
+      <span class="itile" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7.5 15.5a4.5 4.5 0 0 1-.4-8.98 5.5 5.5 0 0 1 10.5 1.2 3.9 3.9 0 0 1-.6 7.78z"/><path d="M8.6 18.4l-.9 2.4M12.4 18.4l-.9 2.4M16.2 18.4l-.9 2.4"/></svg></span>
+      <span class="ilabel">雨雲</span>
+      <span class="idesc">気象庁 高解像度降水ナウキャスト（5分ごと）</span>
+    </div>
+    <div class="irow">
+      <span class="itile" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9 4 3 6.5v13L9 17l6 3 6-2.5v-13L15 7Z"/><path d="M9 4v13M15 7v13"/></svg></span>
+      <span class="ilabel">地図</span>
+      <span class="idesc">国土地理院タイル。ピンの位置は住所からの概算です。</span>
+    </div>
+
+    <div class="sec2"><h3>出典</h3></div>
+    <ul class="srclist">
+      <li><a href="https://www.jma.go.jp/bosai/" target="_blank" rel="noopener">
+        <svg class="lnk" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 13.5a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1.2 1.2"/><path d="M14 10.5a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1.2-1.2"/></svg>
+        <span>出典：気象庁ホームページ <span class="u">https://www.jma.go.jp/bosai/</span></span>
+        <svg class="ext" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 6H5v13h13v-5"/><path d="M14 4h6v6M20 4l-9 9"/></svg></a></li>
+      <li><a href="https://www.city.suginami.tokyo.jp/kasenlive/index.html" target="_blank" rel="noopener">
+        <svg class="lnk" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 13.5a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1.2 1.2"/><path d="M14 10.5a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1.2-1.2"/></svg>
+        <span>出典：杉並区 河川ライブカメラ <span class="u">https://www.city.suginami.tokyo.jp/kasenlive/index.html</span></span>
+        <svg class="ext" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 6H5v13h13v-5"/><path d="M14 4h6v6M20 4l-9 9"/></svg></a></li>
+      <li><a href="https://www.kensetsu.metro.tokyo.lg.jp/" target="_blank" rel="noopener">
+        <svg class="lnk" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 13.5a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1.2 1.2"/><path d="M14 10.5a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1.2-1.2"/></svg>
+        <span>出典：東京都建設局 東京都水防チャンネル</span>
+        <svg class="ext" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 6H5v13h13v-5"/><path d="M14 4h6v6M20 4l-9 9"/></svg></a></li>
+      <li><a href="https://maps.gsi.go.jp/development/ichiran.html" target="_blank" rel="noopener">
+        <svg class="lnk" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 13.5a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1.2 1.2"/><path d="M14 10.5a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1.2-1.2"/></svg>
+        <span>地理院タイル <span class="u">https://maps.gsi.go.jp/development/ichiran.html</span></span>
+        <svg class="ext" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 6H5v13h13v-5"/><path d="M14 4h6v6M20 4l-9 9"/></svg></a></li>
+    </ul>
+
+    <p class="endnote">
+      <span class="en-ic" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9.2"/><path d="M12 11v5.5M12 7.6v.3"/></svg></span>
+      <span>このサイトは、各機関が公開している情報を取得・加工して表示しています。<br>動画の著作権は各配信者に帰属します。制作：Sekimachi Design Studio</span>
+    </p>
+  </div>
+</dialog>
+
+<!-- 設定 -->
+<dialog class="sheet" id="sheetSet" aria-labelledby="stTitle">
+  <div class="sheet-grab" aria-hidden="true"></div>
+  <div class="sheet-head">
+    <h2 id="stTitle">設定</h2>
+    <button class="xbtn" type="button" data-close aria-label="閉じる"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
+  </div>
+  <div class="sheet-body">
+    <label class="row"><input type="checkbox" id="setAutoLive" checked>
+      <span class="rl"><span class="rt">見えている映像を自動で再生</span><span class="rs">通信量が増えるので、モバイル回線では切ることもできます</span></span></label>
+    <label class="row"><input type="checkbox" id="setAuto" checked>
+      <span class="rl"><span class="rt">5分ごとに自動更新</span><span class="rs">画面を見ていないあいだは更新しません</span></span></label>
+    <label class="row"><input type="checkbox" id="setKanda">
+      <span class="rl"><span class="rt">神田川（合流先）も表示</span><span class="rs">9地点が増えます</span></span></label>
+    <p class="sheet-note">
+      「見えている映像を自動で再生」がONのあいだは、<strong>画面に映っているカメラがそのままライブ映像になります</strong>。
+      画面の外に出た映像は自動で止まり、戻ってくるとまた再生します。同時に動かす数は端末に合わせて
+      <strong>スマホで6地点・パソコンで12地点まで</strong>に抑えています。OFFにすると、一覧は<strong>約5分おきに更新される静止画</strong>になります。
+    </p>
+    <h3 class="sec">モード</h3>
+    <div class="seg" role="group" aria-label="モード">
+      <button type="button" data-theme-set="auto" aria-pressed="true">端末に合わせる</button>
+      <button type="button" data-theme-set="light" aria-pressed="false">ライト</button>
+      <button type="button" data-theme-set="dark" aria-pressed="false">ダーク</button>
+    </div>
+  </div>
+</dialog>
+
+<!-- 拡大ビュー -->
+<dialog class="viewer" id="viewer" aria-labelledby="vTitle">
+  <div class="v-head">
+    <span class="vno num" id="vNo" aria-hidden="true">1</span>
+    <div class="vt">
+      <h2 id="vTitle">—</h2>
+      <p id="vSub">—</p>
+    </div>
+    <button class="xbtn" type="button" id="vClose" aria-label="閉じる"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
+  </div>
+  <div class="v-stage" id="vStage"></div>
+  <div class="v-foot">
+    <div class="v-pager">
+      <button class="vnav" type="button" id="vPrev">
+        <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
+        <span class="vnav-tx"><span class="vnav-dir">上流へ</span><span class="vnav-name" id="vPrevName"></span></span>
+      </button>
+      <span class="vpos num" id="vPos">—</span>
+      <button class="vnav" type="button" id="vNext">
+        <span class="vnav-tx"><span class="vnav-dir">下流へ</span><span class="vnav-name" id="vNextName"></span></span>
+        <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </button>
+    </div>
+    <a class="vbtn v-yt" id="vYt" href="#" target="_blank" rel="noopener">YouTubeで開く<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 6H5v13h13v-5"/><path d="M14 4h6v6M20 4l-9 9"/></svg></a>
+  </div>
+</dialog>
+
+<p class="toast" id="toast" role="status" aria-live="polite" hidden></p>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script>
+(function () {
+  "use strict";
+
+  /* ============ データ（東京都建設局・杉並区の公開情報／座標は住所からの概算） ============ */
+  var CAMERAS = [
+    { id:"78jvZ8JXYOM", name:"原寺分橋 下流",        place:"西荻北5丁目",  owner:"区", river:"zen", lat:35.71005, lng:139.59742 },
+    { id:"kpVestpm1Xs", name:"原橋",                 place:"西荻北3-38",   owner:"都", river:"zen", lat:35.70833, lng:139.59862 },
+    { id:"_8cZwk5WikY", name:"丸山橋 下流",          place:"上荻4丁目",    owner:"区", river:"zen", lat:35.70867, lng:139.60402 },
+    { id:"MbXO_cp7g60", name:"置田橋 上流",          place:"上荻2丁目",    owner:"区", river:"zen", lat:35.70437, lng:139.61072 },
+    { id:"InvIlT2BdfA", name:"荻窪橋",               place:"荻窪5丁目",    owner:"都", river:"zen", lat:35.70105, lng:139.61685 },
+    { id:"OuhT1y3Dnnk", name:"松見橋 下流",          place:"荻窪2丁目",    owner:"区", river:"zen", lat:35.69791, lng:139.62076 },
+    { id:"7wiEJygFlT8", name:"西田端橋",             place:"荻窪1丁目",    owner:"都", river:"zen", lat:35.69529, lng:139.62346 },
+    { id:"hQqLkZ4PZ5k", name:"善福寺川調節池",       place:"成田西4丁目",  owner:"都", river:"zen", lat:35.69440, lng:139.62953 },
+    { id:"YGdozzMG7yA", name:"相生橋",               place:"成田西3丁目",  owner:"都", river:"zen", lat:35.69422, lng:139.63369 },
+    { id:"fRfY9qJxlig", name:"白山前橋",             place:"成田東2丁目",  owner:"都", river:"zen", lat:35.68601, lng:139.63602 },
+    { id:"u6l1L08s-MQ", name:"宮下橋",               place:"大宮2-26",     owner:"都", river:"zen", lat:35.68326, lng:139.64250 },
+    { id:"a0K0AUmRPeQ", name:"和田堀公園池",         place:"松ノ木1-1",    owner:"都", river:"zen", lat:35.68690, lng:139.64270 },
+    { id:"D8GhAoXX1kk", name:"武蔵野橋 上流",        place:"堀ノ内1丁目",  owner:"区", river:"zen", lat:35.68820, lng:139.64932 },
+    { id:"VwLusPjP2gE", name:"善福寺取水施設",       place:"堀ノ内2-1",    owner:"都", river:"zen", lat:35.68855, lng:139.65196 },
+    { id:"2_TzMXoYwgA", name:"朝日橋（合流点手前）", place:"中野区弥生町6", owner:"都", river:"zen", lat:35.68676, lng:139.66102 },
+    { id:"P40WrJaz1yI", name:"緑橋",                 place:"久我山3-30",   owner:"都", river:"kanda", lat:35.68846, lng:139.59417 },
+    { id:"sY99FgMwsG4", name:"久我山橋",             place:"久我山2-16",   owner:"都", river:"kanda", lat:35.68752, lng:139.59982 },
+    { id:"_M5UCgCo69A", name:"佃橋",                 place:"高井戸東2-29", owner:"都", river:"kanda", lat:35.68304, lng:139.61562 },
+    { id:"F28lNQJxJqo", name:"向陽橋 下流",          place:"永福3丁目",    owner:"区", river:"kanda", lat:35.67456, lng:139.63520 },
+    { id:"LVj4Pt1_q9I", name:"番屋橋",               place:"和泉4丁目",    owner:"都", river:"kanda", lat:35.67789, lng:139.64996 },
+    { id:"EalhCNpLTXE", name:"神田取水施設",         place:"和泉4丁目",    owner:"都", river:"kanda", lat:35.67855, lng:139.65330 },
+    { id:"JcI3OZzEwl8", name:"神善合流",             place:"中野区弥生町5", owner:"都", river:"kanda", lat:35.68760, lng:139.66320 },
+    { id:"2N1hOHoXpjw", name:"和田見橋 上流",        place:"和田1丁目",    owner:"区", river:"kanda", lat:35.68950, lng:139.66470 },
+    { id:"32xkX2_7rxA", name:"和田見橋",             place:"和田1丁目",    owner:"都", river:"kanda", lat:35.68959, lng:139.66491 }
+  ];
+  ["zen","kanda"].forEach(function (r) {
+    var g = CAMERAS.filter(function (c) { return c.river === r; });
+    g.forEach(function (c, i) {
+      c.no = i + 1;
+      c.area = i < g.length / 3 ? "up" : (i < g.length * 2 / 3 ? "mid" : "down");
+    });
+  });
+  var AREA_NAME = { all:"すべてのカメラ", up:"上流エリア", mid:"中流エリア", down:"下流エリア" };
+
+  var WARN_CODES = {
+    "02":"暴風雪警報","03":"大雨警報","04":"洪水警報","05":"暴風警報","06":"大雪警報",
+    "07":"波浪警報","08":"高潮警報","09":"土砂災害警報",
+    "10":"大雨注意報","12":"大雪注意報","13":"風雪注意報","14":"雷注意報","15":"強風注意報",
+    "16":"波浪注意報","17":"融雪注意報","18":"洪水注意報","19":"高潮注意報","20":"濃霧注意報",
+    "21":"乾燥注意報","22":"なだれ注意報","23":"低温注意報","24":"霜注意報","25":"着氷注意報",
+    "26":"着雪注意報","29":"土砂災害注意報",
+    "32":"暴風雪特別警報","33":"大雨特別警報","35":"暴風特別警報","36":"大雪特別警報",
+    "37":"波浪特別警報","38":"高潮特別警報","39":"土砂災害特別警報","43":"大雨危険警報"
+  };
+  var EMERGENCY = ["32","33","35","36","37","38","39","43"];
+  var WARNING   = ["02","03","04","05","06","07","08","09"];
+  var SUGINAMI = "1311500";
+  var REFRESH_MS = 5 * 60 * 1000;
+  var OFF_GRACE = 2500;
+
+  /* ============ 小物 ============ */
+  var $  = function (s, r) { return (r || document).querySelector(s); };
+  var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
+  function esc(s){return String(s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];});}
+  function store(k,v){try{if(arguments.length===1){return localStorage.getItem("zpw:"+k);}localStorage.setItem("zpw:"+k,v);}catch(e){}return null;}
+  function hhmm(d){return String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0");}
+  function ymd(d){return d.getFullYear()+"年"+(d.getMonth()+1)+"月"+d.getDate()+"日 "+hhmm(d);}
+  function km(a,b,c,d){var R=6371,p=Math.PI/180,x=(c-a)*p,y=(d-b)*p,
+    s=Math.sin(x/2)*Math.sin(x/2)+Math.cos(a*p)*Math.cos(c*p)*Math.sin(y/2)*Math.sin(y/2);
+    return R*2*Math.atan2(Math.sqrt(s),Math.sqrt(1-s));}
+  var tT=null;
+  function toast(m){var e=$("#toast");e.textContent=m;e.hidden=false;clearTimeout(tT);tT=setTimeout(function(){e.hidden=true;},4800);}
+
+  /* ============ 状態 ============ */
+  var state = {
+    area: "all",
+    sort: store("sort") || "down",
+    kanda: store("kanda") === "1",
+    auto: store("auto") !== "0",
+    theme: store("theme") || "auto",
+    autoLive: (function(){
+      var v = store("autoLive");
+      if (v !== null) { return v === "1"; }
+      var c = navigator.connection || {};
+      if (c.saveData === true) { return false; }
+      return ["slow-2g","2g","3g"].indexOf(c.effectiveType) === -1;
+    })(),
+    here: null,
+    stamp: Date.now()
+  };
+  if (state.sort === "near") { state.sort = "down"; }
+
+  /* ============ テーマ ============ */
+  var mq = window.matchMedia("(prefers-color-scheme: dark)");
+  function applyTheme(){
+    document.documentElement.setAttribute("data-theme", state.theme);
+    var res = state.theme === "auto" ? (mq.matches ? "dark" : "light") : state.theme;
+    document.documentElement.classList.toggle("dark-auto", state.theme === "auto" && mq.matches);
+    document.documentElement.setAttribute("data-resolved", res);
+    var m = document.querySelector('meta[name="theme-color"]');
+    if (m) { m.setAttribute("content", res === "dark" ? "#0D1417" : "#F5F7F8"); }
+    var logo = res === "dark" ? "logo-dark.webp" : "logo.webp";
+    $$(".brand .logo").forEach(function (img) {
+      if (img.getAttribute("src") !== logo) { img.setAttribute("src", logo); }
+    });
+    $$("[data-theme-set]").forEach(function(b){ b.setAttribute("aria-pressed", b.dataset.themeSet === state.theme ? "true":"false"); });
+  }
+  if (mq.addEventListener) { mq.addEventListener("change", applyTheme); }
+  $$("[data-theme-set]").forEach(function(b){ b.addEventListener("click", function(){ state.theme=b.dataset.themeSet; store("theme",state.theme); applyTheme(); }); });
+  applyTheme();
+
+  /* ============ シート ============ */
+  function openSheet(el){ if (typeof el.showModal === "function") { el.showModal(); } else { el.setAttribute("open",""); } }
+  $$("dialog").forEach(function(d){
+    d.addEventListener("click", function(ev){ if (ev.target === d) { d.close(); } });
+    $$("[data-close]", d).forEach(function(b){ b.addEventListener("click", function(){ d.close(); }); });
+  });
+  var SHEETS = { about:"#sheetAbout", wx:"#sheetWx", set:"#sheetSet" };
+  $("#btnAbout").addEventListener("click", function(){ openSheet($("#sheetAbout")); });
+  $("#btnWx").addEventListener("click", function(){ openSheet($("#sheetWx")); });
+  $("#btnSettings").addEventListener("click", function(){ openSheet($("#sheetSet")); });
+  $("#btnStatusMore").addEventListener("click", function(){ openSheet($("#sheetWx")); });
+  $$("[data-open]").forEach(function(b){ b.addEventListener("click", function(){ openSheet($(SHEETS[b.dataset.open])); }); });
+
+  /* ============ 一覧 ============ */
+  var grid = $("#grid");
+  function pool(){ return CAMERAS.filter(function(c){ return c.river === "zen" || state.kanda; }); }
+  function listed(){
+    var l = pool().filter(function(c){ return state.area === "all" || c.area === state.area; });
+    if (state.sort === "near" && state.here) {
+      l.forEach(function(c){ c._d = km(state.here.lat, state.here.lng, c.lat, c.lng); });
+      l.sort(function(a,b){ return a._d - b._d; });
+    } else if (state.sort === "up") { l = l.slice().reverse(); }
+    return l;
+  }
+  function thumb(id,t){ return "https://i.ytimg.com/vi/"+id+"/hqdefault_live.jpg?zpw="+t; }
+  function embed(id){ return "https://www.youtube-nocookie.com/embed/"+id+"?autoplay=1&mute=1&playsinline=1&rel=0&modestbranding=1"; }
+
+  function cardHTML(c){
+    var t = hhmm(new Date(state.stamp));
+    return '<button class="cam" type="button" id="cam-'+esc(c.id)+'" data-id="'+esc(c.id)+
+      '" aria-label="'+esc(c.name)+"（"+esc(c.place)+"）の映像を大きく見る"+'">'+
+      '<span class="shot" data-s="thumb">'+
+        '<img src="'+thumb(c.id,state.stamp)+'" width="480" height="270" loading="lazy" decoding="async" alt="'+
+          esc(c.name)+"（"+esc(c.place)+"）のライブ映像"+'">'+
+        '<span class="live-badge">ライブ</span>'+
+        '<span class="still-badge">静止画</span>'+
+        '<span class="play-ic" aria-hidden="true"><span></span></span>'+
+        '<span class="expand-ic" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24"><path d="M4 9V4h5M20 15v5h-5M20 9V4h-5M4 15v5h5"/></svg></span>'+
+        '<span class="errbox">映像を読み込めません<br>押すともう一度</span>'+
+      '</span>'+
+      '<span class="cmeta">'+
+        '<span class="crow1"><span class="cno'+(c.river==="kanda"?" kanda":"")+' num">'+c.no+'</span>'+
+          '<span class="cname">'+esc(c.name)+'</span></span>'+
+        '<span class="crow2"><span class="cplace">'+esc(c.place)+'</span><span class="ctime num">'+t+'</span></span>'+
+      '</span>'+
+    '</button>';
+  }
+
+  function render(){
+    var l = listed(), html = "";
+    if (state.kanda && state.area === "all" && state.sort !== "near") {
+      [["zen","善福寺川"],["kanda","神田川（合流先）"]].forEach(function(p){
+        var g = l.filter(function(c){ return c.river === p[0]; });
+        if (g.length) { html += '<div class="sect"><h2>'+p[1]+'</h2></div>' + g.map(cardHTML).join(""); }
+      });
+    } else { html = l.map(cardHTML).join(""); }
+    grid.innerHTML = html;
+    var P = pool();
+    ["all","up","mid","down"].forEach(function(a){
+      var n = a === "all" ? P.length : P.filter(function(c){ return c.area === a; }).length;
+      var el = $('[data-cnt="'+a+'"]'); if (el) { el.textContent = n; }
+    });
+    $$("#grid img").forEach(function(img){
+      img.addEventListener("error", function(){ clearTimeout(img._wd); img.closest(".shot").dataset.s = "error"; });
+    });
+    restoreLive();
+    if (map) { syncMarkers(listed(), true); }
+  }
+
+  /* ============ 見えているところを自動再生 ============ */
+  var vis = {}, offT = {}, ioOK = typeof IntersectionObserver === "function", io = null;
+  var mq2 = [], qRun = false;
+  var cardOf = function(id){ return $("#cam-"+CSS.escape(id)); };
+  function maxLive(){ return window.innerWidth < 700 ? 6 : 12; }
+  function onScreen(c){ var r=c.getBoundingClientRect(); return r.bottom>0 && r.top<window.innerHeight && r.height>0; }
+
+  function watchImg(card){
+    if (!card) { return; }
+    var shot = $(".shot", card), img = $("img", shot);
+    if (!img || shot.dataset.s === "live" || (img.complete && img.naturalWidth) || img._wd) { return; }
+    img._wd = setTimeout(function(){ img._wd = null; if (!(img.complete && img.naturalWidth)) { shot.dataset.s = "error"; } }, 12000);
+    img.addEventListener("load", function(){ clearTimeout(img._wd); img._wd=null; }, { once:true });
+  }
+  function mountNow(card){
+    if (!card || $("iframe", card)) { return; }
+    var cam = CAMERAS.filter(function(c){ return c.id === card.dataset.id; })[0];
+    if (!cam) { return; }
+    var f = document.createElement("iframe");
+    f.src = embed(cam.id); f.title = cam.name + " のライブ映像";
+    f.allow = "autoplay; encrypted-media; picture-in-picture; fullscreen";
+    f.referrerPolicy = "strict-origin-when-cross-origin";
+    $(".shot", card).appendChild(f);
+    $(".shot", card).dataset.s = "live";
+  }
+  function mount(card){
+    if (!card || $("iframe", card) || mq2.indexOf(card) !== -1) { return; }
+    mq2.push(card);
+    if (qRun) { return; }
+    qRun = true;
+    (function step(){
+      var c = mq2.shift();
+      if (!c) { qRun = false; return; }
+      if (document.contains(c) && !document.hidden) { mountNow(c); }
+      setTimeout(step, 180);
+    })();
+  }
+  function unmount(card){
+    if (!card) { return; }
+    mq2 = mq2.filter(function(c){ return c !== card; });
+    var f = $("iframe", card); if (f) { f.remove(); }
+    var shot = $(".shot", card); if (!shot) { return; }
+    shot.dataset.s = "thumb";
+    var img = $("img", shot);
+    clearTimeout(img._wd); img._wd = null;
+    img.src = thumb(card.dataset.id, Date.now());
+    watchImg(card);
+  }
+  var rtP = false;
+  function retarget(){
+    rtP = false;
+    var cards = $$("#grid .cam");
+    if (!cards.length) { return; }
+    var want = [];
+    if (state.autoLive && !document.hidden) {
+      var cy = window.innerHeight / 2;
+      want = cards.filter(onScreen)
+        .map(function(c){ var r=c.getBoundingClientRect(); return {c:c, d:Math.abs(r.top+r.height/2-cy)}; })
+        .sort(function(a,b){ return a.d-b.d; }).slice(0, maxLive()).map(function(x){ return x.c; });
+    }
+    cards.forEach(function(card){
+      var id = card.dataset.id, keep = want.indexOf(card) !== -1;
+      if (keep) { clearTimeout(offT[id]); offT[id]=null; mount(card); }
+      else if ($("iframe", card) && !offT[id]) {
+        offT[id] = setTimeout(function(){ offT[id]=null; unmount(card); }, OFF_GRACE);
+      }
+    });
+  }
+  function scheduleRetarget(){ if (rtP) { return; } rtP = true; requestAnimationFrame(retarget); }
+  window.addEventListener("scroll", scheduleRetarget, { passive:true });
+  window.addEventListener("resize", scheduleRetarget);
+  function stopAllLive(){ $$("#grid .cam").forEach(function(c){ clearTimeout(offT[c.dataset.id]); offT[c.dataset.id]=null; unmount(c); }); mq2=[]; }
+  function observe(){
+    if (!ioOK) { $$("#grid .cam").forEach(watchImg); return; }
+    if (!io) {
+      io = new IntersectionObserver(function(es){
+        es.forEach(function(e){ vis[e.target.dataset.id]=e.isIntersecting; if (e.isIntersecting) { watchImg(e.target); } });
+        scheduleRetarget();
+      }, { rootMargin:"200px 0px" });
+    } else { io.disconnect(); vis = {}; }
+    $$("#grid .cam").forEach(function(c){ io.observe(c); });
+  }
+  function restoreLive(){
+    Object.keys(offT).forEach(function(k){ clearTimeout(offT[k]); });
+    offT = {}; mq2 = [];
+    observe(); scheduleRetarget();
+  }
+  var hideT = null;
+  document.addEventListener("visibilitychange", function(){
+    clearTimeout(hideT);
+    if (document.hidden) { hideT = setTimeout(function(){ if (document.hidden) { stopAllLive(); } }, 20000); }
+    else { scheduleRetarget(); if (state.auto && Date.now()-state.stamp > 2*60*1000) { refreshAll(); } }
+  });
+
+  /* ============ カードのクリック → 拡大ビュー ============ */
+  grid.addEventListener("click", function(ev){
+    var card = ev.target.closest(".cam");
+    if (!card) { return; }
+    var cam = CAMERAS.filter(function(c){ return c.id === card.dataset.id; })[0];
+    if (!cam) { return; }
+    var shot = $(".shot", card);
+    if (shot.dataset.s === "error") {
+      shot.dataset.s = "thumb";
+      $("img", shot).src = thumb(cam.id, Date.now());
+      watchImg(card);
+      return;
+    }
+    openViewer(cam);
+  });
+
+  /* ============ 拡大ビュー ============ */
+  var viewer = $("#viewer"), vStage = $("#vStage"), opener = null, vList = [], vPos = -1;
+  function openViewer(cam){
+    opener = document.activeElement;
+    vList = listed();
+    vPos = vList.map(function(c){ return c.id; }).indexOf(cam.id);
+    if (vPos < 0) { vList = [cam]; vPos = 0; }
+    stopAllLive();
+    fillViewer();
+    if (!viewer.open) { openSheet(viewer); }
+  }
+  function fillViewer(){
+    var cam = vList[vPos]; if (!cam) { return; }
+    $("#vNo").textContent = cam.no;
+    $("#vTitle").textContent = cam.name;
+    var where = cam.place.indexOf("中野区") === 0 ? cam.place : "杉並区" + cam.place;
+    $("#vSub").textContent = (cam.river==="zen"?"善福寺川":"神田川") + "　" + where + "　" + cam.owner + "設置";
+    $("#vYt").href = "https://www.youtube.com/watch?v=" + cam.id;
+    $("#vPos").textContent = (vPos+1) + " / " + vList.length;
+    var prev = vList[vPos - 1], next = vList[vPos + 1];
+    $("#vPrev").disabled = !prev;
+    $("#vNext").disabled = !next;
+    $("#vPrevName").textContent = prev ? prev.name : "";
+    $("#vNextName").textContent = next ? next.name : "";
+    vStage.innerHTML = "";
+    var f = document.createElement("iframe");
+    f.src = embed(cam.id); f.title = cam.name + " のライブ映像";
+    f.allow = "autoplay; encrypted-media; picture-in-picture; fullscreen";
+    f.referrerPolicy = "strict-origin-when-cross-origin";
+    vStage.appendChild(f);
+  }
+  function step(d){ if (vPos+d < 0 || vPos+d >= vList.length) { return; } vPos += d; fillViewer(); }
+  $("#vPrev").addEventListener("click", function(){ step(-1); });
+  $("#vNext").addEventListener("click", function(){ step(1); });
+  $("#vClose").addEventListener("click", function(){ viewer.close(); });
+  viewer.addEventListener("close", function(){
+    vStage.innerHTML = "";
+    scheduleRetarget();
+    if (opener && document.contains(opener)) { opener.focus(); }
+  });
+  document.addEventListener("keydown", function(e){
+    if (!viewer.open) { return; }
+    if (e.key === "ArrowLeft") { step(-1); }
+    if (e.key === "ArrowRight") { step(1); }
+  });
+
+  /* ============ 更新 ============ */
+  var timer = null;
+  function refreshThumbs(){
+    state.stamp = Date.now();
+    var t = hhmm(new Date(state.stamp));
+    $$("#grid .cam").forEach(function(card){
+      $(".ctime", card).textContent = t;
+      if ($("iframe", card)) { return; }
+      var shot = $(".shot", card), img = $("img", shot);
+      shot.dataset.s = "thumb";
+      img.classList.add("load");
+      img.addEventListener("load", function(){ img.classList.remove("load"); }, { once:true });
+      clearTimeout(img._wd); img._wd = null;
+      img.src = thumb(card.dataset.id, state.stamp);
+      if (vis[card.dataset.id] !== false) { watchImg(card); }
+    });
+    $("#stampLine").textContent = t;
+  }
+  function refreshAll(){ refreshThumbs(); fetchWx(); refreshRain(); }
+  function schedule(){ clearInterval(timer); if (state.auto) { timer = setInterval(function(){ if (!document.hidden) { refreshAll(); } }, REFRESH_MS); } }
+  $("#btnRefresh").addEventListener("click", function(){
+    this.classList.remove("spin"); void this.offsetWidth; this.classList.add("spin");
+    refreshAll(); toast("最新の映像を読み込みました");
+  });
+
+  /* ============ 気象庁（杉並区の警報・注意報） ============ */
+  function fetchWx(){
+    fetch("https://www.jma.go.jp/bosai/warning/data/warning/130000.json?_="+Date.now(), { cache:"no-store" })
+      .then(function(r){ if(!r.ok){throw new Error(r.status);} return r.json(); })
+      .then(function(d){
+        var area = null;
+        (d.areaTypes||[]).forEach(function(at){ (at.areas||[]).forEach(function(a){ if (a.code === SUGINAMI) { area = a; } }); });
+        var codes = [];
+        if (area) { (area.warnings||[]).forEach(function(w){ if (w.code && w.status!=="解除" && w.status!=="発表警報・注意報はなし") { codes.push(w.code); } }); }
+        var names = codes.map(function(c){ return WARN_CODES[c] || ("その他（"+c+"）"); });
+        var lv="ok", lbl="警報・注意報なし", sub="気象庁から杉並区への発表はありません";
+        if (codes.some(function(c){ return EMERGENCY.indexOf(c)!==-1; })) { lv="emergency"; lbl="特別警報"; sub=names.join("／"); }
+        else if (codes.some(function(c){ return WARNING.indexOf(c)!==-1; })) { lv="warning"; lbl="警報"; sub=names.join("／"); }
+        else if (codes.length) { lv="advisory"; lbl="注意報"; sub=names.join("／"); }
+        var dt = d.reportDatetime ? new Date(d.reportDatetime) : null;
+        $("#statusCard").dataset.lv = lv;
+        $("#updated").dataset.lv = lv;
+        $("#statusLbl").textContent = lbl;
+        $("#statusSub").textContent = sub;
+        $("#statusTime").textContent = (dt ? ymd(dt) : "—") + " 気象庁発表";
+        $("#wxState").dataset.lv = lv;
+        $("#wxList").textContent = names.length ? names.join("／") : "発表中の警報・注意報はありません";
+        $("#wxHead").textContent = d.headlineText || "東京都全体への見出し情報はありません。";
+        $("#wxTime").textContent = (dt ? ymd(dt) : "—") + " 気象庁発表（東京都）";
+      })
+      .catch(function(){
+        $("#statusCard").dataset.lv = "advisory";
+        $("#statusLbl").textContent = "取得できません";
+        $("#statusSub").textContent = "気象情報を読み込めませんでした。通信環境をご確認ください";
+        $("#statusTime").textContent = "—";
+        $("#wxState").dataset.lv = "advisory";
+        $("#wxList").textContent = "取得できませんでした。通信環境をご確認ください";
+        $("#wxHead").textContent = "—";
+      });
+  }
+
+  /* ============ 地図 ============ */
+  var map=null, rainLayer=null, markerGroup=null, hereMarker=null;
+  function initMap(){
+    if (typeof L === "undefined") {
+      // CDN 障害などで Leaflet が読めなかった場合：地図まわりを丸ごと畳んで一覧だけで使えるようにする
+      $("#mapFallback").hidden = false;
+      $("#map").hidden = true;
+      $$(".map-fab").forEach(function (b) { b.hidden = true; });
+      $("#rainLegend").hidden = true;
+      $("#mapcard").classList.add("no-map");
+      return;
+    }
+    map = L.map("map", { scrollWheelZoom:false, zoomControl:true }).setView([35.6925,139.6265], 13);
+    var el = $("#map");
+    el.addEventListener("click", function(){ map.scrollWheelZoom.enable(); });
+    el.addEventListener("mouseleave", function(){ map.scrollWheelZoom.disable(); });
+    L.tileLayer("https://cyberjapandata.gsi.go.jp/xyz/pale/{z}/{x}/{y}.png", {
+      attribution:'<a href="https://maps.gsi.go.jp/development/ichiran.html" target="_blank" rel="noopener">国土地理院</a>',
+      maxZoom:18, className:"gsi-base"
+    }).addTo(map);
+    markerGroup = L.layerGroup().addTo(map);
+    syncMarkers(listed(), true);
+    refreshRain();
+  }
+  function syncMarkers(list, fit){
+    if (!markerGroup) { return; }
+    markerGroup.clearLayers();
+    list.forEach(function(c){
+      var m = L.marker([c.lat,c.lng], {
+        icon: L.divIcon({ className:"", iconSize:[28,28], iconAnchor:[14,28],
+          html:'<span class="pin'+(c.river==="kanda"?" kanda":"")+'"><span>'+c.no+'</span></span>' }),
+        keyboard:true,
+        title:c.name+"（"+c.place+"）のライブ映像を開く",
+        alt:(c.river==="zen"?"善福寺川":"神田川")+c.no+" "+c.name+" のライブ映像を開く"
+      });
+      m.bindTooltip(c.name, { direction:"top", offset:[0,-24] });
+      m.on("click", function(){ if (mapBig()) { toggleBig(false); } openViewer(c); });
+      m.on("keypress", function(e){
+        if (e.originalEvent && (e.originalEvent.key==="Enter"||e.originalEvent.key===" ")) { if (mapBig()) { toggleBig(false); } openViewer(c); }
+      });
+      markerGroup.addLayer(m);
+    });
+    if (fit && list.length) {
+      var h = map.getSize().y, pad = h < 320 ? 22 : 44;
+      map.fitBounds(L.latLngBounds(list.map(function(c){ return [c.lat,c.lng]; })), { padding:[pad,pad], maxZoom:15 });
+    }
+  }
+  function refreshRain(){
+    if (!map) { return; }
+    fetch("https://www.jma.go.jp/bosai/jmatile/data/nowc/targetTimes_N1.json?_="+Date.now(), { cache:"no-store" })
+      .then(function(r){ return r.json(); })
+      .then(function(l){
+        var t = l && l[0]; if (!t) { throw new Error("no time"); }
+        var next = L.tileLayer("https://www.jma.go.jp/bosai/jmatile/data/nowc/"+t.basetime+"/none/"+t.validtime+"/surf/hrpns/{z}/{x}/{y}.png", {
+          attribution:'<a href="https://www.jma.go.jp/bosai/nowc/" target="_blank" rel="noopener">気象庁ナウキャスト</a>',
+          maxZoom:18, maxNativeZoom:10, opacity:0.7
+        });
+        next.addTo(map);
+        var prev = rainLayer; rainLayer = next;
+        if (prev) { setTimeout(function(){ map.removeLayer(prev); }, 800); }
+        var v = String(t.validtime);
+        $("#rainLegend").querySelector(".lt").textContent = "雨 mm/h・"+v.slice(8,10)+":"+v.slice(10,12);
+      })
+      .catch(function(){ $("#rainLegend").querySelector(".lt").textContent = "雨雲を取得できません"; });
+  }
+  function mapBig(){ return $("#mapcard").classList.contains("big"); }
+  function toggleBig(force){
+    var on = typeof force === "boolean" ? force : !mapBig();
+    $("#mapcard").classList.toggle("big", on);
+    document.body.classList.toggle("map-open", on);
+    $("#fabExpand").setAttribute("aria-pressed", on ? "true":"false");
+    $("#fabExpandLabel").textContent = on ? "地図を閉じる" : "地図を拡大する";
+    $("#fabExpand").setAttribute("aria-label", on ? "地図を閉じる" : "地図を拡大する");
+    if (map) { setTimeout(function(){ map.invalidateSize(); if (on) { syncMarkers(listed(), true); } }, 80); }
+  }
+  $("#fabExpand").addEventListener("click", function(){ toggleBig(); });
+  document.addEventListener("keydown", function(e){ if (e.key==="Escape" && mapBig() && !viewer.open) { toggleBig(false); } });
+  $("#fabLocate").addEventListener("click", function(){ locate(true); });
+
+  function locate(center){
+    if (!navigator.geolocation) { toast("お使いのブラウザでは現在地を取得できません"); return; }
+    navigator.geolocation.getCurrentPosition(function(p){
+      state.here = { lat:p.coords.latitude, lng:p.coords.longitude };
+      if (map) {
+        if (hereMarker) { map.removeLayer(hereMarker); }
+        hereMarker = L.marker([state.here.lat, state.here.lng], {
+          icon: L.divIcon({ className:"", iconSize:[16,16], iconAnchor:[8,8], html:'<span class="here-dot"></span>' }),
+          keyboard:false, title:"現在地", alt:"現在地"
+        }).addTo(map);
+        if (center) { map.setView([state.here.lat, state.here.lng], 14); }
+      }
+      if (!center) { render(); }
+      toast("現在地を表示しました");
+    }, function(){ toast("現在地を取得できませんでした。ブラウザの位置情報の許可をご確認ください"); },
+    { enableHighAccuracy:false, timeout:10000, maximumAge:300000 });
+  }
+
+  /* ============ ツールバー ============ */
+  $$("[data-area]").forEach(function(b){
+    b.addEventListener("click", function(){
+      state.area = b.dataset.area;
+      $$("[data-area]").forEach(function(x){ x.setAttribute("aria-pressed", x.dataset.area===state.area ? "true":"false"); });
+      render();
+    });
+  });
+  $("#sortSel").addEventListener("change", function(){
+    if (this.value === "near" && !state.here) {
+      var self = this;
+      if (!navigator.geolocation) { toast("お使いのブラウザでは現在地を取得できません"); self.value = state.sort; return; }
+      navigator.geolocation.getCurrentPosition(function(p){
+        state.here = { lat:p.coords.latitude, lng:p.coords.longitude };
+        state.sort = "near"; render(); toast("現在地から近い順に並べ替えました");
+      }, function(){ toast("現在地を取得できませんでした"); self.value = state.sort; },
+      { enableHighAccuracy:false, timeout:10000, maximumAge:300000 });
+      return;
+    }
+    state.sort = this.value; store("sort", this.value); render();
+  });
+  function setAutoLive(on, quiet){
+    state.autoLive = on; store("autoLive", on?"1":"0");
+    $("#swLive").setAttribute("aria-pressed", on?"true":"false");
+    $("#setAutoLive").checked = on;
+    if (!on) { stopAllLive(); } else { scheduleRetarget(); }
+    if (!quiet) { toast(on ? "画面に映っているカメラを自動で再生します（最大"+maxLive()+"地点）" : "自動再生を止めました。カードを押すと1地点ずつ見られます"); }
+  }
+  $("#swLive").addEventListener("click", function(){ setAutoLive(!state.autoLive); });
+  $("#setAutoLive").addEventListener("change", function(){ setAutoLive(this.checked); });
+  $("#setAuto").addEventListener("change", function(){
+    state.auto = this.checked; store("auto", this.checked?"1":"0"); schedule();
+    toast(state.auto ? "5分ごとに自動更新します" : "自動更新を止めました");
+  });
+  $("#setKanda").addEventListener("change", function(){
+    state.kanda = this.checked; store("kanda", this.checked?"1":"0"); render();
+  });
+
+  /* ============ 起動 ============ */
+  $("#setKanda").checked = state.kanda;
+  $("#setAuto").checked = state.auto;
+  $("#setAutoLive").checked = state.autoLive;
+  $("#swLive").setAttribute("aria-pressed", state.autoLive ? "true":"false");
+  $("#sortSel").value = state.sort;
+  $("#stampLine").textContent = hhmm(new Date(state.stamp));
+  render();
+  fetchWx();
+  schedule();
+  initMap();
+})();
+</script>
+</body>
+</html>
