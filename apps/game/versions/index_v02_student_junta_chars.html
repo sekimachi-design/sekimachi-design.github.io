@@ -1,0 +1,1363 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>サイバー・アリーナ 3D アルティメット (ハッピーブライト大群戦)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Noto+Sans+JP:wght@400;700;900&display=swap');
+        
+        * {
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            font-family: 'Noto Sans JP', 'Orbitron', sans-serif;
+            background-color: #022c22;
+            color: #f8fafc;
+        }
+
+        @keyframes eternal-cutin {
+            0% { transform: translateY(-50%) scale(0.2) skewX(-25deg); opacity: 0; filter: blur(10px); }
+            20% { transform: translateY(-50%) scale(1.1) skewX(-20deg); opacity: 1; filter: blur(0px); }
+            80% { transform: translateY(-50%) scale(1) skewX(-20deg); opacity: 1; filter: blur(0px); }
+            100% { transform: translateY(-50%) scale(1.25) skewX(-25deg); opacity: 0; filter: blur(15px); }
+        }
+
+        .animate-eternal-cutin {
+            animation: eternal-cutin 2.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes skill-pop {
+            0% { transform: scale(0.3) translateY(30px); opacity: 0; }
+            15% { transform: scale(1.15) translateY(0); opacity: 1; }
+            85% { transform: scale(1) translateY(0); opacity: 1; }
+            100% { transform: scale(0.9) translateY(-30px); opacity: 0; }
+        }
+
+        .animate-skill-pop {
+            animation: skill-pop 1.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        .skill-btn {
+            transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .skill-btn:active {
+            transform: scale(0.92);
+        }
+
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: rgba(2, 44, 34, 0.8); }
+        ::-webkit-scrollbar-thumb { background: rgba(52, 211, 153, 0.5); border-radius: 3px; }
+    </style>
+</head>
+<body class="relative w-full h-full select-none overflow-hidden bg-emerald-950">
+
+    <div id="canvas-container" class="absolute inset-0 w-full h-full z-0"></div>
+
+    <div id="cutin-overlay" class="hidden fixed inset-0 z-50 pointer-events-none flex items-center justify-center overflow-hidden">
+        <div class="absolute inset-0 bg-slate-950/70 backdrop-blur-md transition-opacity duration-300"></div>
+        <div id="cutin-banner" class="relative w-full py-8 md:py-12 bg-gradient-to-r from-transparent via-emerald-950/95 to-transparent border-y-8 border-emerald-400 flex flex-col items-center justify-center shadow-[0_0_120px_rgba(52,211,153,0.95)]">
+            <div id="cutin-sub" class="text-sm md:text-xl font-black tracking-[1em] text-emerald-400 uppercase mb-3 drop-shadow-[0_0_10px_#34d399]">HACKER SUPREME ARTS</div>
+            <div id="cutin-title" class="text-3xl md:text-7xl font-black tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-emerald-300 via-teal-400 to-cyan-300 text-center drop-shadow-[0_0_35px_rgba(52,211,153,0.9)] uppercase skew-x-[-10deg]">
+                超奥義発動
+            </div>
+        </div>
+    </div>
+
+    <div id="skill-text-overlay" class="hidden fixed top-24 left-1/2 transform -translate-x-1/2 z-50 pointer-events-none flex flex-col items-center justify-center">
+        <div id="skill-popup-banner" class="px-8 py-5 bg-slate-900/95 border-4 border-emerald-400 rounded-3xl shadow-[0_0_60px_rgba(52,211,153,0.9)] backdrop-blur-md flex flex-col items-center transform skew-x-[-8deg]">
+            <div id="skill-popup-icon" class="text-5xl mb-2">💻</div>
+            <div id="skill-popup-name" class="text-2xl md:text-4xl font-black tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400 text-center drop-shadow-lg uppercase">
+                スキル名
+            </div>
+        </div>
+    </div>
+
+    <div id="crosshair" class="fixed pointer-events-none z-30 transform -translate-x-1/2 -translate-y-1/2 left-1/2 top-1/2">
+        <div class="w-6 h-6 border-2 border-emerald-400 rounded-full opacity-90 flex items-center justify-center shadow-[0_0_10px_#34d399]">
+            <div class="w-1.5 h-1.5 bg-emerald-500 rounded-full"></div>
+        </div>
+    </div>
+
+    <header id="game-hud" class="fixed top-0 left-0 right-0 p-3 z-30 pointer-events-none flex items-center justify-between">
+        <div class="pointer-events-auto bg-slate-900/90 backdrop-blur-md border border-emerald-500/50 px-4 py-2 rounded-2xl shadow-xl flex items-center gap-4 text-emerald-300">
+            <div class="flex items-center gap-2">
+                <span class="text-rose-400 font-black text-lg">❤️ HP:</span>
+                <span class="text-emerald-400 font-black text-xl tracking-wider">∞ (無限)</span>
+            </div>
+            <div class="h-5 w-px bg-emerald-700"></div>
+            <div class="flex items-center gap-1.5">
+                <span class="text-amber-400 font-bold text-sm">🗝️ 鍵:</span>
+                <span id="hud-keys" class="text-amber-300 font-black text-lg">0.0</span>
+            </div>
+            <div class="h-5 w-px bg-emerald-700"></div>
+            <div class="flex items-center gap-1.5">
+                <span class="text-purple-400 font-bold text-sm">🌊 WAVE:</span>
+                <span id="hud-wave" class="text-purple-300 font-black text-lg">1</span>
+                <span class="text-emerald-500 text-xs">(<span id="hud-wave-kills">0</span>/100体)</span>
+            </div>
+            <div class="h-5 w-px bg-emerald-700"></div>
+            <div class="flex items-center gap-1.5">
+                <span class="text-cyan-400 font-bold text-sm">👤 覚醒者:</span>
+                <span id="hud-active-char" class="text-cyan-300 font-black text-sm">通常兵装</span>
+            </div>
+        </div>
+
+        <div id="boss-hud" class="hidden pointer-events-auto w-1/3 bg-slate-900/90 border-2 border-rose-500 px-4 py-2 rounded-2xl shadow-[0_0_30px_rgba(225,29,72,0.4)] flex flex-col items-center">
+            <div class="flex justify-between w-full text-xs font-black text-rose-400 uppercase tracking-widest mb-1">
+                <span id="boss-name">⚠️ タイタン・オメガ ⚠️</span>
+                <span id="boss-hp-text">1,000,000,000 / 1,000,000,000</span>
+            </div>
+            <div class="w-full h-3 bg-slate-800 rounded-full overflow-hidden border border-rose-900">
+                <div id="boss-hp-bar" class="h-full bg-gradient-to-r from-rose-500 via-amber-400 to-rose-500 transition-all duration-150" style="width: 100%;"></div>
+            </div>
+        </div>
+
+        <div class="pointer-events-auto flex items-center gap-2">
+            <button id="btn-admin-panel" class="hidden px-4 py-2 rounded-xl bg-emerald-700 hover:bg-emerald-600 text-white font-black text-sm shadow-[0_0_15px_rgba(52,211,153,0.5)] flex items-center gap-1.5 transition border border-emerald-400">
+                <span>💻</span>
+                <span>ハッカー管理パネル</span>
+            </button>
+            <button id="btn-open-lobby" class="px-4 py-2 rounded-xl bg-slate-900/90 hover:bg-slate-800 border border-emerald-400 text-emerald-300 font-black text-sm shadow-[0_0_15px_rgba(52,211,153,0.3)] flex items-center gap-1.5 transition">
+                <span>🏠</span>
+                <span>ホームロビー</span>
+            </button>
+        </div>
+    </header>
+
+    <div id="action-dock" class="fixed bottom-3 left-1/2 transform -translate-x-1/2 z-30 flex flex-col items-center gap-2 pointer-events-auto max-w-[98vw]">
+        <div class="flex flex-wrap items-center justify-center gap-1.5 md:gap-2">
+            <button id="btn-hover-fly" class="skill-btn px-3 py-1.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white text-xs font-black border border-emerald-300 shadow-md flex items-center gap-1">
+                <span>🕊️</span>
+                <span id="hover-btn-text">[Y] 永続滞空: OFF</span>
+            </button>
+            <button id="btn-island-bigbang" class="skill-btn px-3 py-1.5 rounded-xl bg-gradient-to-r from-amber-600 to-orange-600 text-white text-xs font-black border border-amber-300 shadow-md flex items-center gap-1">
+                <span>🪐</span>
+                <span>[Z] 島消滅ビッグバン</span>
+            </button>
+            <button id="btn-holy-blast" class="skill-btn px-3 py-1.5 rounded-xl bg-gradient-to-r from-yellow-500 to-amber-500 text-slate-950 text-xs font-black border border-yellow-200 shadow-md flex items-center gap-1">
+                <span>💥</span>
+                <span>[X] 神聖爆発</span>
+            </button>
+            <button id="btn-awaken-toggle" class="skill-btn px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 text-slate-950 text-xs font-black border-2 border-emerald-200 shadow-[0_0_20px_rgba(52,211,153,0.6)] flex items-center gap-1 animate-pulse">
+                <span>⚡</span>
+                <span id="awaken-btn-text">[H] ハッカーモード起動</span>
+            </button>
+        </div>
+
+        <div id="char-skills-container" class="flex flex-wrap items-center justify-center gap-1.5 bg-slate-900/90 p-1.5 rounded-2xl border border-emerald-500/40 shadow-2xl backdrop-blur-md text-emerald-300">
+            <div id="skills-juntaro" class="hidden flex flex-wrap items-center justify-center gap-1"></div>
+            <div id="skills-normal-hint" class="text-xs text-emerald-400 px-3 py-1 flex items-center gap-2 font-bold">
+                <span>[P/クリック]: 射撃</span>
+                <span>|</span>
+                <span>[Space]: ジャンプ</span>
+                <span>|</span>
+                <span>[Y]: 永続滞空</span>
+                <span>|</span>
+                <span>[Z]: 島消滅</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ホームロビー -->
+    <div id="lobby-modal" class="fixed inset-0 z-40 bg-emerald-950/90 backdrop-blur-md flex flex-col items-center justify-center p-4 overflow-y-auto">
+        <div class="relative w-full max-w-4xl bg-slate-900 border-4 border-emerald-400 rounded-3xl p-6 md:p-8 shadow-[0_0_80px_rgba(52,211,153,0.6)] flex flex-col gap-6 my-auto max-h-[90vh] overflow-y-auto text-emerald-100">
+            <div class="flex items-center justify-between border-b border-emerald-800 pb-4">
+                <div>
+                    <h1 class="text-2xl md:text-3xl font-black tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400 flex items-center gap-2 cursor-pointer">
+                        <span>サイバー・アリーナ</span>
+                        <span id="cyber-dot" class="text-emerald-400 animate-pulse text-4xl leading-none">・</span>
+                        <span>ホームロビー</span>
+                    </h1>
+                    <p class="text-xs md:text-sm text-emerald-400/80 mt-1">作戦本部: ハッカー武器庫 ＆ 島ステージ選択</p>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button id="btn-deploy-battle" class="px-6 py-3 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-black text-base shadow-[0_0_25px_rgba(52,211,153,0.7)] flex items-center gap-2 transform hover:scale-105 transition active:scale-95">
+                        <span>⚔️</span>
+                        <span>出撃 / 戦闘開始</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- 当たり判定を大きくした電球ボックス（どこをクリックしても反応） -->
+            <div id="tutorial-bulb-box" class="p-5 rounded-2xl bg-emerald-950/80 border-2 border-emerald-500/60 flex flex-col gap-2 cursor-pointer hover:border-emerald-400 transition shadow-lg">
+                <div class="text-sm font-black text-emerald-300 flex items-center gap-2">
+                    <span class="text-2xl">💡</span>
+                    <span>はじめての方へ (チュートリアル) ※このボックス全体のどこをクリック・タップでもシークレット起動可能</span>
+                </div>
+                <p class="text-xs text-emerald-200/90 leading-relaxed pointer-events-none">
+                    1. **移動**: <code>W A S D</code> キーで島内を自由に移動。<br>
+                    2. **攻撃**: マウスクリックまたは <code>P</code> キーで銃弾を発射して敵を倒そう！<br>
+                    3. **ジャンプ・滞空**: <code>Space</code> キーでジャンプ。<code>Y</code> キーを押すと「永続滞空飛行」がONになります。<br>
+                    4. **ステージ移動**: 下の「全島ステージ選択」タブからいつでもお好きな島へ出撃できます。
+                </p>
+            </div>
+
+            <div class="flex flex-wrap gap-2 border-b border-emerald-800 pb-2">
+                <button id="tab-btn-weapons" class="px-4 py-2 rounded-xl bg-emerald-800 text-emerald-200 border border-emerald-400 font-bold text-sm">⚔️ ハッカー武器庫 (30+種)</button>
+                <button id="tab-btn-stages" class="px-4 py-2 rounded-xl bg-slate-800 text-emerald-400 hover:text-white font-bold text-sm">🪐 全島ステージ選択</button>
+            </div>
+
+            <div id="tab-content-weapons" class="flex flex-col gap-3">
+                <div class="text-xs text-emerald-400 flex items-center justify-between">
+                    <span>所持キー: <span id="lobby-keys-count" class="text-amber-400 font-bold">0.0</span> 個</span>
+                    <span class="text-emerald-300 font-bold">30種以上のハッカー武器完備</span>
+                </div>
+                <div id="weapon-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 max-h-72 overflow-y-auto p-1"></div>
+            </div>
+
+            <div id="tab-content-stages" class="hidden grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                <div class="stage-card p-4 rounded-2xl bg-slate-950 border-2 border-emerald-500 flex flex-col justify-between shadow-md">
+                    <div>
+                        <div class="text-lg font-black text-emerald-300">サイバー・アリーナ</div>
+                        <p class="text-xs text-emerald-400/80 mt-1">ハッカーズ・マトリックス電脳都市。</p>
+                    </div>
+                    <button class="stage-select-btn mt-3 w-full py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow" data-stage="arena">▶ この島に入る</button>
+                </div>
+                <div class="stage-card p-4 rounded-2xl bg-slate-950 border-2 border-emerald-500 flex flex-col justify-between shadow-md">
+                    <div>
+                        <div class="text-lg font-black text-emerald-300">マグマ・ボルケーノ</div>
+                        <p class="text-xs text-emerald-400/80 mt-1">緑色に輝くハッカー溶岩島。</p>
+                    </div>
+                    <button class="stage-select-btn mt-3 w-full py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow" data-stage="volcano">▶ この島に入る</button>
+                </div>
+                <div class="stage-card p-4 rounded-2xl bg-slate-950 border-2 border-emerald-500 flex flex-col justify-between shadow-md">
+                    <div>
+                        <div class="text-lg font-black text-emerald-300">ネオン・ディメンション</div>
+                        <p class="text-xs text-emerald-400/80 mt-1">エメラルドグリーンの異次元空間。</p>
+                    </div>
+                    <button class="stage-select-btn mt-3 w-full py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow" data-stage="neon">▶ この島に入る</button>
+                </div>
+                <div class="stage-card p-4 rounded-2xl bg-slate-950 border-2 border-emerald-500 flex flex-col justify-between shadow-md">
+                    <div>
+                        <div class="text-lg font-black text-emerald-300">コズミック・宇宙島</div>
+                        <p class="text-xs text-emerald-400/80 mt-1">グリーンアイズが広がるハッカー宇宙。</p>
+                    </div>
+                    <button class="stage-select-btn mt-3 w-full py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow" data-stage="cosmic">▶ この島に入る</button>
+                </div>
+                <div class="stage-card p-4 rounded-2xl bg-slate-950 border-2 border-emerald-500 flex flex-col justify-between shadow-md">
+                    <div>
+                        <div class="text-lg font-black text-emerald-300">極寒サイバー・アイス</div>
+                        <p class="text-xs text-emerald-400/80 mt-1">きらめくデジタル氷結グリッド島。</p>
+                    </div>
+                    <button class="stage-select-btn mt-3 w-full py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow" data-stage="ice">▶ この島に入る</button>
+                </div>
+                <div class="stage-card p-4 rounded-2xl bg-slate-950 border-2 border-emerald-500 flex flex-col justify-between shadow-md">
+                    <div>
+                        <div class="text-lg font-black text-amber-300">👑 神の領域 (終極)</div>
+                        <p class="text-xs text-emerald-400/80 mt-1">緑と黄金の光が降り注ぐ聖域。</p>
+                    </div>
+                    <button class="stage-select-btn mt-3 w-full py-2 rounded-xl bg-gradient-to-r from-emerald-500 to-amber-500 hover:from-emerald-400 hover:to-amber-400 text-slate-950 font-black text-xs shadow" data-stage="god">▶ この島に入る</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ハッカー風シークレット端末 (コード: 1000) -->
+    <div id="secret-terminal-modal" class="hidden fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
+        <div class="relative w-full max-w-xl bg-slate-900 border-4 border-emerald-400 rounded-3xl p-6 shadow-[0_0_80px_rgba(52,211,153,0.8)] flex flex-col gap-4 text-emerald-100 my-auto max-h-[90vh] overflow-y-auto">
+            <div class="flex items-center justify-between border-b border-emerald-800 pb-3">
+                <div class="flex items-center gap-2">
+                    <span class="text-2xl text-emerald-400 animate-pulse">💻</span>
+                    <span class="text-emerald-300 font-black text-lg tracking-wider">ハッカー・シークレット端末</span>
+                </div>
+                <button id="secret-terminal-close" class="text-emerald-500 hover:text-emerald-300 text-xl font-bold">✕</button>
+            </div>
+            
+            <div class="flex flex-col gap-3">
+                <p class="text-xs text-emerald-400/80">暗証コードに <strong class="text-emerald-300">1000</strong> と入力して認証すると、すべての隠しキャラクターが全解放されます。</p>
+                <div class="flex items-center gap-2">
+                    <input id="secret-terminal-input" type="password" maxlength="4" placeholder="1000" class="w-2/3 bg-slate-950 border border-emerald-500 rounded-xl px-3 py-2.5 text-center text-lg font-black text-emerald-300 tracking-widest">
+                    <button id="secret-terminal-submit" class="w-1/3 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow">
+                        コード認証 (1000)
+                    </button>
+                </div>
+
+                <div id="character-selector-panel" class="hidden flex flex-col gap-2 mt-3 pt-3 border-t border-emerald-800 max-h-[50vh] overflow-y-auto p-1">
+                    <div class="text-xs font-black text-emerald-300">👑 覚醒キャラクター・全ラインナップ選択 (即時変身)</div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <button class="char-select-btn p-2.5 rounded-xl bg-slate-950 hover:bg-emerald-950 border border-emerald-800 text-emerald-300 text-xs font-black transition flex items-center justify-center gap-1.5" data-char="normal">👤 通常兵装</button>
+                        <button class="char-select-btn p-2.5 rounded-xl bg-emerald-950 hover:bg-emerald-900 border border-emerald-500 text-emerald-200 text-xs font-black transition flex items-center justify-center gap-1.5" data-char="god">👑 純太郎ハッカー神</button>
+                        <button class="char-select-btn p-2.5 rounded-xl bg-emerald-900 hover:bg-emerald-800 border border-emerald-400 text-emerald-100 text-xs font-black transition flex items-center justify-center gap-1.5" data-char="nori">🌌 ノリ</button>
+                        <button class="char-select-btn p-2.5 rounded-xl bg-emerald-900 hover:bg-emerald-800 border border-emerald-400 text-emerald-100 text-xs font-black transition flex items-center justify-center gap-1.5" data-char="guest1337">👊 ゲスト1337</button>
+                        <button class="char-select-btn p-2.5 rounded-xl bg-emerald-900 hover:bg-emerald-800 border border-emerald-400 text-emerald-100 text-xs font-black transition flex items-center justify-center gap-1.5" data-char="mix">🧬 ミックス (全融合)</button>
+                        <button class="char-select-btn p-2.5 rounded-xl bg-emerald-900 hover:bg-emerald-800 border border-emerald-400 text-emerald-100 text-xs font-black transition flex items-center justify-center gap-1.5" data-char="kuruki">⚡ クルキ (Kuruki)</button>
+                        <button class="char-select-btn p-2.5 rounded-xl bg-emerald-900 hover:bg-emerald-800 border border-emerald-400 text-emerald-100 text-xs font-black transition flex items-center justify-center gap-1.5" data-char="john">💻 ジョン・ドゥ</button>
+                        <button class="char-select-btn p-2.5 rounded-xl bg-emerald-900 hover:bg-emerald-800 border border-emerald-400 text-emerald-100 text-xs font-black transition flex items-center justify-center gap-1.5" data-char="noestra">🦇 ノエストラ</button>
+                        <button class="char-select-btn p-2.5 rounded-xl bg-emerald-900 hover:bg-emerald-800 border border-emerald-400 text-emerald-100 text-xs font-black transition flex items-center justify-center gap-1.5" data-char="azur">🌸 アズール</button>
+                        <button class="char-select-btn p-2.5 rounded-xl bg-emerald-900 hover:bg-emerald-800 border border-emerald-400 text-emerald-100 text-xs font-black transition flex items-center justify-center gap-1.5" data-char="thrasher">🗡️ スラッシャー</button>
+                        <button class="char-select-btn p-2.5 rounded-xl bg-cyan-950 hover:bg-cyan-900 border border-cyan-400 text-cyan-200 text-xs font-black transition flex items-center justify-center gap-1.5" data-char="pandiriaz">⭐ Pandiriaz (友達)</button>
+                        <button class="char-select-btn p-2.5 rounded-xl bg-pink-950 hover:bg-pink-900 border border-pink-400 text-pink-200 text-xs font-black transition flex items-center justify-center gap-1.5" data-char="uchidarion">💖 内田リオン (女子)</button>
+                        <button class="char-select-btn p-2.5 rounded-xl bg-sky-950 hover:bg-sky-900 border border-sky-400 text-sky-200 text-xs font-black transition flex items-center justify-center gap-1.5" data-char="gakuseijuntaro">🎒 学生純太郎</button>
+                        <button class="char-select-btn col-span-2 p-2.5 rounded-xl bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 text-slate-950 text-xs font-black shadow-[0_0_15px_rgba(251,191,36,0.7)] transition flex items-center justify-center gap-1.5" data-char="supergakuseijuntaro">🌟 スーパー学生純太郎</button>
+                        <button class="char-select-btn col-span-2 p-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white text-xs font-black shadow transition flex items-center justify-center gap-1.5" data-char="class43">🏫 4年3組 (クラス全員参戦)</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ハッカー管理アドミンパネル -->
+    <div id="admin-panel-modal" class="hidden fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
+        <div class="relative w-full max-w-3xl bg-slate-900 border-4 border-emerald-500 rounded-3xl p-6 shadow-[0_0_80px_rgba(52,211,153,0.7)] flex flex-col gap-4 text-emerald-100 my-auto max-h-[92vh] overflow-y-auto">
+            <div class="flex items-center justify-between border-b border-emerald-800 pb-3">
+                <div class="flex items-center gap-2">
+                    <span class="text-2xl text-emerald-400">💻</span>
+                    <span id="admin-panel-title" class="text-emerald-300 font-black text-base tracking-wider">ハッカー管理アドミンパネル (100項目)</span>
+                </div>
+                <button id="admin-panel-close" class="text-emerald-500 hover:text-emerald-300 text-xl font-bold">✕</button>
+            </div>
+            
+            <div class="flex flex-col gap-3 text-xs font-bold text-emerald-300">
+                <div class="flex flex-col gap-1.5 p-3 rounded-2xl bg-gradient-to-r from-emerald-950 to-teal-950 border-2 border-emerald-400">
+                    <label class="flex justify-between items-center text-emerald-200">
+                        <span class="font-black text-sm">👏 全島完全即死キルコマンド「純太郎クラップ」</span>
+                        <span class="text-xs text-emerald-400 font-bold">どんな敵やボスも1発で完全即死</span>
+                    </label>
+                    <button id="admin-juntaro-clap" class="py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 text-white font-black text-sm shadow">
+                        👏 純太郎クラップ発動 (マジの無限即死)
+                    </button>
+                </div>
+
+                <div id="admin-grid-container" class="grid grid-cols-2 gap-2 max-h-[50vh] overflow-y-auto p-1 bg-slate-950 border border-emerald-800 rounded-2xl"></div>
+
+                <button id="admin-apply-btn" class="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-sm shadow">
+                    ハッカーアドミン設定を適用して保存
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- アラートボックス -->
+    <div id="game-alert-box" class="hidden fixed top-16 left-1/2 transform -translate-x-1/2 z-50 px-6 py-3 rounded-2xl bg-slate-900 border-2 border-emerald-400 text-emerald-200 font-black text-sm shadow-[0_0_30px_rgba(52,211,153,0.4)] flex items-center gap-2 pointer-events-none transition-all duration-300">
+        <span id="alert-icon">⚡</span>
+        <span id="alert-message">メッセージ</span>
+    </div>
+
+    <script>
+    const AudioEngine = {
+        ctx: null,
+        isBgmPlaying: false,
+        init() {
+            if (!this.ctx) {
+                const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                if (AudioCtx) this.ctx = new AudioCtx();
+            }
+            if (this.ctx && this.ctx.state === 'suspended') {
+                this.ctx.resume();
+            }
+        },
+        startBGM() {
+            this.init();
+            if (!this.ctx || this.isBgmPlaying) return;
+            this.isBgmPlaying = true;
+            
+            const playNoteSequence = () => {
+                if (!this.isBgmPlaying) return;
+                const notes = [261.63, 329.63, 392.00, 523.25, 587.33, 659.25, 783.99, 1046.50];
+                const note = notes[Math.floor(Math.random() * notes.length)];
+                
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(note, this.ctx.currentTime);
+                
+                gain.gain.setValueAtTime(0.03, this.ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.3);
+                
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc.start();
+                osc.stop(this.ctx.currentTime + 0.3);
+
+                setTimeout(playNoteSequence, 300);
+            };
+            playNoteSequence();
+        },
+        playShoot() {
+            this.init();
+            if (!this.ctx) return;
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(587.33, this.ctx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(880, this.ctx.currentTime + 0.1);
+            gain.gain.setValueAtTime(0.1, this.ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.1);
+            osc.connect(gain);
+            gain.connect(this.ctx.destination);
+            osc.start();
+            osc.stop(this.ctx.currentTime + 0.1);
+        },
+        playExplosion() {
+            this.init();
+            if (!this.ctx) return;
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(220, this.ctx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(50, this.ctx.currentTime + 0.3);
+            gain.gain.setValueAtTime(0.2, this.ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.3);
+            osc.connect(gain);
+            gain.connect(this.ctx.destination);
+            osc.start();
+            osc.stop(this.ctx.currentTime + 0.3);
+        },
+        playChirin() {
+            this.init();
+            if (!this.ctx) return;
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(1046.50, this.ctx.currentTime);
+            osc.frequency.setValueAtTime(1318.51, this.ctx.currentTime + 0.08);
+            gain.gain.setValueAtTime(0.2, this.ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.25);
+            osc.connect(gain);
+            gain.connect(this.ctx.destination);
+            osc.start();
+            osc.stop(this.ctx.currentTime + 0.25);
+        },
+        playAwaken() {
+            this.init();
+            if (!this.ctx) return;
+            [523.25, 659.25, 783.99, 1046.50].forEach((freq, i) => {
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(freq, this.ctx.currentTime + i * 0.07);
+                gain.gain.setValueAtTime(0.15, this.ctx.currentTime + i * 0.07);
+                gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + i * 0.07 + 0.35);
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc.start(this.ctx.currentTime + i * 0.07);
+                osc.stop(this.ctx.currentTime + i * 0.07 + 0.35);
+            });
+        }
+    };
+
+    let scene, camera, renderer;
+    let playerPos = new THREE.Vector3(0, 1.6, 0);
+    let playerVelocityY = 0;
+    let isGrounded = true;
+    let isHoverFlying = false;
+    let isJuntaroMode = false;
+    let isTimeFrozen = false;
+
+    let playerKeys = 0.0;
+    let currentWave = 1;
+    let waveKills = 0;
+    let currentBoss = null;
+    let currentStage = 'arena';
+    let activeCharacter = 'none';
+
+    let adminSettings = {
+        wave: 1,
+        damageMultiplier: 1.0,
+        maxSpawnCount: 60,
+        enemySpeedMultiplier: 0.4, // 歩行速度を遅めに設定
+        enemyHpMultiplier: 1.0,
+        skillRangeMultiplier: 1.0,
+        mapSize: 90,
+        rateMultiplier: 1.0,
+        killRadius: 25,
+        keyBoost: 1.0,
+        playerSpeed: 1.0,
+        skillSpeed: 1.0,
+        rareSpawnRate: 15,
+        bossWaveInterval: 10,
+        gravity: 0.015,
+        jumpForce: 0.35,
+        bulletSize: 0.5,
+        enemySize: 2.0,
+        bossSize: 12.0
+    };
+    for(let i=21; i<=100; i++) {
+        adminSettings[`param_${i}`] = 1.0;
+    }
+
+    const WEAPONS = [];
+    const weaponPrefixes = ['ハッピー', 'シャイニー', 'レインボー', 'スカイ', 'スター', 'ギャラクシー', 'サンシャイン', 'クリスタル', 'ダイヤ', 'プラチナ'];
+    const weaponTypes = ['アサルト', 'ガン', 'ショット', 'スナイパー', 'ブラスター', 'バズーカ', 'カノン', 'リボルバー', 'マシンガン', 'レイザー'];
+    for (let i = 1; i <= 35; i++) {
+        const p = weaponPrefixes[(i - 1) % weaponPrefixes.length];
+        const t = weaponTypes[Math.floor((i - 1) / weaponPrefixes.length) % weaponTypes.length];
+        WEAPONS.push({
+            id: i,
+            name: `${p}・${t} #${i}`,
+            unlocked: true,
+            damage: 25000000 + i * 15000000,
+            rate: Math.max(50, 200 - i * 4)
+        });
+    }
+    let currentWeapon = WEAPONS[0];
+
+    const enemies = [];
+    const bullets = [];
+    const particles = [];
+    const keysPressed = {};
+    let mouseX = window.innerWidth / 2;
+    let mouseY = window.innerHeight / 2;
+
+    function init3D() {
+        const container = document.getElementById('canvas-container');
+        scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x022c22);
+        scene.fog = new THREE.FogExp2(0x022c22, 0.0001);
+
+        camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.set(0, 1.6, 0);
+
+        renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        renderer.shadowMap.enabled = true;
+        container.appendChild(renderer.domElement);
+
+        const ambientLight = new THREE.AmbientLight(0xffffff, 9.0);
+        scene.add(ambientLight);
+
+        const hemiLight = new THREE.HemisphereLight(0xffffff, 0x065f46, 6.0);
+        hemiLight.position.set(0, 300, 0);
+        scene.add(hemiLight);
+
+        const dirLight = new THREE.DirectionalLight(0xffffff, 7.0);
+        dirLight.position.set(150, 400, 150);
+        scene.add(dirLight);
+
+        buildIsland('arena');
+        spawnInitialEnemies();
+        buildJuntaro10スキルUI();
+        buildAdminGridUI(100);
+
+        window.addEventListener('resize', onWindowResize);
+    }
+
+    let groundMesh = null;
+    let gridHelper = null;
+
+    function buildIsland(stageType) {
+        currentStage = stageType;
+        if (groundMesh) scene.remove(groundMesh);
+        if (gridHelper) scene.remove(gridHelper);
+
+        let groundColor = 0x022c22;
+        let gridColor1 = 0x065f46;
+
+        if (stageType === 'volcano') {
+            groundColor = 0x064e3b; gridColor1 = 0x10b981;
+        } else if (stageType === 'neon') {
+            groundColor = 0x042f2e; gridColor1 = 0x14b8a6;
+        } else if (stageType === 'cosmic') {
+            groundColor = 0x022f40; gridColor1 = 0x0284c7;
+        } else if (stageType === 'ice') {
+            groundColor = 0x082f49; gridColor1 = 0x38bdf8;
+        } else if (stageType === 'god') {
+            groundColor = 0x451a03; gridColor1 = 0xf59e0b;
+        }
+
+        scene.background = new THREE.Color(groundColor);
+        scene.fog = new THREE.FogExp2(groundColor, 0.0001);
+
+        const mapRadius = adminSettings.mapSize;
+        const geo = new THREE.CylinderGeometry(mapRadius, mapRadius, 4, 32);
+        const mat = new THREE.MeshStandardMaterial({ color: groundColor, roughness: 0.2, metalness: 0.1 });
+        groundMesh = new THREE.Mesh(geo, mat);
+        groundMesh.position.y = -2;
+        groundMesh.receiveShadow = true;
+        scene.add(groundMesh);
+
+        gridHelper = new THREE.GridHelper(mapRadius * 2, 60, 0xffffff, gridColor1);
+        gridHelper.position.y = 0.02;
+        scene.add(gridHelper);
+    }
+
+    function onWindowResize() {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+    }
+
+    function spawnInitialEnemies() {
+        while (enemies.length < adminSettings.maxSpawnCount) {
+            spawnSingleEnemy();
+        }
+    }
+
+    function checkAndSpawnEnemies() {
+        if (enemies.length < adminSettings.maxSpawnCount) {
+            spawnSingleEnemy();
+        }
+        if (currentWave % adminSettings.bossWaveInterval === 0 && !currentBoss) {
+            spawnTitanOmegaBoss();
+        }
+    }
+
+    function spawnSingleEnemy() {
+        const isRare = Math.random() < (adminSettings.rareSpawnRate / 100);
+        const size = adminSettings.enemySize;
+        const enemyGeo = isRare ? new THREE.BoxGeometry(size * 1.4, size * 2.0, size * 1.4) : new THREE.BoxGeometry(size, size * 1.5, size);
+        let enemyColor = isRare ? 0xf59e0b : 0x10b981;
+
+        const enemyMat = new THREE.MeshStandardMaterial({
+            color: enemyColor,
+            emissive: enemyColor,
+            emissiveIntensity: isRare ? 0.9 : 0.6
+        });
+        const mesh = new THREE.Mesh(enemyGeo, enemyMat);
+
+        const angle = Math.random() * Math.PI * 2;
+        const dist = 30 + Math.random() * 40;
+        mesh.position.set(playerPos.x + Math.cos(angle) * dist, isRare ? 2.0 : 1.5, playerPos.z + Math.sin(angle) * dist);
+
+        const baseHp = (350000000 + currentWave * 50000000) * (isRare ? 5.0 : 1.0) * adminSettings.enemyHpMultiplier; 
+        const enemy = {
+            mesh,
+            hp: baseHp,
+            maxHp: baseHp,
+            isRare: isRare,
+            speed: (0.4 + Math.random() * 0.15) * adminSettings.enemySpeedMultiplier // ゆっくりとした歩行スピード
+        };
+        scene.add(mesh);
+        enemies.push(enemy);
+    }
+
+    function spawnTitanOmegaBoss() {
+        const bSize = adminSettings.bossSize;
+        const bossGeo = new THREE.BoxGeometry(bSize, bSize * 1.6, bSize);
+        const bossMat = new THREE.MeshStandardMaterial({
+            color: 0x064e3b,
+            emissive: 0x10b981,
+            emissiveIntensity: 0.9
+        });
+        const mesh = new THREE.Mesh(bossGeo, bossMat);
+        mesh.position.set(0, bSize * 0.8, -50);
+
+        const bossHp = (5000000000000 + currentWave * 1000000000000) * adminSettings.enemyHpMultiplier;
+        currentBoss = {
+            mesh,
+            hp: bossHp,
+            maxHp: bossHp,
+            speed: 0.3 * adminSettings.enemySpeedMultiplier
+        };
+        scene.add(mesh);
+
+        const bossHud = document.getElementById('boss-hud');
+        bossHud.classList.remove('hidden');
+        updateBossHPUI();
+        alertBox("⚠️ 巨大ボス タイタン・オメガ出現！ ⚠️", "👹");
+    }
+
+    function updateBossHPUI() {
+        if (!currentBoss) return;
+        const pct = Math.max(0, (currentBoss.hp / currentBoss.maxHp) * 100);
+        document.getElementById('boss-hp-bar').style.width = pct + '%';
+        document.getElementById('boss-hp-text').textContent = `${Math.ceil(currentBoss.hp).toLocaleString()} / ${currentBoss.maxHp.toLocaleString()}`;
+    }
+
+    function destroyBoss() {
+        if (!currentBoss) return;
+        createParticleExplosion(currentBoss.mesh.position, 0x34d399, 80);
+        scene.remove(currentBoss.mesh);
+        currentBoss = null;
+        document.getElementById('boss-hud').classList.add('hidden');
+        alertBox("🎉 タイタン・オメガ討伐完了！！", "👑");
+        playerKeys += 100000.0 * adminSettings.keyBoost;
+        updateHUDKeys();
+    }
+
+    function createParticleExplosion(pos, colorHex, count = 40) {
+        for (let i = 0; i < count; i++) {
+            const pGeo = new THREE.SphereGeometry(0.3 + Math.random() * 0.5, 6, 6);
+            const pMat = new THREE.MeshBasicMaterial({ color: colorHex });
+            const pMesh = new THREE.Mesh(pGeo, pMat);
+            pMesh.position.copy(pos);
+            const vel = new THREE.Vector3(
+                (Math.random() - 0.5) * 2.0,
+                Math.random() * 1.5 + 0.3,
+                (Math.random() - 0.5) * 2.0
+            );
+            scene.add(pMesh);
+            particles.push({ mesh: pMesh, vel, life: 50 });
+        }
+    }
+
+    let lastShootTime = 0;
+    function shootBullet() {
+        AudioEngine.startBGM();
+        const now = performance.now();
+        const adjustedRate = currentWeapon.rate / adminSettings.rateMultiplier;
+        if (now - lastShootTime < adjustedRate) return;
+        lastShootTime = now;
+
+        AudioEngine.playShoot();
+
+        const bulletGeo = new THREE.SphereGeometry(adminSettings.bulletSize, 8, 8);
+        const bulletMat = new THREE.MeshBasicMaterial({ color: 0x34d399 });
+        const bulletMesh = new THREE.Mesh(bulletGeo, bulletMat);
+        bulletMesh.position.copy(playerPos);
+        bulletMesh.position.y += 0.2;
+
+        const dir = new THREE.Vector3();
+        camera.getWorldDirection(dir);
+
+        scene.add(bulletMesh);
+        bullets.push({
+            mesh: bulletMesh,
+            dir: dir.clone().normalize(),
+            damage: currentWeapon.damage * (isJuntaroMode ? 1000 : 1) * adminSettings.damageMultiplier,
+            life: 90
+        });
+    }
+
+    function showCutin(subText, mainTitle, borderColor = '#34d399') {
+        const overlay = document.getElementById('cutin-overlay');
+        const banner = document.getElementById('cutin-banner');
+        const sub = document.getElementById('cutin-sub');
+        const title = document.getElementById('cutin-title');
+
+        sub.textContent = subText;
+        title.textContent = mainTitle;
+        banner.style.borderColor = borderColor;
+
+        overlay.classList.remove('hidden');
+        banner.classList.remove('animate-eternal-cutin');
+        void banner.offsetWidth;
+        banner.classList.add('animate-eternal-cutin');
+
+        clearTimeout(overlay.timer);
+        overlay.timer = setTimeout(() => {
+            overlay.classList.add('hidden');
+        }, 2200);
+    }
+
+    function showSkillPopup(skillName, icon = "💻") {
+        const overlay = document.getElementById('skill-text-overlay');
+        const banner = document.getElementById('skill-popup-banner');
+        const nameEl = document.getElementById('skill-popup-name');
+        const iconEl = document.getElementById('skill-popup-icon');
+
+        nameEl.textContent = skillName;
+        iconEl.textContent = icon;
+
+        overlay.classList.remove('hidden');
+        banner.classList.remove('animate-skill-pop');
+        void banner.offsetWidth;
+        banner.classList.add('animate-skill-pop');
+
+        clearTimeout(overlay.timer);
+        overlay.timer = setTimeout(() => {
+            overlay.classList.add('hidden');
+        }, 1800);
+    }
+
+    function triggerCameraQuake(durationMs = 1200, magnitude = 0.8) {
+        const start = performance.now();
+        const interval = setInterval(() => {
+            const elapsed = performance.now() - start;
+            if (elapsed > durationMs) {
+                clearInterval(interval);
+                camera.position.y = playerPos.y;
+                return;
+            }
+            const factor = (1 - elapsed / durationMs) * magnitude;
+            camera.position.x = playerPos.x + (Math.random() - 0.5) * factor;
+            camera.position.y = playerPos.y + (Math.random() - 0.5) * factor;
+        }, 20);
+    }
+
+    function inflictDamageToAll(dmg) {
+        const finalDmg = 1e300;
+
+        for (let j = enemies.length - 1; j >= 0; j--) {
+            const en = enemies[j];
+            en.hp -= finalDmg;
+            createParticleExplosion(en.mesh.position, 0x34d399, 15);
+            if (en.hp <= 0) {
+                scene.remove(en.mesh);
+                enemies.splice(j, 1);
+                waveKills++;
+                playerKeys += (en.isRare ? 200.0 : 50.0) * adminSettings.keyBoost;
+                updateHUDKeys();
+                document.getElementById('hud-wave-kills').textContent = waveKills;
+                if (waveKills >= 100) {
+                    currentWave++; waveKills = 0;
+                    document.getElementById('hud-wave').textContent = currentWave;
+                    showSkillPopup(`WAVE ${currentWave} 到達！！`, "🏆");
+                }
+            }
+        }
+        if (currentBoss) {
+            currentBoss.hp -= finalDmg;
+            createParticleExplosion(currentBoss.mesh.position, 0x10b981, 45);
+            updateBossHPUI();
+            if (currentBoss.hp <= 0) destroyBoss();
+        }
+    }
+
+    function triggerJuntaroClap() {
+        AudioEngine.playAwaken();
+        AudioEngine.playExplosion();
+        triggerCameraQuake(2500, 2.5);
+        showCutin("HACKER ULTIMATE CLAP", "純太郎クラップ・ハッカー無限即死コマンド", "#34d399");
+        showSkillPopup("純太郎クラップ発動！全島全敵一網打尽", "👏");
+        playerKeys += 999999.0 * adminSettings.keyBoost;
+        updateHUDKeys();
+        inflictDamageToAll(1e300);
+    }
+
+    const juntaro10Names = [
+        "皇神・神威閃光", "終焉・天罰雷光", "覇道・次元断層", "虚空・絶対零度", "創世・星屑嵐",
+        "滅神・業火審判", "転生・神聖結界", "天魔・無量大数", "覚醒・神速破界", "皇神制覇・純太郎エタニティ"
+    ];
+
+    function executeJuntaroSkill(index) {
+        AudioEngine.playAwaken();
+        const name = juntaro10Names[index - 1] || `純太郎秘技 #${index}`;
+        triggerCameraQuake(1400, 1.3);
+        showCutin("HACKER SUPREME ART", name, "#34d399");
+        showSkillPopup(`[${index}] ${name}`, "👑");
+        inflictDamageToAll(1e300);
+    }
+
+    function buildJuntaro10スキルUI() {
+        const container = document.getElementById('skills-juntaro');
+        if (!container) return;
+        container.innerHTML = '';
+        for (let i = 1; i <= 10; i++) {
+            const btn = document.createElement('button');
+            btn.className = "skill-btn px-2.5 py-1.5 rounded-lg bg-emerald-950 hover:bg-emerald-900 border border-emerald-500 text-emerald-200 text-xs font-bold";
+            btn.textContent = `[${i}] ${juntaro10Names[i - 1]}`;
+            btn.addEventListener('click', () => executeJuntaroSkill(i));
+            container.appendChild(btn);
+        }
+    }
+
+    function buildAdminGridUI(count = 100) {
+        const grid = document.getElementById('admin-grid-container');
+        if (!grid) return;
+        grid.innerHTML = '';
+
+        const titles = [
+            "1. 🌊 WAVE数の変更 (最大1000)", "2. ⚔️ プレイヤー火力倍率", "3. 👾 敵の同時出現数", "4. 🏃‍♂️ 敵の移動速度",
+            "5. ❤️ 敵のHP倍率", "6. 💥 スキル範囲倍率", "7. 🪐 マップ(島)の広さ", "8. ⚡ 銃連射レート",
+            "9. 💀 一撃消滅範囲", "10. 🗝️ 鍵ドロップ倍率", "11. 🦅 プレイヤー速度", "12. ☄️ 隕石落下速度",
+            "13. 🌟 レア出現率", "14. 🌋 ボス出現W間隔", "15. 🌍 重力変更", "16. 🦘 ジャンプ力",
+            "17. 🔵 弾のサイズ", "18. 🟥 敵のサイズ", "19. 👑 ボスサイズ", "20. 🧬 スキルミックス",
+            "21. 🌀 歪曲フィールド", "22. 🛡️ 無効シールド", "23. ⏳ タイムスロー", "24. 💎 鍵自動磁力",
+            "25. 🔥 炎上エフェクト", "26. ⚡ 雷撃チェイン", "27. 🧊 氷結フリーズ", "28. 🌪️ 竜巻旋風",
+            "29. 🔮 ダークマター", "30. 🌠 流星群頻度", "31. 🗡️ 斬撃判定", "32. 🏹 弾速ブースト",
+            "33. 🛡️ アーマー防御", "34. 💖 HP自動回復", "35. 💰 報酬ブースト", "36. 🗺️ 起伏の高さ",
+            "37. 🌫️ フォグの濃さ", "38. 🎆 花火量", "39. 🎶 BGMテンポ", "40. 🕹️ マウス感度",
+            "41. 🌠 星屑きらめき", "42. 🌋 溶岩熱量", "43. 🧊 氷反射率", "44. 👑 神聖オーラ",
+            "45. 👥 影解像度", "46. 📷 FOV画角", "47. 📺 画面揺れ", "48. 🎯 クロスヘア",
+            "49. 🔋 スタミナ回復", "50. 🚀 ダッシュ推進力", "51. 🧱 地面タイル粗さ", "52. 🚪 ポータル距離",
+            "53. 🏮 提灯ライト", "54. 🧬 遺伝子変異率", "55. 🧪 科学的重力", "56. 📻 音響エコー",
+            "57. 📐 ジオメトリ頂点", "58. 🎨 カラー彩度", "59. 🕹️ 入力遅延軽減", "60. 🛡️ バリア耐久",
+            "61. ⚡ 電流スパーク", "62. 🌊 津波シミュ", "63. 🌪️ 風向ベクトル", "64. 🔥 爆風拡散",
+            "65. ❄️ 冷却ガス", "66. 💎 宝石屈折", "67. 🧬 二重螺旋速度", "68. 🧠 AI思考速度",
+            "69. 👁️ 視界レンダリング", "70. 👣 足音エコー", "71. 🦾 サイバネティックス", "72. 📡 レーダー索敵",
+            "73. 🔋 エネルギーコア", "74. ⚙️ 歯車回転数", "75. 🕳️ ワームホール", "76. 🌌 銀河系スピン",
+            "77. ☄️ クレーター深度", "78. 🌋 火山灰飛散", "79. 🧊 氷河融解", "80. 👑 皇神威圧感",
+            "81. ⚡ プラズマ放電", "82. 🛡️ エナジーシールド", "83. ⏳ 亜空間クロック", "84. 💎 共鳴音量",
+            "85. 🔥 マグマ対流", "86. 🌪️ 暴風シャドウ", "87. ❄️ 吹雪パーティクル", "88. 🔮 魔力ポテンシャル",
+            "89. 🗡️ ブレード鋭さ", "90. 🏹 弓矢テンション", "91. 🧱 ブロック耐久", "92. 🚪 自動ドア速度",
+            "93. 🏮 ネオン点滅", "94. 🧬 細胞再生", "95. 🧪 化学薬品反応", "96. 📻 通信ノイズ",
+            "97. 黄金比グリッド", "98. 🎨 グラデーション", "99. 🕹️ 振動フィードバック", "100. 👑 ハッカー全権限"
+        ];
+
+        for (let i = 1; i <= count; i++) {
+            let labelText = titles[i - 1] || `${i}. ⚙️ 固有カスタム調整項目 #${i}`;
+            let inputHtml = `<input id="adm-in-${i}" type="range" min="0.1" max="100.0" step="0.1" value="1.0" class="w-full accent-emerald-500">`;
+
+            if (i === 2) {
+                inputHtml = `<input id="adm-in-2" type="range" min="1.0" max="1000000.0" step="10.0" value="1.0" class="w-full accent-emerald-500">`;
+            } else if (i === 1) {
+                inputHtml = `<div class="flex gap-1"><input id="adm-in-1" type="number" min="1" max="1000" value="1" class="w-2/3 bg-slate-900 border border-emerald-600 rounded px-2 py-0.5 text-emerald-200"><button id="adm-btn-wave" class="w-1/3 bg-emerald-600 hover:bg-emerald-500 text-white rounded text-[10px] font-bold">決定</button></div>`;
+            } else if (i === 15) {
+                inputHtml = `<input id="adm-in-15" type="range" min="0.001" max="0.050" step="0.001" value="0.015" class="w-full accent-emerald-500">`;
+            } else if (i === 16) {
+                inputHtml = `<input id="adm-in-16" type="range" min="0.1" max="1.5" step="0.05" value="0.35" class="w-full accent-emerald-500">`;
+            }
+
+            const div = document.createElement('div');
+            div.className = "flex flex-col gap-1 p-2 rounded-xl bg-slate-900 border border-emerald-800/60";
+            div.innerHTML = `
+                <label class="flex justify-between text-[11px] text-emerald-300 font-bold truncate">
+                    <span>${labelText}</span>
+                    <span>(<span id="adm-val-${i}">1.0</span>)</span>
+                </label>
+                ${inputHtml}
+            `;
+            grid.appendChild(div);
+        }
+
+        for (let i = 1; i <= count; i++) {
+            const input = document.getElementById(`adm-in-${i}`);
+            const valSpan = document.getElementById(`adm-val-${i}`);
+            if (input && valSpan) {
+                if (i === 1) {
+                    const waveBtn = document.getElementById('adm-btn-wave');
+                    if (waveBtn) {
+                        waveBtn.addEventListener('click', () => {
+                            const val = parseInt(input.value);
+                            valSpan.textContent = val;
+                            currentWave = val;
+                            document.getElementById('hud-wave').textContent = currentWave;
+                            alertBox(`WAVEを ${val} に変更しました！`, "🌊");
+                        });
+                    }
+                } else {
+                    input.addEventListener('input', (e) => {
+                        const val = parseFloat(e.target.value);
+                        valSpan.textContent = val;
+                        adminSettings[`param_${i}`] = val;
+
+                        if (i === 2) adminSettings.damageMultiplier = val;
+                        if (i === 3) adminSettings.maxSpawnCount = Math.floor(val * 30);
+                        if (i === 4) adminSettings.enemySpeedMultiplier = val;
+                        if (i === 5) adminSettings.enemyHpMultiplier = val;
+                        if (i === 6) adminSettings.skillRangeMultiplier = val;
+                        if (i === 7) adminSettings.mapSize = Math.floor(val * 90);
+                        if (i === 8) adminSettings.rateMultiplier = val;
+                        if (i === 9) adminSettings.killRadius = Math.floor(val * 25);
+                        if (i === 10) adminSettings.keyBoost = val;
+                        if (i === 11) adminSettings.playerSpeed = val;
+                        if (i === 15) adminSettings.gravity = val;
+                        if (i === 16) adminSettings.jumpForce = val;
+                        if (i === 17) adminSettings.bulletSize = val;
+                        if (i === 18) adminSettings.enemySize = val;
+                        if (i === 19) adminSettings.bossSize = val;
+                    });
+                }
+            }
+        }
+    }
+
+    function activateCharacterMode(charType) {
+        activeCharacter = charType;
+        AudioEngine.playAwaken();
+
+        let charName = "通常兵装";
+        const adminBtn = document.getElementById('btn-admin-panel');
+        adminBtn.classList.add('hidden');
+        isJuntaroMode = false;
+
+        if (charType === 'god') {
+            charName = "👑 純太郎ハッカー神";
+            isJuntaroMode = true;
+            adminBtn.classList.remove('hidden');
+            showSkillPopup("純太郎ハッカー神覚醒！10大奥義＆100アドミン解禁", "👑");
+        } else if (charType === 'pandiriaz') {
+            charName = "⭐ Pandiriaz (友達)";
+            adminBtn.classList.remove('hidden');
+            showSkillPopup("Pandiriaz 降臨！超越管理モード", "⭐");
+        } else if (charType === 'uchidarion') {
+            charName = "💖 内田リオン (女子)";
+            adminBtn.classList.remove('hidden');
+            showSkillPopup("内田リオン 降臨！華麗なる聖域", "💖");
+        } else if (charType === 'class43') {
+            charName = "🏫 4年3組 (クラス全員参戦)";
+            adminBtn.classList.remove('hidden');
+            showSkillPopup("4年3組全員出撃！無敵のクラスパワー", "🏫");
+        } else if (charType === 'kuruki') {
+            charName = "⚡ クルキ (Kuruki)";
+            adminBtn.classList.remove('hidden');
+            showSkillPopup("クルキ覚醒！超電磁の閃光", "⚡");
+        } else if (charType === 'thrasher') {
+            charName = "🗡️ スラッシャー";
+            adminBtn.classList.remove('hidden');
+            showSkillPopup("スラッシャー降臨！血風の刃", "🗡️");
+        } else if (charType === 'mix') {
+            charName = "🧬 ミックス (全キャラクター融合)";
+            adminBtn.classList.remove('hidden');
+            showSkillPopup("全キャラクター完全融合！究極ミックス", "🧬");
+        } else if (charType === 'gakuseijuntaro') {
+            charName = "🎒 学生純太郎";
+            adminBtn.classList.remove('hidden');
+            showSkillPopup("学生純太郎、参上！日々の努力が力になる", "🎒");
+        } else if (charType === 'supergakuseijuntaro') {
+            charName = "🌟 スーパー学生純太郎";
+            isJuntaroMode = true;
+            adminBtn.classList.remove('hidden');
+            showSkillPopup("スーパー学生純太郎、覚醒！！限界突破パワー全開", "🌟");
+        } else if (charType !== 'normal') {
+            charName = `⚔️ ${charType.toUpperCase()}`;
+            showSkillPopup(`${charName} 覚醒！`, "⚡");
+        }
+
+        document.getElementById('hud-active-char').textContent = charName;
+        updateSkillsDock(charType);
+    }
+
+    function updateSkillsDock(mode) {
+        ['juntaro', 'normal-hint'].forEach(m => {
+            const el = document.getElementById(`skills-${m}`);
+            if (el) el.classList.add('hidden');
+        });
+        document.getElementById('skills-normal-hint').classList.add('hidden');
+
+        if (mode === 'god' || mode === 'pandiriaz' || mode === 'uchidarion' || mode === 'class43' || mode === 'kuruki' || mode === 'thrasher' || mode === 'mix' || mode === 'gakuseijuntaro' || mode === 'supergakuseijuntaro') {
+            document.getElementById('skills-juntaro').classList.remove('hidden');
+        } else {
+            document.getElementById('skills-normal-hint').classList.remove('hidden');
+        }
+    }
+
+    function updateHUDKeys() {
+        document.getElementById('hud-keys').textContent = playerKeys.toFixed(1);
+        document.getElementById('lobby-keys-count').textContent = playerKeys.toFixed(1);
+    }
+
+    function alertBox(text, icon = "💻") {
+        const box = document.getElementById('game-alert-box');
+        if (!box) return;
+        const iconEl = document.getElementById('alert-icon');
+        const msgEl = document.getElementById('alert-message');
+        if (iconEl) iconEl.textContent = icon;
+        if (msgEl) msgEl.textContent = text;
+        box.classList.remove('hidden');
+        clearTimeout(box.timer);
+        box.timer = setTimeout(() => { box.classList.add('hidden'); }, 3000);
+    }
+
+    let dotClickCount = 0;
+    function setupEvents() {
+        window.addEventListener('keydown', (e) => {
+            keysPressed[e.code] = true;
+
+            if (e.code === 'KeyP') shootBullet();
+            if (e.code === 'KeyY') {
+                isHoverFlying = !isHoverFlying;
+                document.getElementById('hover-btn-text').textContent = `[Y] 永続滞空: ${isHoverFlying ? 'ON' : 'OFF'}`;
+                showSkillPopup(`永続滞空: ${isHoverFlying ? 'ON' : 'OFF'}`, "🕊️");
+            }
+            if (e.code === 'KeyZ') {
+                AudioEngine.playExplosion();
+                showSkillPopup("島消滅ビッグバン", "🪐");
+                playerPos.y = 60;
+                triggerCameraQuake(1600, 1.4);
+                inflictDamageToAll(1e300);
+                playerKeys += 3000.0; updateHUDKeys();
+            }
+            if (e.code === 'KeyX') {
+                AudioEngine.playExplosion();
+                showSkillPopup("神聖爆発ブラスト", "💥");
+                createParticleExplosion(playerPos, 0x34d399, 45);
+                inflictDamageToAll(1e300);
+            }
+            if (e.code === 'KeyH') {
+                if (!isJuntaroMode) {
+                    activateCharacterMode('god');
+                } else {
+                    activateCharacterMode('normal');
+                }
+            }
+
+            if (isJuntaroMode || activeCharacter !== 'none') {
+                if (e.code.startsWith('Digit')) {
+                    const num = parseInt(e.code.replace('Digit', ''));
+                    if (num >= 1 && num <= 9) executeJuntaroSkill(num);
+                }
+            }
+        });
+
+        window.addEventListener('keyup', (e) => { keysPressed[e.code] = false; });
+
+        window.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX; mouseY = e.clientY;
+            const crosshair = document.getElementById('crosshair');
+            if (crosshair) {
+                crosshair.style.left = mouseX + 'px'; 
+                crosshair.style.top = mouseY + 'px';
+            }
+
+            const normX = (mouseX / window.innerWidth - 0.5) * 2;
+            const normY = (mouseY / window.innerHeight - 0.5) * 2;
+            camera.rotation.y = -normX * 1.8;
+            camera.rotation.x = -normY * 0.8;
+        });
+
+        window.addEventListener('mousedown', (e) => {
+            if (e.target.tagName !== 'BUTTON' && e.target.tagName !== 'INPUT' && e.target.tagName !== 'RANGE') {
+                shootBullet();
+            }
+        });
+
+        const dot = document.getElementById('cyber-dot');
+        if (dot) {
+            dot.addEventListener('click', () => {
+                dotClickCount++;
+                AudioEngine.playChirin();
+                if (dotClickCount >= 5) {
+                    dotClickCount = 0;
+                    document.getElementById('secret-terminal-modal').classList.remove('hidden');
+                    alertBox("💻 ハッカーシークレット端末起動！ (コード: 1000)", "⭐");
+                }
+            });
+        }
+
+        // チュートリアルBOX全体のどこをクリックしても反応
+        const bulbBox = document.getElementById('tutorial-bulb-box');
+        if (bulbBox) {
+            bulbBox.addEventListener('click', () => {
+                dotClickCount++;
+                AudioEngine.playChirin();
+                if (dotClickCount >= 5) {
+                    dotClickCount = 0;
+                    document.getElementById('secret-terminal-modal').classList.remove('hidden');
+                    alertBox("💻 ハッカーシークレット端末起動！ (コード: 1000)", "⭐");
+                } else {
+                    alertBox(`💡 シークレット端末まであと ${5 - dotClickCount} 回タップ`, "⭐");
+                }
+            });
+        }
+
+        document.getElementById('btn-hover-fly').addEventListener('click', () => {
+            isHoverFlying = !isHoverFlying;
+            document.getElementById('hover-btn-text').textContent = `[Y] 永続滞空: ${isHoverFlying ? 'ON' : 'OFF'}`;
+        });
+        document.getElementById('btn-island-bigbang').addEventListener('click', () => {
+            AudioEngine.playExplosion();
+            showSkillPopup("島消滅ビッグバン", "🪐");
+            playerPos.y = 60;
+            triggerCameraQuake(1600, 1.4);
+            inflictDamageToAll(1e300);
+            playerKeys += 3000.0; updateHUDKeys();
+        });
+        document.getElementById('btn-holy-blast').addEventListener('click', () => {
+            AudioEngine.playExplosion();
+            showSkillPopup("神聖爆発ブラスト", "💥");
+            createParticleExplosion(playerPos, 0x34d399, 45);
+            inflictDamageToAll(1e300);
+        });
+        document.getElementById('btn-awaken-toggle').addEventListener('click', () => {
+            if (!isJuntaroMode) {
+                activateCharacterMode('pandiriaz');
+            } else {
+                activateCharacterMode('normal');
+            }
+        });
+
+        document.getElementById('btn-admin-panel').addEventListener('click', () => {
+            document.getElementById('admin-panel-modal').classList.remove('hidden');
+        });
+        document.getElementById('admin-panel-close').addEventListener('click', () => {
+            document.getElementById('admin-panel-modal').classList.add('hidden');
+        });
+        document.getElementById('admin-juntaro-clap').addEventListener('click', () => {
+            triggerJuntaroClap();
+            document.getElementById('admin-panel-modal').classList.add('hidden');
+        });
+
+        document.getElementById('admin-apply-btn').addEventListener('click', () => {
+            currentWave = adminSettings.wave;
+            document.getElementById('hud-wave').textContent = currentWave;
+            buildIsland(currentStage);
+            document.getElementById('admin-panel-modal').classList.add('hidden');
+            alertBox("💻 ハッカーアドミン設定を適用して保存しました！", "👑");
+        });
+
+        document.getElementById('btn-deploy-battle').addEventListener('click', () => {
+            AudioEngine.startBGM();
+            document.getElementById('lobby-modal').classList.add('hidden');
+        });
+        document.getElementById('btn-open-lobby').addEventListener('click', () => {
+            activateCharacterMode('normal');
+            document.getElementById('lobby-modal').classList.remove('hidden');
+        });
+
+        document.getElementById('tab-btn-weapons').addEventListener('click', () => switchLobbyTab('weapons'));
+        document.getElementById('tab-btn-stages').addEventListener('click', () => switchLobbyTab('stages'));
+
+        document.querySelectorAll('.stage-select-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                buildIsland(e.target.getAttribute('data-stage'));
+                document.getElementById('lobby-modal').classList.add('hidden');
+                showSkillPopup(`「${e.target.getAttribute('data-stage')}」島出撃！`, "🪐");
+            });
+        });
+
+        document.getElementById('secret-terminal-close').addEventListener('click', () => {
+            document.getElementById('secret-terminal-modal').classList.add('hidden');
+        });
+        document.getElementById('secret-terminal-submit').addEventListener('click', () => {
+            const code = document.getElementById('secret-terminal-input').value.trim();
+            if (code === '1000') {
+                document.getElementById('character-selector-panel').classList.remove('hidden');
+                alertBox("🔐 コード 1000 認証成功！キャラクターを選択してください", "💻");
+            } else {
+                alertBox("❌ コードが違います (コード: 1000)", "⚠️");
+            }
+        });
+
+        document.querySelectorAll('.char-select-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const charType = e.target.getAttribute('data-char');
+                if (charType === 'normal') {
+                    activateCharacterMode('normal');
+                    document.getElementById('btn-admin-panel').classList.add('hidden');
+                    showSkillPopup("通常兵装に戻りました", "👤");
+                } else {
+                    activateCharacterMode(charType);
+                }
+                document.getElementById('secret-terminal-modal').classList.add('hidden');
+            });
+        });
+    }
+
+    function switchLobbyTab(tab) {
+        document.getElementById('tab-content-weapons').classList.add('hidden');
+        document.getElementById('tab-content-stages').classList.add('hidden');
+        if (tab === 'weapons') document.getElementById('tab-content-weapons').classList.remove('hidden');
+        if (tab === 'stages') document.getElementById('tab-content-stages').classList.remove('hidden');
+    }
+
+    function renderWeaponList() {
+        const grid = document.getElementById('weapon-grid');
+        grid.innerHTML = '';
+        WEAPONS.forEach(w => {
+            const card = document.createElement('div');
+            card.className = "p-3 rounded-xl border border-emerald-500/50 bg-slate-950 hover:bg-emerald-950 cursor-pointer transition shadow-sm flex flex-col justify-between";
+            card.innerHTML = `
+                <div>
+                    <div class="text-xs font-black text-emerald-300 truncate">${w.name}</div>
+                    <div class="text-[10px] text-emerald-400/80 mt-1">威力: ${w.damage.toLocaleString()}</div>
+                </div>
+                <div class="text-[10px] font-bold text-teal-400 mt-2">✓ 装備する</div>
+            `;
+            card.addEventListener('click', () => {
+                currentWeapon = w;
+                showSkillPopup(`${w.name} 装備！`, "⚔️");
+            });
+            grid.appendChild(card);
+        });
+    }
+
+    let spawnTimer = 0;
+    function animate() {
+        requestAnimationFrame(animate);
+
+        spawnTimer++;
+        if (spawnTimer >= 2) {
+            spawnTimer = 0;
+            checkAndSpawnEnemies();
+        }
+
+        const moveSpeed = 0.35 * adminSettings.playerSpeed;
+        const forward = new THREE.Vector3(); camera.getWorldDirection(forward); forward.y = 0; forward.normalize();
+        const right = new THREE.Vector3(); right.crossVectors(forward, new THREE.Vector3(0, 1, 0)).normalize();
+
+        if (keysPressed['KeyW']) playerPos.addScaledVector(forward, moveSpeed);
+        if (keysPressed['KeyS']) playerPos.addScaledVector(forward, -moveSpeed);
+        if (keysPressed['KeyA']) playerPos.addScaledVector(right, -moveSpeed);
+        if (keysPressed['KeyD']) playerPos.addScaledVector(right, moveSpeed);
+
+        if (isHoverFlying) {
+            if (keysPressed['Space']) playerPos.y += 0.25;
+            if (keysPressed['ShiftLeft']) playerPos.y = Math.max(1.6, playerPos.y - 0.25);
+            playerVelocityY = 0;
+        } else {
+            if (keysPressed['Space'] && isGrounded) { playerVelocityY = adminSettings.jumpForce; isGrounded = false; }
+            playerVelocityY -= adminSettings.gravity;
+            playerPos.y += playerVelocityY;
+            if (playerPos.y <= 1.6) { playerPos.y = 1.6; playerVelocityY = 0; isGrounded = true; }
+        }
+
+        camera.position.set(playerPos.x, playerPos.y, playerPos.z);
+
+        for (let i = bullets.length - 1; i >= 0; i--) {
+            const b = bullets[i];
+            b.mesh.position.addScaledVector(b.dir, 1.8 * adminSettings.skillSpeed);
+            b.life--;
+
+            for (let j = enemies.length - 1; j >= 0; j--) {
+                const en = enemies[j];
+                if (b.mesh.position.distanceTo(en.mesh.position) < 2.5) {
+                    en.hp -= b.damage;
+                    createParticleExplosion(en.mesh.position, 0x34d399, 10);
+                    b.life = 0;
+
+                    if (en.hp <= 0) {
+                        scene.remove(en.mesh);
+                        enemies.splice(j, 1);
+                        waveKills++;
+                        playerKeys += (en.isRare ? 200.0 : 50.0) * adminSettings.keyBoost;
+                        updateHUDKeys();
+                        document.getElementById('hud-wave-kills').textContent = waveKills;
+
+                        if (waveKills >= 100) {
+                            currentWave++; waveKills = 0;
+                            document.getElementById('hud-wave').textContent = currentWave;
+                            showSkillPopup(`WAVE ${currentWave} 到達！！`, "🏆");
+                        }
+                    }
+                    break;
+                }
+            }
+
+            if (currentBoss && b.life > 0) {
+                if (b.mesh.position.distanceTo(currentBoss.mesh.position) < 8.0) {
+                    currentBoss.hp -= b.damage;
+                    createParticleExplosion(currentBoss.mesh.position, 0x10b981, 25);
+                    b.life = 0; updateBossHPUI();
+                    if (currentBoss.hp <= 0) destroyBoss();
+                }
+            }
+
+            if (b.life <= 0) { scene.remove(b.mesh); bullets.splice(i, 1); }
+        }
+
+        if (!isTimeFrozen) {
+            enemies.forEach(en => {
+                const dir = new THREE.Vector3().subVectors(playerPos, en.mesh.position);
+                dir.y = 0; 
+                dir.normalize();
+                en.mesh.position.addScaledVector(dir, en.speed);
+                en.mesh.lookAt(playerPos.x, en.mesh.position.y, playerPos.z);
+            });
+            if (currentBoss) {
+                const bDir = new THREE.Vector3().subVectors(playerPos, currentBoss.mesh.position);
+                bDir.y = 0; bDir.normalize();
+                currentBoss.mesh.position.addScaledVector(bDir, currentBoss.speed);
+                currentBoss.mesh.lookAt(playerPos.x, currentBoss.mesh.position.y, playerPos.z);
+            }
+        }
+
+        for (let i = particles.length - 1; i >= 0; i--) {
+            const p = particles[i]; p.mesh.position.add(p.vel); p.life--;
+            if (p.life <= 0) { scene.remove(p.mesh); particles.splice(i, 1); }
+        }
+
+        renderer.render(scene, camera);
+    }
+
+    if (document.readyState === 'complete') {
+        init3D();
+        setupEvents();
+        renderWeaponList();
+        updateHUDKeys();
+        animate();
+    } else {
+        window.addEventListener('load', () => {
+            init3D();
+            setupEvents();
+            renderWeaponList();
+            updateHUDKeys();
+            animate();
+        });
+    }
+    </script>
+</body>
+</html>
