@@ -7,106 +7,51 @@
   <link rel="icon" type="image/x-icon" href="../../favicon.ico">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: 'DM Sans', sans-serif;
-      background: #fafafa;
-      color: #111;
-      min-height: 100vh;
-      padding: 60px 24px;
-    }
-    header {
-      max-width: 560px;
-      margin: 0 auto 48px;
-    }
-    header a {
-      display: inline-block;
-      margin-bottom: 32px;
-    }
-    header img {
-      height: 36px;
-    }
-    h1 {
-      font-size: 32px;
-      font-weight: 700;
-      letter-spacing: -0.5px;
-    }
-    .group {
-      max-width: 560px;
-      margin: 0 auto 40px;
-    }
-    .group h2 {
-      font-size: 15px;
-      font-weight: 700;
-      letter-spacing: 0.02em;
-      margin-bottom: 14px;
-      padding-left: 12px;
-      border-left: 4px solid #c8e020;
-    }
-    .grid {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 12px;
-    }
-    .card {
-      display: block;
-      background: #fff;
-      border: 1px solid #e5e5e5;
-      border-radius: 12px;
-      padding: 28px 24px;
-      text-decoration: none;
-      color: inherit;
-      transition: box-shadow 0.2s, transform 0.2s;
-    }
-    .card:hover {
-      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-      transform: translateY(-2px);
-    }
-    .card-title {
-      font-size: 16px;
-      font-weight: 600;
-      margin-bottom: 6px;
-    }
-    .card-sub {
-      font-size: 13px;
-      color: #888;
-    }
-    .arrow {
-      margin-top: 20px;
-      font-size: 18px;
-      color: #c8e020;
-    }
+    body { font-family: 'DM Sans', 'Hiragino Sans', sans-serif; background: #fafafa; color: #111; padding: 32px 16px 48px; }
+    main { max-width: 480px; margin: 0 auto; }
+    .back { display: inline-block; font-size: 13px; color: #888; text-decoration: none; margin-bottom: 16px; }
+    h1 { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
+    .lead { font-size: 13px; color: #888; margin-bottom: 20px; }
+    .list { display: flex; flex-direction: column; gap: 8px; }
+    .row { display: flex; align-items: center; gap: 12px; background: #fff; border: 1px solid #e5e5e5; border-radius: 10px; padding: 10px 12px; text-decoration: none; color: inherit; }
+    .row:hover { border-color: #c8e020; }
+    .ic { font-size: 22px; width: 32px; text-align: center; flex: none; }
+    .tx { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+    .tx b { font-size: 15px; font-weight: 700; }
+    .tx small { font-size: 12px; color: #888; }
+    .btn { flex: none; font-size: 13px; font-weight: 700; background: #c8e020; color: #111; border-radius: 999px; padding: 6px 14px; }
   </style>
 </head>
 <body>
-  <header>
-    <a href="../index.html">
-      <img src="https://sekimachi-design.com/portfolio/images/logo.png" alt="Sekimachi Design Studio">
-    </a>
+  <main>
+    <a class="back" href="../index.html">← Apps</a>
     <h1>純太郎くんが作ったゲーム</h1>
-  </header>
-
-  <section class="group">
-    <h2>ゲームリスト（3つ）</h2>
-    <div class="grid">
-    <a class="card" href="../sailor-quest/">
-      <div class="card-title">セーラークエスト3D</div>
-      <div class="card-sub">3Dオープンワールドの冒険</div>
-      <div class="arrow">→</div>
+    <p class="lead">タップして あそぼう</p>
+    <div class="list">
+    <a class="row" href="../sailor-quest/">
+      <span class="ic">⚓</span>
+      <span class="tx"><b>セーラークエスト3D</b><small>3Dオープンワールドの冒険</small></span>
+      <span class="btn">あそぶ</span>
     </a>
-    <a class="card" href="../yami/">
-      <div class="card-title">ヤミのおにごっこ 3D</div>
-      <div class="card-sub">キラーからにげる3Dおにごっこ</div>
-      <div class="arrow">→</div>
+    <a class="row" href="../yami/">
+      <span class="ic">👻</span>
+      <span class="tx"><b>ヤミのおにごっこ 3D</b><small>キラーからにげる3Dおにごっこ</small></span>
+      <span class="btn">あそぶ</span>
     </a>
-    <a class="card" href="../egg-thief/">
-      <div class="card-title">たまごドロボウ3D</div>
-      <div class="card-sub">たまごをぬすんで、そだてて、つよくなる3Dゲーム</div>
-      <div class="arrow">→</div>
+    <a class="row" href="../egg-thief/">
+      <span class="ic">🥚</span>
+      <span class="tx"><b>たまごドロボウ3D</b><small>たまごをぬすんで、そだてて、つよくなる</small></span>
+      <span class="btn">あそぶ</span>
+    </a>
+    <a class="row" href="../cyber-arena/">
+      <span class="ic">🤖</span>
+      <span class="tx"><b>サイバー・アリーナ 3D</b><small>3Dの大群戦アクション</small></span>
+      <span class="btn">あそぶ</span>
     </a>
     </div>
-  </section>
+  </main>
 </body>
 </html>
