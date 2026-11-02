@@ -127,6 +127,10 @@
     .writing-list a:hover{background:var(--bg-alt)}
     .writing-list small{display:block;font-weight:400;color:var(--text-dim);font-size:.85rem}
 
+    .writing-list.plain a{pointer-events:none}
+    .writing-list.plain a::after{content:none}
+    .writing-sub{font-size:1rem;margin:40px 0 4px}
+
     /* プロフィール */
     .profile{display:grid;grid-template-columns:minmax(0,14em) 1fr;gap:16px 48px}
     @media (max-width:760px){.profile{grid-template-columns:1fr}}
@@ -294,6 +298,14 @@
           <li><a href="https://note.com/aiwakaruman/n/n883ce2bc53fd" target="_blank" rel="noopener"><span>【記事タイトル】<small>note ・ 【公開年月】</small></span></a></li>
           <li><a href="https://note.com/aiwakaruman/n/n5f691d190f78" target="_blank" rel="noopener"><span>【記事タイトル】<small>note ・ 【公開年月】</small></span></a></li>
           <li><a href="https://note.com/aiwakaruman/n/nbb1b57d50e46" target="_blank" rel="noopener"><span>【記事タイトル】<small>note ・ 【公開年月】</small></span></a></li>
+        </ul>
+        <h3 class="writing-sub">企業メディアへの寄稿</h3>
+        <p class="small" style="max-width:38em">所属先の技術・採用メディアに掲載された記事です。社名は伏せています。記事は、ご相談いただいた方に個別にご紹介します。</p>
+        <ul class="writing-list plain">
+          <li><a><span>【記事タイトル】<small>企業の技術・採用メディア ・ 【公開年月】 ・ 【役割:執筆/取材 など】</small></span></a></li>
+          <li><a><span>【記事タイトル】<small>企業の技術・採用メディア ・ 【公開年月】 ・ 【役割:執筆/取材 など】</small></span></a></li>
+          <li><a><span>【記事タイトル】<small>企業の技術・採用メディア ・ 【公開年月】 ・ 【役割:執筆/取材 など】</small></span></a></li>
+          <li><a><span>【記事タイトル】<small>企業の技術・採用メディア ・ 【公開年月】 ・ 【役割:執筆/取材 など】</small></span></a></li>
         </ul>
         <div class="works-cta">
           <a class="btn btn-outline" href="https://note.com/aiwakaruman" target="_blank" rel="noopener">note の記事一覧を見る</a>
