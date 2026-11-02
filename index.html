@@ -118,6 +118,15 @@
     @media (max-width:900px){.works{grid-template-columns:1fr}}
     .works-cta{margin-top:44px;display:flex;align-items:center;gap:20px;flex-wrap:wrap}
 
+
+    /* 執筆 */
+    .writing-list{list-style:none;margin-top:8px;border-top:1px solid var(--border)}
+    .writing-list li{border-bottom:1px solid var(--border)}
+    .writing-list a{display:flex;justify-content:space-between;align-items:center;gap:16px;min-height:56px;padding:14px 4px;text-decoration:none;font-weight:700}
+    .writing-list a::after{content:"→";color:var(--text-dim)}
+    .writing-list a:hover{background:var(--bg-alt)}
+    .writing-list small{display:block;font-weight:400;color:var(--text-dim);font-size:.85rem}
+
     /* プロフィール */
     .profile{display:grid;grid-template-columns:minmax(0,14em) 1fr;gap:16px 48px}
     @media (max-width:760px){.profile{grid-template-columns:1fr}}
@@ -156,6 +165,7 @@
           <li class="opt"><a href="#services">サービス</a></li>
           <li class="opt"><a href="#process">進め方</a></li>
           <li class="opt"><a href="#principles">考え方</a></li>
+          <li class="opt"><a href="#writing">執筆</a></li>
           <li class="opt"><a href="#profile">プロフィール</a></li>
           <li class="opt-s"><a href="/portfolio/">ポートフォリオ</a></li>
           <li><a class="nav-cta" href="#contact">ご相談</a></li>
@@ -267,6 +277,26 @@
         <div class="works-cta">
           <a class="btn btn-outline" href="/portfolio/">ポートフォリオを見る(パスワード制)</a>
           <p class="small" style="margin:0">詳細は、ご相談いただいた方に、パスワードをお伝えしています。</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="writing" aria-labelledby="writing-title">
+      <div class="container">
+        <p class="section-tag">Writing</p>
+        <h2 id="writing-title">執筆</h2>
+        <p class="small" style="margin-bottom:24px;max-width:38em">デザインの現場経験をもとに、UI/UX・AI活用・働き方の記事を書いています。</p>
+        <ul class="writing-list">
+          <li><a href="https://note.com/aiwakaruman/n/n5531533c769c" target="_blank" rel="noopener"><span>【記事タイトル】<small>note ・ 【公開年月】</small></span></a></li>
+          <li><a href="https://note.com/aiwakaruman/n/nb4505c7ce521" target="_blank" rel="noopener"><span>【記事タイトル】<small>note ・ 【公開年月】</small></span></a></li>
+          <li><a href="https://note.com/aiwakaruman/n/n9f987a36c13c" target="_blank" rel="noopener"><span>【記事タイトル】<small>note ・ 【公開年月】</small></span></a></li>
+          <li><a href="https://note.com/aiwakaruman/n/n100bd5f45a9b" target="_blank" rel="noopener"><span>【記事タイトル】<small>note ・ 【公開年月】</small></span></a></li>
+          <li><a href="https://note.com/aiwakaruman/n/n883ce2bc53fd" target="_blank" rel="noopener"><span>【記事タイトル】<small>note ・ 【公開年月】</small></span></a></li>
+          <li><a href="https://note.com/aiwakaruman/n/n5f691d190f78" target="_blank" rel="noopener"><span>【記事タイトル】<small>note ・ 【公開年月】</small></span></a></li>
+          <li><a href="https://note.com/aiwakaruman/n/nbb1b57d50e46" target="_blank" rel="noopener"><span>【記事タイトル】<small>note ・ 【公開年月】</small></span></a></li>
+        </ul>
+        <div class="works-cta">
+          <a class="btn btn-outline" href="https://note.com/aiwakaruman" target="_blank" rel="noopener">note の記事一覧を見る</a>
         </div>
       </div>
     </section>
