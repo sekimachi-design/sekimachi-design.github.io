@@ -1,58 +1,316 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ja">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sekimachi Design Studio — Coming Soon</title>
-  <meta name="description" content="Sekimachi Design Studio — Coming Soon">
+  <title>Sekimachi Design Studio — UI/UXデザイン・リサーチ・改善提案</title>
+  <meta name="description" content="Sekimachi Design Studio は、UI/UXデザイナー Rie Hayashi の個人事業です。利用者の声とデータをもとに、画面設計・UXリサーチ・バナー・LP・改善提案まで、根拠のあるデザインをお届けします。">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="ja_JP">
+  <meta property="og:url" content="https://sekimachi-design.com/">
+  <meta property="og:title" content="Sekimachi Design Studio — UI/UXデザイン・リサーチ・改善提案">
+  <meta property="og:description" content="目的から逆算して、迷わず使えるデザインを。UI/UXデザイン、UXリサーチ、バナー・LP、改善提案。">
+  <meta name="twitter:card" content="summary">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800;900&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
   <link rel="icon" type="image/x-icon" href="favicon.ico">
   <style>
+    /* トーンは、既存のポートフォリオ(白黒・DM Sans・丸ボタン)に合わせ、ロゴのライムを「面」の印として使う */
+    :root{
+      --bg:#fafafa;
+      --bg-card:#ffffff;
+      --bg-alt:#f0f0f0;
+      --text:#111111;
+      --text-dim:#5c5c61;
+      --border:#e5e5e5;
+      --lime:#e4f550;
+      --radius:16px;
+      --font:'DM Sans','Noto Sans JP','Hiragino Sans','Yu Gothic',sans-serif;
+    }
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-    html,body{
-      height:100%;
-    }
-    body{
-      font-family:'DM Sans',sans-serif;
-      background:#fafafa;
-      color:#111111;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      min-height:100vh;
-    }
-    .container{
-      text-align:center;
-      padding:40px 32px;
-    }
-    .logo{
-      margin-bottom:48px;
-    }
-    .logo img{
-      height:64px;
-      width:auto;
-    }
-    h1{
-      font-family:'DM Sans',sans-serif;
-      font-size:clamp(2.5rem,8vw,5rem);
-      font-weight:900;
-      letter-spacing:-2px;
-      line-height:1.05;
-      background:linear-gradient(135deg,#111111,#333333);
-      -webkit-background-clip:text;
-      -webkit-text-fill-color:transparent;
-      background-clip:text;
-    }
+    html{scroll-behavior:smooth;scroll-padding-top:88px;-webkit-text-size-adjust:100%}
+    body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:1.9;font-size:1rem;overflow-x:hidden}
+    a{color:inherit}
+    img{max-width:100%;display:block}
+    :focus-visible{outline:3px solid var(--text);outline-offset:3px;border-radius:4px}
+    .skip{position:absolute;left:-9999px;top:0;background:var(--text);color:#fff;padding:12px 16px;z-index:200}
+    .skip:focus{left:12px;top:12px}
+    .container{max-width:1100px;margin:0 auto;padding:0 32px}
+
+    /* ナビ */
+    header.site{position:sticky;top:0;z-index:100;background:rgba(250,250,250,.88);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
+    header.site .container{display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:76px}
+    .nav-logo{display:inline-flex;align-items:center;min-height:44px}
+    .nav-logo img{height:50px;width:auto}
+    nav ul{list-style:none;display:flex;gap:2px 28px;align-items:center}
+    nav a{display:inline-flex;align-items:center;justify-content:center;white-space:nowrap;min-height:44px;min-width:44px;text-decoration:none;font-size:.9rem;font-weight:500;color:var(--text-dim)}
+    nav a:hover{color:var(--text)}
+    nav a.nav-cta{padding:0 22px;border:1px solid var(--text);border-radius:50px;color:var(--text);font-size:.85rem;font-weight:700}
+    nav a.nav-cta:hover{background:var(--text);color:#fff}
+    @media (max-width:520px){nav li.opt-s{display:none}}
+    @media (max-width:760px){nav li.opt{display:none}.nav-logo img{height:42px}header.site .container{min-height:64px;padding:0 20px}}
+
+    /* 共通 */
+    .section-tag{display:inline-flex;align-items:center;gap:8px;padding:6px 16px;border:1px solid var(--border);border-radius:50px;font-size:.75rem;color:var(--text-dim);letter-spacing:2px;text-transform:uppercase;margin-bottom:20px;background:var(--bg-card)}
+    .section-tag::before{content:"";width:9px;height:9px;background:var(--lime);border:1px solid var(--text)}
+    h1,h2,h3{font-weight:800;line-height:1.35}
+    h1,h2,h3{text-wrap:balance}
+    p,dd,li{text-wrap:pretty}
+    h2{font-size:clamp(1.7rem,4vw,2.6rem);letter-spacing:-.01em;margin-bottom:36px}
+    section{padding:112px 0}
+    .btn{display:inline-flex;align-items:center;justify-content:center;min-height:52px;padding:0 32px;border-radius:50px;font-weight:700;font-size:.95rem;text-decoration:none;border:1px solid var(--text);transition:background .25s,color .25s,transform .25s}
+    .btn-primary{background:var(--text);color:#fff;box-shadow:0 4px 20px rgba(0,0,0,.15)}
+    .btn-primary:hover{background:var(--lime);color:var(--text);transform:translateY(-2px)}
+    .btn-outline{background:transparent;color:var(--text);border-color:var(--text)}
+    .btn-outline:hover{background:var(--text);color:#fff}
+    .btns{display:flex;gap:16px;flex-wrap:wrap}
+    .small{font-size:.9rem;color:var(--text-dim)}
+    mark{background:linear-gradient(transparent 58%,var(--lime) 58%);color:inherit;padding:0 .08em}
+
+    /* ヒーロー */
+    .hero{padding:72px 0 96px}
+    .hero-grid{display:grid;grid-template-columns:1fr 380px;gap:72px;align-items:center}
+    .hero h1{font-size:clamp(2.1rem,5.4vw,3.6rem);font-weight:900;letter-spacing:-.02em;line-height:1.3;margin-bottom:28px;text-wrap:balance}
+    .hero .lead{color:var(--text-dim);max-width:34em;margin-bottom:40px;font-size:1.05rem}
+    .photo{position:relative}
+    .photo img{width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:var(--radius);filter:grayscale(20%)}
+    .photo::after{content:"";position:absolute;inset:auto -14px -14px auto;width:96px;height:96px;background:var(--lime);border-radius:var(--radius);z-index:-1}
+    .facts{display:flex;flex-wrap:wrap;gap:24px 56px;margin-top:72px;padding-top:32px;border-top:1px solid var(--border)}
+    .facts dt{font-size:.8rem;color:var(--text-dim);letter-spacing:.04em}
+    .facts dd{font-size:2rem;font-weight:800;line-height:1.3}
+    .facts dd small{font-size:.95rem;font-weight:700}
+    @media (max-width:900px){.hero-grid{grid-template-columns:1fr;gap:48px}.photo{max-width:320px}}
+
+    /* サービス */
+    .services{background:var(--bg)}
+    .cards{list-style:none;display:grid;grid-template-columns:repeat(2,1fr);gap:28px}
+    .card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:40px;transition:transform .4s,box-shadow .4s,border-color .4s}
+    .card:hover{transform:translateY(-4px);border-color:rgba(0,0,0,.18);box-shadow:0 20px 60px rgba(0,0,0,.08)}
+    .num{display:inline-block;font-size:2.6rem;font-weight:900;line-height:1;margin-bottom:20px;background:linear-gradient(transparent 66%,var(--lime) 66%)}
+    .card h3{font-size:1.25rem;margin-bottom:12px}
+    .card p{color:var(--text-dim);font-size:.95rem;line-height:1.85}
+    @media (max-width:760px){.cards{grid-template-columns:1fr}.card{padding:32px 28px}}
+
+    /* 進め方 */
+    .process{background:var(--bg-alt)}
+    .steps{list-style:none;display:grid;grid-template-columns:repeat(4,1fr);gap:36px 28px;counter-reset:s}
+    .steps li{counter-increment:s;border-top:2px solid var(--text);padding-top:18px}
+    .steps li::before{content:"0" counter(s);display:block;font-weight:900;font-size:1.3rem;margin-bottom:6px}
+    .steps h3{font-size:1.1rem;margin-bottom:8px}
+    .steps p{color:var(--text-dim);font-size:.93rem;line-height:1.85}
+    @media (max-width:900px){.steps{grid-template-columns:1fr 1fr}}
+    @media (max-width:520px){.steps{grid-template-columns:1fr}}
+
+    /* 考え方 */
+    dl.pr{display:grid;grid-template-columns:minmax(0,14em) 1fr;gap:0 48px}
+    dl.pr dt{font-weight:800;font-size:1.1rem;padding:26px 0;border-top:1px solid var(--border)}
+    dl.pr dd{color:var(--text-dim);padding:26px 0;border-top:1px solid var(--border);max-width:38em}
+    dl.pr dt:last-of-type,dl.pr dd:last-of-type{border-bottom:1px solid var(--border)}
+    @media (max-width:760px){dl.pr{grid-template-columns:1fr}dl.pr dt{padding-bottom:0;border-bottom:0}dl.pr dd{border-top:0;padding-top:6px}}
+
+    /* 取り組み */
+    .works-sec{background:var(--bg-alt)}
+    .works{list-style:none;display:grid;grid-template-columns:repeat(3,1fr);gap:28px}
+    .works li{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:32px}
+    .works h3{font-size:1.05rem;margin-bottom:10px}
+    .works p{color:var(--text-dim);font-size:.93rem;line-height:1.85}
+    @media (max-width:900px){.works{grid-template-columns:1fr}}
+    .works-cta{margin-top:44px;display:flex;align-items:center;gap:20px;flex-wrap:wrap}
+
+    /* プロフィール */
+    .profile{display:grid;grid-template-columns:minmax(0,14em) 1fr;gap:16px 48px}
+    @media (max-width:760px){.profile{grid-template-columns:1fr}}
+    .profile h2{margin-bottom:0}
+    .profile p{color:var(--text-dim);max-width:38em}
+    .profile p + p{margin-top:14px}
+    .quals{list-style:none;margin-top:24px;display:flex;flex-wrap:wrap;gap:10px}
+    .quals li{text-wrap:balance;padding:6px 16px;border:1px solid var(--border);border-radius:50px;font-size:.85rem;color:var(--text-dim);background:var(--bg-card)}
+
+    /* 相談 */
+    .contact{background:var(--text);color:#fff}
+    .contact .section-tag{background:transparent;border-color:#555;color:#d6d6d6}
+    .contact .section-tag::before{border-color:var(--lime)}
+    .contact h2{color:#fff}
+    .contact p{color:#dcdcdc;max-width:36em;margin-bottom:32px}
+    .contact .btn-primary{background:var(--lime);color:var(--text);border-color:var(--lime);box-shadow:none}
+    .contact .btn-primary:hover{background:#fff;border-color:#fff}
+    .contact :focus-visible{outline-color:#fff}
+
+    footer{padding:36px 0;font-size:.85rem;color:var(--text-dim)}
+    footer .container{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+    footer a{display:inline-flex;align-items:center;min-height:44px;color:var(--text-dim)}
+
+    @media (max-width:760px){.container{padding:0 20px}section{padding:72px 0}.hero{padding:40px 0 64px}}
+    @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
   </style>
 </head>
 <body>
-  <div class="container">
-    <div class="logo">
-      <img src="portfolio/images/logo.png" alt="Sekimachi Design Studio">
+  <a class="skip" href="#main">本文へ移動</a>
+
+  <header class="site">
+    <div class="container">
+      <a class="nav-logo" href="/"><img src="/images/logo.png" width="202" height="50" alt="Sekimachi Design Studio"></a>
+      <nav aria-label="メインメニュー">
+        <ul>
+          <li class="opt"><a href="#services">サービス</a></li>
+          <li class="opt"><a href="#process">進め方</a></li>
+          <li class="opt"><a href="#principles">考え方</a></li>
+          <li class="opt"><a href="#profile">プロフィール</a></li>
+          <li class="opt-s"><a href="/portfolio/">ポートフォリオ</a></li>
+          <li><a class="nav-cta" href="#contact">ご相談</a></li>
+        </ul>
+      </nav>
     </div>
-    <h1>Coming Soon</h1>
-  </div>
+  </header>
+
+  <main id="main">
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="container">
+        <div class="hero-grid">
+          <div>
+            <p class="section-tag">UI/UX Design Studio — Tokyo</p>
+            <h1 id="hero-title">目的から逆算して、<br><mark>迷わず使える</mark><br>デザインを。</h1>
+            <p class="lead">Sekimachi Design Studio は、UI/UXデザイナー Rie Hayashi の個人事業です。利用者の声とデータをもとに、画面設計から、バナー・LP、改善のご提案まで。見た目だけでなく、使われて、成果につながるデザインをお届けします。</p>
+            <div class="btns">
+              <a class="btn btn-primary" href="https://www.lancers.jp/profile/sekimachi_design_studio" rel="noopener">ランサーズで相談する</a>
+              <a class="btn btn-outline" href="/portfolio/">ポートフォリオを見る(パスワード制)</a>
+            </div>
+          </div>
+          <div class="photo"><img src="/images/profile.jpg" width="400" height="500" alt="Rie Hayashi"></div>
+        </div>
+        <dl class="facts" aria-label="これまでの経験">
+          <div><dt>UX・UIデザイン</dt><dd>15年以上</dd></div>
+          <div><dt>Amazon Japan(契約)</dt><dd>約10年 <small>・35以上の案件</small></dd></div>
+          <div><dt>海外勤務(オーストラリア)</dt><dd>4年</dd></div>
+        </dl>
+      </div>
+    </section>
+
+    <section id="services" class="services" aria-labelledby="services-title">
+      <div class="container">
+        <p class="section-tag">Services</p>
+        <h2 id="services-title">ご相談いただける内容</h2>
+        <ul class="cards">
+          <li class="card">
+            <span class="num" aria-hidden="true">01</span>
+            <h3>UI/UXデザイン・改善提案</h3>
+            <p>画面設計、情報設計、UIデザイン。ヒューリスティック評価や認知ウォークスルーで、利用者が迷う箇所を洗い出し、改善案をご提案します。WCAGにもとづくアクセシビリティの診断もご相談ください。</p>
+          </li>
+          <li class="card">
+            <span class="num" aria-hidden="true">02</span>
+            <h3>UXリサーチ</h3>
+            <p>ユーザーインタビューの設計と実施、データの分析、課題の整理。「なんとなく」ではなく、根拠のある課題から始めます。</p>
+          </li>
+          <li class="card">
+            <span class="num" aria-hidden="true">03</span>
+            <h3>バナー・SNS画像・LP</h3>
+            <p>掲載される面と、見る人の状況から逆算して設計します。クリック、問い合わせ、予約など、目的に合わせて、伝えることを1つに絞ります。</p>
+          </li>
+          <li class="card">
+            <span class="num" aria-hidden="true">04</span>
+            <h3>Web制作・文章制作</h3>
+            <p>HTML/CSS、WordPress の実装、紹介記事やコラムなどの文章制作。AIは下書きや整理の補助に使い、事実の確認と仕上げは、人が行います。</p>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="process" class="process" aria-labelledby="process-title">
+      <div class="container">
+        <p class="section-tag">Process</p>
+        <h2 id="process-title">進め方</h2>
+        <ol class="steps">
+          <li><h3>ヒアリング</h3><p>目的・ターゲット・KPI・制約を、最初に確認します。ここが定まってから、制作に入ります。</p></li>
+          <li><h3>ご提案・お見積り</h3><p>方針と理由、納期、修正の範囲を、最初にお伝えします。納期には、余裕をもたせています。</p></li>
+          <li><h3>制作・ご確認</h3><p>案には、必ず「なぜそうしたか」を添えます。目的とのつながりが、分かる形でご説明します。</p></li>
+          <li><h3>納品・振り返り</h3><p>納品後のご質問にもお答えします。気づいた改善点は、次の一歩としてお伝えします。</p></li>
+        </ol>
+      </div>
+    </section>
+
+    <section id="principles" aria-labelledby="principles-title">
+      <div class="container">
+        <p class="section-tag">Principles</p>
+        <h2 id="principles-title">大切にしていること</h2>
+        <dl class="pr">
+          <dt>目的から逆算する</dt>
+          <dd>見た目の好みより、目的の達成を優先します。ペルソナ・状況・ゴールを言葉にしてから、デザインに入ります。</dd>
+          <dt>根拠をもって決める</dt>
+          <dd>データ、利用者の声、専門的な知見、仮説を区別して扱います。確かめられていないことは、仮説として、正直にお伝えします。</dd>
+          <dt>誰もが迷わず使える</dt>
+          <dd>文字の大きさ、コントラスト、色だけに頼らない表現など、アクセシビリティを前提に設計します。</dd>
+          <dt>AIは道具、責任は人</dt>
+          <dd>AIを使う場合は、事前にお伝えします。事実の確認と最終判断は人が行い、画像や素材の権利、利用規約も確認します。</dd>
+        </dl>
+      </div>
+    </section>
+
+    <section id="works" class="works-sec" aria-labelledby="works-title">
+      <div class="container">
+        <p class="section-tag">Work</p>
+        <h2 id="works-title">取り組みの一例</h2>
+        <ul class="works">
+          <li>
+            <h3>ECサイトのカテゴリページ全面リニューアル</h3>
+            <p>訪問の6割超がモバイルなのに、PC中心だったページを、データ分析とユーザビリティテストをもとに再設計しました。</p>
+          </li>
+          <li>
+            <h3>季節キャンペーンのA/Bテスト改善</h3>
+            <p>公開後のクリック率の低下に気づき、仮説を立ててA/Bテストを提案。得られた知見は、以降の設計方針になりました。</p>
+          </li>
+          <li>
+            <h3>登録フローの改善</h3>
+            <p>離脱の多い登録の流れを、ファネル分析とインタビューをもとに、段階的に進める形へ再設計しました。</p>
+          </li>
+        </ul>
+        <div class="works-cta">
+          <a class="btn btn-outline" href="/portfolio/">ポートフォリオを見る(パスワード制)</a>
+          <p class="small" style="margin:0">詳細は、ご相談いただいた方に、パスワードをお伝えしています。</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="profile" aria-labelledby="profile-title">
+      <div class="container">
+        <p class="section-tag">Profile</p>
+        <div class="profile">
+          <h2 id="profile-title">Rie Hayashi</h2>
+          <div>
+            <p>プログラマーとしてキャリアを始め、UX/UIデザインに軸足を移して15年以上。Amazon Japan(契約)で約10年、35以上のプロジェクトでUXを担当し、現在は大手人材サービス企業で、リードデザイナーとして法人向けサービスのUI/UXに取り組んでいます。オーストラリアで4年間働いた経験もあります。</p>
+            <p>設計と開発の両方の視点があるため、利用者にも、実装するエンジニアにも寄り添ったデザインを心がけています。</p>
+            <ul class="quals" aria-label="資格">
+              <li>Google UXデザイン認定資格</li>
+              <li>HCD-Net認定 人間中心設計スペシャリスト</li>
+              <li>UX検定 基礎</li>
+              <li>ユニバーサルデザインコーディネーター</li>
+              <li>ユニバーサルカラーアドバイザー</li>
+              <li>Google Analytics 認定資格(上級)</li>
+              <li>ORACLE MASTER Silver</li>
+              <li>生成AIパスポート</li>
+              <li>G検定</li>
+              <li>Google Generative AI Leader</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="contact" class="contact" aria-labelledby="contact-title">
+      <div class="container">
+        <p class="section-tag">Contact</p>
+        <h2 id="contact-title">まずは、お悩みをお聞かせください</h2>
+        <p>お仕事のご相談・お見積りは、ランサーズのプロフィールからお受けしています。イメージが固まっていない段階でも、大丈夫です。</p>
+        <a class="btn btn-primary" href="https://www.lancers.jp/profile/sekimachi_design_studio" rel="noopener">ランサーズで相談する</a>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container">
+      <span>© 2026 Sekimachi Design Studio(個人事業)</span>
+      <a href="/portfolio/">ポートフォリオ(パスワード制)</a>
+    </div>
+  </footer>
 </body>
 </html>
