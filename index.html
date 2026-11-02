@@ -82,6 +82,21 @@
     .facts dd small{font-size:.95rem;font-weight:700}
     @media (max-width:900px){.hero-grid{grid-template-columns:1fr;gap:48px}.photo{max-width:320px}}
 
+
+    /* 写真なし版:右側は「20年」と、受けられる仕事のパネル */
+    .panel{display:grid;gap:14px}
+    .panel-main{background:var(--text);color:#fff;border-radius:var(--radius);padding:36px 36px 32px;position:relative;overflow:hidden}
+    .panel-main::after{content:"";position:absolute;right:-28px;top:-28px;width:120px;height:120px;background:var(--lime);border-radius:var(--radius)}
+    .panel-main .big{font-size:clamp(4.6rem,9vw,6.6rem);font-weight:900;line-height:1;letter-spacing:-.04em;position:relative;z-index:1}
+    .panel-main .big span{color:var(--lime)}
+    .panel-main p{position:relative;z-index:1;margin-top:12px;color:#d6d6d6;font-size:.95rem;line-height:1.7}
+    .panel-tiles{list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:14px}
+    .panel-tiles li{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;font-weight:800;font-size:1.05rem;display:flex;align-items:baseline;justify-content:space-between;gap:8px}
+    .panel-tiles small{font-weight:500;color:var(--text-dim);font-size:.78rem;letter-spacing:.04em}
+    .panel-tiles li:first-child{background:var(--lime);border-color:var(--text)}
+    .panel-tiles li:first-child small{color:var(--text)}
+    @media (max-width:900px){.panel{max-width:420px}}
+
     /* サービス */
     .services{background:var(--bg)}
     .cards{list-style:none;display:grid;grid-template-columns:repeat(2,1fr);gap:28px}
@@ -188,10 +203,17 @@
               <a class="btn btn-outline" href="/portfolio/">ポートフォリオを見る(パスワード制)</a>
             </div>
           </div>
-          <div class="photo"><img src="/images/profile.jpg" width="400" height="500" alt="Rie Hayashi"></div>
+          <div class="panel" aria-label="対応できる仕事">
+            <div class="panel-main"><div class="big">20<span>+</span></div><p>years in UX / UI design<br>プログラマーを兼ねてきた、実装まで分かるデザイナー</p></div>
+            <ul class="panel-tiles">
+              <li>Banner<small>バナー</small></li>
+              <li>LP<small>ランディング</small></li>
+              <li>Web<small>サイト</small></li>
+              <li>UI<small>画面設計</small></li>
+            </ul>
+          </div>
         </div>
         <dl class="facts" aria-label="これまでの経験">
-          <div><dt>UX・UIデザイン</dt><dd>20年以上</dd></div>
           <div><dt>Amazon Japan(契約)</dt><dd>約10年 <small>・35以上の案件</small></dd></div>
           <div><dt>海外勤務(オーストラリア)</dt><dd>4年</dd></div>
         </dl>
