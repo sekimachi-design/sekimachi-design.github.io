@@ -100,7 +100,7 @@
     var NEXT = 'main.html';
     var KEY = 'sd_pf';
 
-    try { if (sessionStorage.getItem(KEY) === '1') { location.replace(NEXT); return; } } catch (e) {}
+    try { var t = +localStorage.getItem(KEY); if (t && Date.now() - t < 2592e6) { location.replace(NEXT); return; } } catch (e) {}
 
     var form = document.getElementById('gate');
     var input = document.getElementById('pw');
@@ -124,7 +124,7 @@
       btn.disabled = true;
       try {
         if (await check(input.value)) {
-          try { sessionStorage.setItem(KEY, '1'); } catch (e2) {}
+          try { localStorage.setItem(KEY, String(Date.now())); } catch (e2) {}
           location.href = NEXT;
           return;
         }
